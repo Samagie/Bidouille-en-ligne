@@ -118,3 +118,12 @@
   color: var(--rs-accent);
   animation: px-clignote 0.8s steps(1) infinite;
 }
+
+/* Comparaison et réactions */
+[data-modele="pixel"] .rs-evolution { border-radius: 0; text-transform: uppercase; font-size: 3cqw; }
+[data-modele="pixel"] .rs-evo-mieux { background: rgba(78, 225, 160, 0.15); color: #4ee1a0; }
+[data-modele="pixel"] .rs-evo-moins-bien { background: rgba(255, 159, 67, 0.15); color: #ff9f43; }
+[data-modele="pixel"] .rs-evo-pareil, [data-modele="pixel"] .rs-evo-neutre { background: rgba(255, 255, 255, 0.1); color: #b9b6d3; }
+[data-modele="pixel"] .rs-reaction { border-radius: 0; background: #1d1a3a; box-shadow: inset 0 0 0 0.6cqw #f4f4f4; }
+[data-modele="pixel"] .rs-reaction[aria-pressed="true"] { background: var(--rs-accent); }
+[data-modele="pixel"] .rs-reaction-autre { border-radius: 0; background: #1d1a3a; color: #f4f4f4; text-transform: uppercase; font-size: 3cqw; }

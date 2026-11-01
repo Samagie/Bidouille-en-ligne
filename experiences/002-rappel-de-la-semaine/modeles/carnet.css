@@ -130,3 +130,12 @@
   color: var(--ca-rouge);
 }
 [data-modele="carnet"] .rs-mimi svg { filter: drop-shadow(0.5cqw 0.5cqw 0 rgba(43, 42, 51, 0.18)); }
+
+/* Comparaison et réactions */
+[data-modele="carnet"] .rs-evolution { border-radius: 0; background: none; border: 0.3cqw solid currentColor; font-family: "Courier New", "Courier 10 Pitch", monospace; font-weight: 700; }
+[data-modele="carnet"] .rs-evo-mieux { color: #2f6b3f; }
+[data-modele="carnet"] .rs-evo-moins-bien { color: var(--ca-rouge); }
+[data-modele="carnet"] .rs-evo-pareil, [data-modele="carnet"] .rs-evo-neutre { color: var(--ca-encre); }
+[data-modele="carnet"] .rs-reaction { border-radius: 0; background: var(--ca-papier); box-shadow: inset 0 0 0 0.35cqw var(--ca-encre); }
+[data-modele="carnet"] .rs-reaction[aria-pressed="true"] { background: #f2d7d3; box-shadow: inset 0 0 0 0.6cqw var(--ca-rouge); }
+[data-modele="carnet"] .rs-reaction-autre { border-radius: 0; background: var(--ca-papier); box-shadow: inset 0 0 0 0.3cqw var(--ca-encre); font-style: italic; }

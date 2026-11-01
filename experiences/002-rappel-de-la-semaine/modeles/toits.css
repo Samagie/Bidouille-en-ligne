@@ -138,3 +138,11 @@
   border-left: 2.8cqw solid rgba(10, 13, 38, 0.72);
   border-right: 0;
 }
+
+/* Comparaison et réactions */
+[data-modele="toits"] .rs-evo-mieux { background: rgba(78, 225, 160, 0.16); color: #8af0c4; }
+[data-modele="toits"] .rs-evo-moins-bien { background: rgba(255, 159, 107, 0.18); color: #ffb38a; }
+[data-modele="toits"] .rs-evo-pareil, [data-modele="toits"] .rs-evo-neutre { background: rgba(255, 255, 255, 0.1); color: #f3ead8; }
+[data-modele="toits"] .rs-reaction,
+[data-modele="toits"] .rs-reaction-autre { background: rgba(10, 13, 38, 0.72); color: #f3ead8; box-shadow: inset 0 0 0 1px rgba(255, 207, 107, 0.4); }
+[data-modele="toits"] .rs-reaction[aria-pressed="true"] { background: #ffcf6b; }

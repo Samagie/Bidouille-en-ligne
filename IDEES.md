@@ -21,6 +21,30 @@ Dans l'ordre conseillé. Entre crochets : le projet que l'expérience sert à te
 
 Dépôt public : ces expériences n'utilisent que des données inventées, sans nom ni information personnelle.
 
+## Propositions pour Chez Miaouss
+
+Des fonctions pour l'appli du foyer. Certaines peuvent d'abord passer par une maquette dans le labo.
+
+**Au quotidien**
+- 🍽️ **Du menu de la semaine à la liste de courses** : on choisit les repas parmi les recettes, et les ingrédients manquants partent tout seuls dans les courses, rangés par rayon. Ce qui est déjà en stock est déduit.
+- 📲 **Ajout rapide par « Partager »** : depuis n'importe quelle appli Android, « Partager → Chez Miaouss » envoie une recette, un film, un livre ou un lien dans le bon module.
+- 🧾 **Le ticket de caisse en photo** : le montant et les catégories vont dans les comptes, et les produits achetés sortent de la liste de courses. La lecture se fait par l'IA, avec la clé gardée sur le téléphone.
+- 🧹 **Des tâches tournantes** : les tâches qui reviennent passent de l'un à l'autre, avec un équilibre visible, selon « qui a fait quoi ».
+
+**À deux**
+- 💞 **Match à deux** (voir plus haut) : on voit les films et les recettes qui plaisent à tous les deux.
+- 🎯 **Un projet commun** : une cagnotte pour une envie (voyage, canapé…), avec une jauge qui monte à chaque versement.
+- 📸 **« Il y a un an »** : chaque matin dans la Gazette, une photo de la galerie prise le même jour l'année d'avant.
+
+**Pour Mimi**
+- 🩺 **Les rappels de soins** : vermifuge, antipuces, vaccins, griffes, avec une notification le jour J et l'historique.
+- ⚖️ **La courbe de poids** : une pesée par mois, une petite courbe, et Mimi gotchi qui réagit.
+- 📹 **Mimi-cam** (voir plus haut).
+
+**Écrans et notifications**
+- 🔔 **Des notifications utiles** : le journal du dimanche est prêt, un anniversaire dans 3 jours, un stock bas, la tâche du jour.
+- 📺 **Le Nest Hub en mode « salon »** : la story du dimanche en diaporama, la Mimi-cam, l'agenda du jour.
+
 ## Un jour, peut-être
 
 - _(vide pour l'instant)_

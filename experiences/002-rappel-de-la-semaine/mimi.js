@@ -93,6 +93,45 @@
     },
   };
 
+  // Costumes de saison : ils remplacent l'accessoire du rôle pendant les semaines spéciales.
+  // « fond » est dessiné derrière tout le corps (la cape), « devant » par-dessus la tête.
+  const COSTUMES = {
+    anniversaire: {
+      devant: () => `
+        <path d="M76 46 L 100 -6 L 124 46 Z" fill="#ff8fab" stroke="#e5577d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M88 20 L 112 20 M82 33 L 118 33" stroke="#fff3a6" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="100" cy="-7" r="8" fill="#c9b3ec" stroke="#9d7fd6" stroke-width="2"/>
+        <path d="M76 46 Q 100 54 124 46" fill="none" stroke="#e5577d" stroke-width="2"/>`,
+    },
+    noel: {
+      devant: () => `
+        <path d="M70 124 Q 100 142 130 124 L 133 136 Q 100 156 67 136 Z" fill="#d93a3a"/>
+        <path d="M80 129 L 82 141 M94 133 L 95 146 M108 133 L 107 146 M120 129 L 118 141" stroke="#2f8a57" stroke-width="3"/>
+        <path d="M112 138 L 126 172 L 112 176 Z" fill="#d93a3a"/>
+        <path d="M58 54 C 64 18 104 -2 150 18 C 132 22 130 36 138 52 Z" fill="#d93a3a"/>
+        <circle cx="152" cy="20" r="9.5" fill="#ffffff" stroke="#e7e2dc" stroke-width="2"/>
+        <path d="M50 56 Q 100 32 150 56 L 148 68 Q 100 46 52 68 Z" fill="#ffffff" stroke="#e7e2dc" stroke-width="2"/>`,
+    },
+    halloween: {
+      fond: () => `<path d="M64 120 Q 30 170 36 214 L 164 214 Q 170 170 136 120 Z" fill="#4a2a6b"/>`,
+      devant: () => `
+        <path d="M78 122 L 100 134 L 122 122 L 116 136 L 100 142 L 84 136 Z" fill="#4a2a6b"/>
+        <ellipse cx="100" cy="48" rx="64" ry="11" fill="#2b2730"/>
+        <path d="M70 46 L 108 -12 Q 120 -14 114 0 L 130 46 Z" fill="#2b2730"/>
+        <path d="M74 36 L 128 36 L 130 46 L 70 46 Z" fill="#ff8a1f"/>`,
+    },
+    ete: {
+      devant: () => `
+        <ellipse cx="100" cy="46" rx="68" ry="12" fill="#ead08a" stroke="#c9a24f" stroke-width="2"/>
+        <path d="M70 46 Q 70 14 100 12 Q 130 14 130 46 Z" fill="#ead08a" stroke="#c9a24f" stroke-width="2"/>
+        <path d="M71 34 Q 100 40 129 34 L 130 42 Q 100 48 70 42 Z" fill="#ff7a59"/>
+        <rect x="64" y="76" width="30" height="18" rx="8" fill="#1d1a24"/>
+        <rect x="106" y="76" width="30" height="18" rx="8" fill="#1d1a24"/>
+        <path d="M94 82 L 106 82" stroke="#1d1a24" stroke-width="3"/>
+        <path d="M70 80 L 78 80 M112 80 L 120 80" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".7"/>`,
+    },
+  };
+
   function yeux(humeur, c) {
     if (humeur === "content") {
       return `<path d="M71 87 Q 80 75 89 87 M111 87 Q 120 75 129 87" fill="none" stroke="${c.trait}" stroke-width="4.5" stroke-linecap="round"/>`;
@@ -115,9 +154,9 @@
    * @param {object} [o.couleurs] remplace des couleurs de COULEURS
    * @param {boolean} [o.anime]   ajoute les classes d'animation (clignement, queue, oreille)
    */
-  function mimi({ role = "hote", humeur = "normal", couleurs = {}, anime = true } = {}) {
+  function mimi({ role = "hote", humeur = "normal", couleurs = {}, anime = true, costume = null } = {}) {
     const c = { ...COULEURS, ...couleurs };
-    const r = ROLES[role] || {};
+    const r = (costume && COSTUMES[costume]) || ROLES[role] || {};
     const a = (classe) => (anime ? ` class="${classe}"` : "");
     const bouche = humeur === "surpris"
       ? `<ellipse cx="100" cy="113" rx="4" ry="5" fill="${c.trait}"/>`
@@ -126,6 +165,7 @@
       ? `<g${a("rs-mimi-zzz")} fill="${c.trait}" font-family="sans-serif" font-weight="700"><text x="150" y="40" font-size="22">z</text><text x="166" y="22" font-size="15">z</text></g>`
       : "";
     return `<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mimi">
+  ${r.fond ? r.fond(c) : ""}
   <g${a("rs-mimi-queue")}><path d="M132 192 C 172 198 190 166 178 136 C 173 124 166 118 158 117" fill="none" stroke="${c.pelage}" stroke-width="16" stroke-linecap="round"/>
     <path d="M171 126 C 168 121 163 118 158 117" fill="none" stroke="${c.rayures}" stroke-width="16" stroke-linecap="round"/></g>
   <path d="M58 206 C 50 160 64 118 100 114 C 136 118 150 160 142 206 Z" fill="${c.pelage}"/>
@@ -154,4 +194,5 @@
   window.RS = window.RS || {};
   window.RS.mimi = mimi;
   window.RS.ROLES_MIMI = Object.keys(ROLES);
+  window.RS.COSTUMES_MIMI = Object.keys(COSTUMES);
 })();

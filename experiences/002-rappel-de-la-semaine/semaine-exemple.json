@@ -1,74 +1,271 @@
 {
   "foyer": {
     "personnes": [
-      { "id": "a", "prenom": "Jules" },
-      { "id": "b", "prenom": "Lina" }
+      {
+        "id": "a",
+        "prenom": "Jules"
+      },
+      {
+        "id": "b",
+        "prenom": "Lina"
+      }
     ],
-    "chat": "Mimi"
+    "chat": "Mimi",
+    "anniversaireChat": "11-18"
   },
-  "semaine": { "numero": 45, "debut": "2026-11-02", "fin": "2026-11-08" },
-  "note": { "valeur": 15, "sur": 20, "verdict": "Belle semaine" },
+  "semaine": {
+    "numero": 45,
+    "debut": "2026-11-02",
+    "fin": "2026-11-08"
+  },
+  "note": {
+    "valeur": 15,
+    "sur": 20,
+    "verdict": "Belle semaine"
+  },
   "bilan": {
     "argent": {
       "depense": 312.4,
       "categories": [
-        { "nom": "Courses", "montant": 148.2 },
-        { "nom": "Sorties", "montant": 86 },
-        { "nom": "Mimi", "montant": 41.9 }
+        {
+          "nom": "Courses",
+          "montant": 148.2
+        },
+        {
+          "nom": "Sorties",
+          "montant": 86
+        },
+        {
+          "nom": "Mimi",
+          "montant": 41.9
+        }
       ],
-      "equilibre": { "de": "b", "a": "a", "montant": 12.5 },
+      "equilibre": {
+        "de": "b",
+        "a": "a",
+        "montant": 12.5
+      },
       "budgetUtilise": 0.62
     },
-    "sport": { "seances": 4, "objectif": 5, "parPersonne": { "a": 3, "b": 1 } },
-    "cuisine": { "cuisines": 9, "planifies": 11, "star": "Gratin dauphinois", "stocksBas": ["Beurre", "Riz"] },
-    "maison": { "faites": 14, "enRetard": 2, "parPersonne": { "a": 6, "b": 8 }, "phare": "Le grand ménage de la salle de bain" },
-    "soins": { "repas": 14, "brossages": 3, "jeux": 9, "serie": 6, "parPersonne": { "a": 12, "b": 14 } },
+    "sport": {
+      "seances": 4,
+      "objectif": 5,
+      "parPersonne": {
+        "a": 3,
+        "b": 1
+      }
+    },
+    "cuisine": {
+      "cuisines": 9,
+      "planifies": 11,
+      "star": "Gratin dauphinois",
+      "stocksBas": [
+        "Beurre",
+        "Riz"
+      ]
+    },
+    "maison": {
+      "faites": 14,
+      "enRetard": 2,
+      "parPersonne": {
+        "a": 6,
+        "b": 8
+      },
+      "phare": "Le grand ménage de la salle de bain"
+    },
+    "soins": {
+      "repas": 14,
+      "brossages": 3,
+      "jeux": 9,
+      "serie": 6,
+      "parPersonne": {
+        "a": 12,
+        "b": 14
+      }
+    },
     "cinema": {
       "films": [
-        { "titre": "Les Moustaches de minuit", "note": 4 },
-        { "titre": "Croquettes et conséquences", "note": 3 }
+        {
+          "titre": "Les Moustaches de minuit",
+          "note": 4
+        },
+        {
+          "titre": "Croquettes et conséquences",
+          "note": 3
+        }
       ],
-      "series": [{ "titre": "Le Bureau des chats perdus", "episodes": 3 }]
+      "series": [
+        {
+          "titre": "Le Bureau des chats perdus",
+          "episodes": 3
+        }
+      ]
     },
     "dj": {
       "morceaux": 7,
-      "top": { "titre": "La Valse des croquettes", "artiste": "Les Moustaches" },
-      "parPersonne": { "a": 4, "b": 3 }
+      "top": {
+        "titre": "La Valse des croquettes",
+        "artiste": "Les Moustaches"
+      },
+      "parPersonne": {
+        "a": 4,
+        "b": 3
+      }
     },
     "photos": {
       "nombre": 6,
-      "legendes": ["Sieste au soleil", "Le carton parfait", "Gratin du dimanche", "Balade au parc", "Mimi contre le ruban", "Pluie sur la fenêtre"]
+      "legendes": [
+        "Sieste au soleil",
+        "Le carton parfait",
+        "Gratin du dimanche",
+        "Balade au parc",
+        "Mimi contre le ruban",
+        "Pluie sur la fenêtre"
+      ]
     },
     "tribunal": {
       "betises": [
-        { "jour": "mardi", "quoi": "A renversé la plante du salon" },
-        { "jour": "jeudi", "quoi": "A volé un bout de jambon" },
-        { "jour": "samedi", "quoi": "A dormi sur le linge propre" }
+        {
+          "jour": "mardi",
+          "quoi": "A renversé la plante du salon"
+        },
+        {
+          "jour": "jeudi",
+          "quoi": "A volé un bout de jambon"
+        },
+        {
+          "jour": "samedi",
+          "quoi": "A dormi sur le linge propre"
+        }
       ],
       "peine": "Une caresse en moins (non, on plaisante)"
     }
   },
+  "precedente": {
+    "note": 13,
+    "argent": {
+      "depense": 368.1
+    },
+    "sport": {
+      "seances": 2
+    },
+    "cuisine": {
+      "cuisines": 7
+    },
+    "maison": {
+      "faites": 16
+    },
+    "soins": {
+      "repas": 14
+    },
+    "cinema": {
+      "films": 1
+    },
+    "dj": {
+      "morceaux": 4
+    },
+    "photos": {
+      "nombre": 9
+    }
+  },
   "aVenir": {
     "agenda": [
-      { "jour": "2026-11-09", "heure": "19:00", "quoi": "Cours de yoga", "qui": "b" },
-      { "jour": "2026-11-11", "heure": "", "quoi": "Jour férié", "qui": null },
-      { "jour": "2026-11-12", "heure": "18:30", "quoi": "Véto pour Mimi", "qui": "a" },
-      { "jour": "2026-11-14", "heure": "20:00", "quoi": "Dîner chez Paul et Inès", "qui": null },
-      { "jour": "2026-11-15", "heure": "11:00", "quoi": "Marché", "qui": null }
+      {
+        "jour": "2026-11-09",
+        "heure": "19:00",
+        "quoi": "Cours de yoga",
+        "qui": "b"
+      },
+      {
+        "jour": "2026-11-11",
+        "heure": "",
+        "quoi": "Jour férié",
+        "qui": null
+      },
+      {
+        "jour": "2026-11-12",
+        "heure": "18:30",
+        "quoi": "Véto pour Mimi",
+        "qui": "a"
+      },
+      {
+        "jour": "2026-11-14",
+        "heure": "20:00",
+        "quoi": "Dîner chez Paul et Inès",
+        "qui": null
+      },
+      {
+        "jour": "2026-11-15",
+        "heure": "11:00",
+        "quoi": "Marché",
+        "qui": null
+      }
     ],
     "anniversaires": [
-      { "jour": "2026-11-12", "qui": "Mamie Odette", "age": 80 },
-      { "jour": "2026-11-15", "qui": "Hugo", "age": null }
+      {
+        "jour": "2026-11-12",
+        "qui": "Mamie Odette",
+        "age": 80
+      },
+      {
+        "jour": "2026-11-15",
+        "qui": "Hugo",
+        "age": null
+      }
     ],
     "meteo": [
-      { "jour": "2026-11-09", "temps": "nuages", "min": 6, "max": 12 },
-      { "jour": "2026-11-10", "temps": "pluie", "min": 7, "max": 11 },
-      { "jour": "2026-11-11", "temps": "pluie", "min": 6, "max": 10 },
-      { "jour": "2026-11-12", "temps": "eclaircies", "min": 4, "max": 11 },
-      { "jour": "2026-11-13", "temps": "soleil", "min": 3, "max": 12 },
-      { "jour": "2026-11-14", "temps": "soleil", "min": 4, "max": 13 },
-      { "jour": "2026-11-15", "temps": "nuages", "min": 5, "max": 12 }
+      {
+        "jour": "2026-11-09",
+        "temps": "nuages",
+        "min": 6,
+        "max": 12
+      },
+      {
+        "jour": "2026-11-10",
+        "temps": "pluie",
+        "min": 7,
+        "max": 11
+      },
+      {
+        "jour": "2026-11-11",
+        "temps": "pluie",
+        "min": 6,
+        "max": 10
+      },
+      {
+        "jour": "2026-11-12",
+        "temps": "eclaircies",
+        "min": 4,
+        "max": 11
+      },
+      {
+        "jour": "2026-11-13",
+        "temps": "soleil",
+        "min": 3,
+        "max": 12
+      },
+      {
+        "jour": "2026-11-14",
+        "temps": "soleil",
+        "min": 4,
+        "max": 13
+      },
+      {
+        "jour": "2026-11-15",
+        "temps": "nuages",
+        "min": 5,
+        "max": 12
+      }
     ]
   },
-  "motDeMimi": "Merci pour les 14 repas. Je vous aime presque autant que le carton du salon."
+  "motDeMimi": "Merci pour les 14 repas. Je vous aime presque autant que le carton du salon.",
+  "reactions": {
+    "b": {
+      "note": "❤️",
+      "sport": "😾",
+      "tribunal": "😂",
+      "dj": "❤️",
+      "photos": "😂"
+    }
+  }
 }

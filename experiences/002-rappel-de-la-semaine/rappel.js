@@ -17,6 +17,7 @@
     pixel: { nom: "Rétro pixel", emoji: "🕹️" },
     toits: { nom: "Les toits de Paris", emoji: "🌙" },
     album: { nom: "L'album", emoji: "📸" },
+    saison: { nom: "Saison", emoji: "🎉" },
   };
   RS.ORDRE = ORDRE;
   RS.INFOS = INFOS;
@@ -111,7 +112,113 @@
     meteoPluie: ["De la pluie en vue. J'ai sorti mon ciré.", "Il va pleuvoir. Journée canapé confirmée."],
     meteoBeau: ["Du soleil cette semaine. Rebord de fenêtre réservé.", "Beau temps prévu. Je bronze, vous sortez."],
     fin: ["Bonne semaine !", "À dimanche prochain !", "Bonne semaine, les humains !"],
+    noteMieux: ["{ecart} de mieux que la semaine dernière ! Je ronronne.", "En progrès : {ecart} de plus que la semaine dernière."],
+    noteMoins: ["{ecart} de moins que la semaine dernière. On se reprend ?", "Un peu moins bien que la semaine dernière. Je garde confiance."],
+    compareMieux: ["Mieux que la semaine dernière. Je note, je note.", "En progrès ! Je vous accorde une caresse."],
+    compareMoins: ["Un peu moins que la semaine dernière. Je ne juge pas. Enfin, un peu.", "Moins que la semaine dernière. La prochaine sera la bonne."],
+    argentMoins: ["{pct} % de dépenses en moins que la semaine dernière. Le banquier est ravi."],
+    argentPlus: ["{pct} % de dépenses en plus que la semaine dernière. Le banquier fronce les moustaches."],
   };
+
+  // ---------------------------------------------------------------------------
+  // Les semaines spéciales : le modèle « Saison » remplace la rotation.
+  // ---------------------------------------------------------------------------
+  const SAISONS = {
+    anniversaire: {
+      nom: "Anniversaire de Mimi", emoji: "🎂", titre: "Spécial anniversaire",
+      ouverture: ["C'est MA semaine : j'ai un an de plus ! Installez-vous.", "Joyeux anniversaire… à moi ! Voici votre semaine."],
+      fin: ["Merci pour la fête ! Où sont mes cadeaux ?", "Un an de plus, et toujours aussi beau. Bonne semaine !"],
+    },
+    noel: {
+      nom: "Noël", emoji: "🎄", titre: "Spécial Noël",
+      ouverture: ["Joyeux Noël les humains ! Le journal est sous le sapin.", "Ho ho ho ! J'ai mis mon bonnet pour votre semaine."],
+      fin: ["Joyeux Noël ! Je garde le papier cadeau, c'est pour moi.", "Bonnes fêtes ! Et pensez à ma gamelle du réveillon."],
+    },
+    halloween: {
+      nom: "Halloween", emoji: "🎃", titre: "Spécial Halloween",
+      ouverture: ["Bouh ! C'est la semaine d'Halloween. Même pas peur ?", "Un journal ensorcelé vous attend… Miaouhahaha."],
+      fin: ["Des bonbons ou une caresse ! Bonne semaine.", "Les fantômes sont partis. Bonne semaine, les humains !"],
+    },
+    ete: {
+      nom: "L'été", emoji: "☀️", titre: "Spécial été",
+      ouverture: ["C'est l'été ! J'ai sorti mes lunettes de soleil.", "Premier jour de l'été : rebord de fenêtre réservé."],
+      fin: ["Bon été ! Je retourne à ma sieste au soleil.", "Pensez à l'eau fraîche (pour moi). Bonne semaine !"],
+    },
+  };
+  RS.SAISONS = SAISONS;
+  // Une semaine est spéciale si l'un de ses jours tombe sur une date de fête (« MM-JJ »).
+  RS.saisonDe = (debut, anniversaireChat) => {
+    const jours = Array.from({ length: 7 }, (_, i) => ajouterJours(debut, i).slice(5));
+    if (anniversaireChat && jours.includes(anniversaireChat)) return "anniversaire";
+    if (jours.includes("12-24") || jours.includes("12-25")) return "noel";
+    if (jours.includes("10-31")) return "halloween";
+    if (jours.includes("06-21")) return "ete";
+    return null;
+  };
+
+  // ---------------------------------------------------------------------------
+  // Comparé à la semaine dernière. sens : 1 = plus c'est mieux, -1 = moins c'est mieux, 0 = neutre.
+  // ---------------------------------------------------------------------------
+  const COMPARAISONS = {
+    note: { actuel: (d) => d.note?.valeur, avant: (p) => p.note, mot: ["point", "points"], sens: 1 },
+    argent: { actuel: (d) => d.bilan.argent?.depense, avant: (p) => p.argent?.depense, pourcent: true, sens: -1 },
+    sport: { actuel: (d) => d.bilan.sport?.seances, avant: (p) => p.sport?.seances, sens: 1 },
+    cuisine: { actuel: (d) => d.bilan.cuisine?.cuisines, avant: (p) => p.cuisine?.cuisines, sens: 1 },
+    maison: { actuel: (d) => d.bilan.maison?.faites, avant: (p) => p.maison?.faites, sens: 1 },
+    soins: { actuel: (d) => d.bilan.soins?.repas, avant: (p) => p.soins?.repas, sens: 0 },
+    cinema: { actuel: (d) => d.bilan.cinema?.films.length, avant: (p) => p.cinema?.films, sens: 0 },
+    dj: { actuel: (d) => d.bilan.dj?.morceaux, avant: (p) => p.dj?.morceaux, sens: 0 },
+    photos: { actuel: (d) => d.bilan.photos?.nombre, avant: (p) => p.photos?.nombre, sens: 0 },
+  };
+
+  function evolution(regle, actuel, avant) {
+    if (actuel == null || avant == null) return null;
+    let ecart, signe, texte;
+    if (regle.pourcent) {
+      if (!avant) return null;
+      const pct = Math.round(((actuel - avant) / avant) * 100);
+      signe = Math.sign(pct);
+      ecart = Math.abs(pct);
+      texte = `${ecart} % de ${signe > 0 ? "plus" : "moins"}`;
+    } else {
+      const d = Math.round((actuel - avant) * 10) / 10;
+      signe = Math.sign(d);
+      ecart = Math.abs(d);
+      texte = `${fmtEntier.format(ecart)}${regle.mot ? ` ${ecart > 1 ? regle.mot[1] : regle.mot[0]}` : ""} de ${signe > 0 ? "plus" : "moins"}`;
+    }
+    texte = signe === 0 ? "= comme la semaine dernière" : `${signe > 0 ? "↑" : "↓"} ${texte} que la semaine dernière`;
+    const qualite = signe === 0 ? "pareil" : regle.sens === 0 ? "neutre" : signe === regle.sens ? "mieux" : "moins-bien";
+    const relatif = avant ? Math.abs(actuel - avant) / Math.abs(avant) : 1;
+    return { texte, qualite, signe, ecart, relatif };
+  }
+
+  // Ajoute l'étiquette sous le grand chiffre, et fait commenter Mimi.
+  function comparer(ecrans, donnees, h, dire) {
+    const p = donnees.precedente;
+    if (!p) return;
+    const candidats = [];
+    for (const e of ecrans) {
+      const regle = COMPARAISONS[e.type];
+      const ev = regle && evolution(regle, regle.actuel(donnees), regle.avant(p));
+      if (!ev) continue;
+      const etiquette = `<p class="rs-evolution rs-evo-${ev.qualite}" data-rs="evolution">${ev.texte}</p>`;
+      const i = e.corps.indexOf("</p>", e.corps.indexOf('class="rs-chiffre'));
+      e.corps = i < 0 ? etiquette + e.corps : e.corps.slice(0, i + 4) + etiquette + e.corps.slice(i + 4);
+      if (e.type === "note") {
+        if (ev.signe !== 0) e.phrase = dire(ev.signe > 0 ? "noteMieux" : "noteMoins", { ecart: `${ev.ecart} point${ev.ecart > 1 ? "s" : ""}` });
+      } else if (ev.signe !== 0) candidats.push({ e, ev });
+    }
+    // Mimi commente une ou deux rubriques qui ont le plus bougé, pas toutes.
+    candidats.sort((x, y) => y.ev.relatif - x.ev.relatif).slice(0, 2).forEach(({ e, ev }) => {
+      if (h() < 0.3) return;
+      if (e.type === "argent") e.phrase = dire(ev.signe < 0 ? "argentMoins" : "argentPlus", { pct: ev.ecart });
+      else if (ev.qualite === "mieux") e.phrase = dire("compareMieux");
+      else if (ev.qualite === "moins-bien") e.phrase = dire("compareMoins");
+    });
+  }
+
+  const REACTIONS = ["❤️", "😂", "😾"];
+  const REACTIFS = ["argent", "sport", "cuisine", "maison", "soins", "cinema", "dj", "photos", "tribunal"];
 
   const VERDICTS = [
     [17, "Semaine de rêve"],
@@ -149,7 +256,7 @@
     return `<span class="rs-compte" data-rs-compte="${valeur}" data-format="${format}">${format === "euros" ? euros(valeur) : fmtEntier.format(valeur)}</span>`;
   }
 
-  function fabriquerEcrans(donnees, { quiFaitQuoi, h, masquees = [] }) {
+  function fabriquerEcrans(donnees, { quiFaitQuoi, h, masquees = [], saison = null }) {
     const prenom = (id) => donnees.foyer.personnes.find((p) => p.id === id)?.prenom ?? "";
     const duo = (parPersonne, unite) => {
       if (!quiFaitQuoi || !parPersonne) return "";
@@ -164,8 +271,8 @@
 
     ecrans.push({
       type: "ouverture", picto: "📰", titre: "Le journal de la semaine", role: "hote", humeur: "content", duree: 4800,
-      corps: `<p class="rs-sur-titre" data-rs="sur-titre">Semaine ${numero}</p><p class="rs-grand-titre" data-rs="grand-titre">${esc(majuscule(periode(debut, fin)))}</p>`,
-      phrase: dire("ouverture"),
+      corps: `<p class="rs-sur-titre" data-rs="sur-titre">${saison ? `${SAISONS[saison].emoji} ${SAISONS[saison].titre} · ` : ""}Semaine ${numero}</p><p class="rs-grand-titre" data-rs="grand-titre">${esc(majuscule(periode(debut, fin)))}</p>`,
+      phrase: saison ? choisir(h, SAISONS[saison].ouverture) : dire("ouverture"),
     });
 
     const n = donnees.note;
@@ -351,9 +458,10 @@
       type: "fin", picto: "🐾", titre: `Le mot de ${esc(donnees.foyer.chat)}`, role: "aucun", humeur: "endormi", duree: null,
       corps: `<p class="rs-citation" data-rs="citation">« ${esc(donnees.motDeMimi)} »</p>
               <div class="rs-boutons" data-rs="boutons"><button type="button" data-action="revoir">Revoir</button><button type="button" data-action="fermer">Fermer</button></div>`,
-      phrase: dire("fin"),
+      phrase: saison ? choisir(h, SAISONS[saison].fin) : dire("fin"),
     });
 
+    comparer(ecrans, donnees, h, dire);
     return ecrans;
   }
 
@@ -361,7 +469,7 @@
   // Le lecteur
   // ---------------------------------------------------------------------------
   class Lecteur {
-    constructor(scene, { donnees, modeleId, quiFaitQuoi, reduit, vitesse = 1, masquees = [] }) {
+    constructor(scene, { donnees, modeleId, quiFaitQuoi, reduit, vitesse = 1, masquees = [], saison = null }) {
       this.scene = scene;
       this.modeleId = modeleId;
       this.modele = RS.modeles[modeleId] || {};
@@ -374,13 +482,20 @@
       this.animations = new Set();
 
       const numero = donnees.semaine.numero;
+      this.donnees = donnees;
+      this.quiFaitQuoi = quiFaitQuoi;
+      this.saison = modeleId === "saison" ? saison || "anniversaire" : null;
+      [this.moi, this.autre] = donnees.foyer.personnes;
+      this.cleReactions = `rs-reactions-${numero}`;
       this.h = hasard(graine("variante", numero, modeleId));
-      this.ecrans = fabriquerEcrans(donnees, { quiFaitQuoi, masquees, h: hasard(graine("contenu", numero)) });
+      this.ecrans = fabriquerEcrans(donnees, { quiFaitQuoi, masquees, saison: this.saison, h: hasard(graine("contenu", numero)) });
       this.accent = this.modele.accents ? choisir(this.h, this.modele.accents) : "#f4a894";
 
       scene.replaceChildren();
       scene.dataset.mode = "story";
       scene.dataset.modele = modeleId;
+      if (this.saison) scene.dataset.saison = this.saison;
+      else delete scene.dataset.saison;
       scene.style.setProperty("--rs-accent", this.accent);
       scene.classList.toggle("rs-reduit", reduit);
       scene.classList.remove("rs-en-pause");
@@ -403,6 +518,7 @@
       return {
         hasard: this.h,
         reduit: this.reduit,
+        saison: this.saison,
         accent: this.accent,
         scene: this.scene,
         decor: this.decor,
@@ -415,7 +531,7 @@
           return a;
         },
         compter: (racine, opts) => this.compter(racine, opts),
-        mimi: (o) => RS.mimi({ couleurs: this.modele.couleursMimi, ...o }),
+        mimi: (o) => RS.mimi({ couleurs: this.modele.couleursMimi, costume: this.saison, ...o }),
         enPause: () => this.estEnPause(),
         // Barres et jauges qui se remplissent jusqu'à leur valeur (--rs-part).
         remplir(ecran, { duree = 900, delai = 0, easing = "cubic-bezier(.2,.8,.2,1)", ecart = 120 } = {}) {
@@ -460,8 +576,59 @@
       })));
     }
 
+    lireReactions() {
+      try { return JSON.parse(localStorage.getItem(this.cleReactions) || "{}"); } catch (_) { return {}; }
+    }
+
+    ecrireReactions(r) {
+      try { localStorage.setItem(this.cleReactions, JSON.stringify(r)); } catch (_) { /* navigation privée */ }
+    }
+
+    htmlReactions(type) {
+      const mien = this.lireReactions()[type];
+      const sienne = this.donnees.reactions?.[this.autre?.id]?.[type];
+      const nom = this.quiFaitQuoi && this.autre ? esc(this.autre.prenom) : "L'autre";
+      return `<div class="rs-reactions" role="group" aria-label="Réagir à cet écran">
+        ${REACTIONS.map((r) => `<button type="button" class="rs-reaction" data-reaction="${r}" aria-pressed="${mien === r}" aria-label="Réagir : ${r}">${r}</button>`).join("")}
+        ${sienne ? `<span class="rs-reaction-autre">${nom} : ${sienne}</span>` : ""}
+      </div>`;
+    }
+
+    // Une petite gerbe d'emojis s'envole du bouton touché.
+    gerbe(bouton, emoji) {
+      bouton.animate([{ transform: "scale(1)" }, { transform: "scale(1.35)" }, { transform: "scale(1)" }], { duration: 320, easing: "ease-out" });
+      if (this.reduit) return;
+      const s = this.scene.getBoundingClientRect();
+      const b = bouton.getBoundingClientRect();
+      for (let k = 0; k < 7; k++) {
+        const p = document.createElement("span");
+        p.className = "rs-gerbe";
+        p.textContent = emoji;
+        p.style.left = `${b.left - s.left + b.width / 2}px`;
+        p.style.top = `${b.top - s.top}px`;
+        this.scene.append(p);
+        const dx = ((Math.random() * 2 - 1) * 14).toFixed(1);
+        const dy = (12 + Math.random() * 16).toFixed(1);
+        const r = ((Math.random() * 2 - 1) * 40).toFixed(0);
+        const a = p.animate([
+          { transform: "translate(-50%, 0) scale(.6)", opacity: 1 },
+          { transform: `translate(calc(-50% + ${dx}cqw), -${dy}cqh) rotate(${r}deg) scale(1.3)`, opacity: 0 },
+        ], { duration: 900 + Math.random() * 400, easing: "cubic-bezier(.2,.7,.3,1)" });
+        const fin = () => p.remove();
+        a.finished.then(fin, fin);
+      }
+    }
+
     creerEcran(i) {
       const e = this.ecrans[i];
+      const reactif = e.type === "note" || REACTIFS.includes(e.type);
+      let corps = e.corps;
+      if (e.type === "fin") {
+        const compte = {};
+        for (const r of Object.values(this.lireReactions())) compte[r] = (compte[r] || 0) + 1;
+        const resume = REACTIONS.filter((r) => compte[r]).map((r) => `${r} ×${compte[r]}`).join("  ");
+        if (resume) corps = corps.replace('<div class="rs-boutons"', `<p class="rs-bilan-reactions" data-rs="bilan-reactions">Tes réactions de la semaine : ${resume}</p><div class="rs-boutons"`);
+      }
       const section = document.createElement("section");
       section.className = `rs-ecran rs-e-${e.type}`;
       section.dataset.type = e.type;
@@ -471,11 +638,12 @@
         <div class="rs-ecran-fond" aria-hidden="true"></div>
         <div class="rs-ecran-contenu">
           ${e.titre ? `<header class="rs-entete" data-rs="entete">${e.picto ? `<span class="rs-picto" aria-hidden="true">${e.picto}</span>` : ""}<h2 class="rs-titre" data-rs="titre">${e.titre}</h2></header>` : ""}
-          <div class="rs-corps">${e.corps}</div>
+          <div class="rs-corps">${corps}</div>
         </div>
         <div class="rs-narrateur" data-rs="narrateur">
           <p class="rs-bulle" data-rs="bulle">${e.phrase}</p>
           <div class="rs-mimi" data-rs="mimi">${this.outils.mimi({ role: e.role, humeur: e.humeur || "normal", anime: !this.reduit })}</div>
+          ${reactif ? this.htmlReactions(e.type) : ""}
         </div>`;
       return section;
     }
@@ -487,6 +655,8 @@
 
     async aller(i, sens) {
       if (i < 0 || i >= this.ecrans.length) return;
+      // Changer d'écran relance la lecture (comme une story) : sinon la transition resterait figée.
+      if (this.pauseManuelle) this.mettreEnPause("manuelle", false);
       const gen = ++this.gen;
       this.finirAnimations();
       for (const e of [...this.conteneur.children]) if (e !== this.courant) e.remove();
@@ -511,6 +681,9 @@
       if (this.reduit) { /* rien */ }
       else if (this.modele.entrer) this.modele.entrer(nouveau, this.outils, this.ecrans[i]);
       else this.entreeParDefaut(nouveau);
+      if (!this.reduit) this.outils.animer(nouveau.querySelector(".rs-reactions"), [
+        { opacity: 0, transform: "translateY(1.5cqh)" }, { opacity: 1, transform: "none" },
+      ], { duration: 420, delay: 950 });
       this.lancerMinuterie(gen);
     }
 
@@ -585,6 +758,18 @@
       ecouter(s, "pointerleave", (e) => relacher(e, true));
       ecouter(s, "contextmenu", (e) => e.preventDefault());
       ecouter(s, "click", (e) => {
+        const reaction = e.target.closest("[data-reaction]");
+        if (reaction) {
+          const type = this.ecrans[this.index].type;
+          const toutes = this.lireReactions();
+          const choix = reaction.dataset.reaction;
+          if (toutes[type] === choix) delete toutes[type];
+          else toutes[type] = choix;
+          this.ecrireReactions(toutes);
+          reaction.parentElement.querySelectorAll("[data-reaction]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.reaction === toutes[type])));
+          if (toutes[type] === choix) this.gerbe(reaction, choix);
+          return;
+        }
         const bouton = e.target.closest("[data-action]");
         if (!bouton) return;
         if (bouton.dataset.action === "revoir") this.aller(0, -1);

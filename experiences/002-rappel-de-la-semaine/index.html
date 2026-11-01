@@ -44,6 +44,11 @@
               <select id="p-modele"></select>
             </label>
 
+            <label class="rs-ligne-param">
+              <span>Modèles de saison<small>Noël, Halloween, l'été, l'anniversaire de Mimi</small></span>
+              <input type="checkbox" role="switch" id="p-saisons">
+            </label>
+
             <fieldset class="rs-ligne-param rs-colonne" id="p-mes-modeles">
               <legend>Mes modèles <small>(ceux de la rotation)</small></legend>
               <div class="rs-cases" id="p-modeles-cases"></div>
@@ -116,6 +121,7 @@
         quand: "dimanche",
         modele: "rotation",            // ou l'identifiant d'un modèle fixe
         mesModeles: [...RS.ORDRE],
+        saisons: true,                 // les semaines spéciales ont leur propre modèle
         rythme: "normal",
         masquees: [],
         qui: true,
@@ -161,6 +167,7 @@
         el("p-modeles-cases").querySelectorAll("input").forEach((c) => (c.checked = p.mesModeles.includes(c.value)));
         el("p-rubriques").querySelectorAll("input").forEach((c) => (c.checked = !p.masquees.includes(c.value)));
         el("p-rythme").querySelectorAll("input").forEach((r) => (r.checked = r.value === p.rythme));
+        el("p-saisons").checked = p.saisons;
         el("p-qui").checked = p.qui;
         el("p-reduit").checked = p.reduit;
         const fin = base.semaine.fin;
@@ -186,17 +193,23 @@
       }));
       el("p-rythme").addEventListener("change", (e) => changer(() => (p.rythme = e.target.value)));
       el("p-qui").addEventListener("change", (e) => changer(() => (p.qui = e.target.checked)));
+      el("p-saisons").addEventListener("change", (e) => changer(() => (p.saisons = e.target.checked)));
       el("p-reduit").addEventListener("change", (e) => changer(() => (p.reduit = e.target.checked)));
 
       // ---------------------------------------------------------------------
       // Outils de la maquette
       // ---------------------------------------------------------------------
       const choix = el("choix-modele");
-      for (const id of [null, ...RS.ORDRE]) {
+      const etiquette = (id) => {
+        if (!id) return "Selon les paramètres";
+        if (id.startsWith("saison:")) { const s = RS.SAISONS[id.slice(7)]; return `${s.emoji} ${s.nom}`; }
+        return `${RS.INFOS[id].emoji} ${RS.INFOS[id].nom}`;
+      };
+      for (const id of [null, ...RS.ORDRE, ...Object.keys(RS.SAISONS).map((s) => `saison:${s}`)]) {
         const b = document.createElement("button");
         b.type = "button";
         b.dataset.id = id ?? "";
-        b.textContent = id ? `${RS.INFOS[id].emoji} ${RS.INFOS[id].nom}` : "Selon les paramètres";
+        b.textContent = etiquette(id);
         b.addEventListener("click", () => { maquette.essai = id; lancer(); });
         choix.append(b);
       }
@@ -244,7 +257,9 @@
       async function lancer() {
         const moi = ++jeton;
         const donnees = RS.semaineSimulee(base, maquette.numero);
-        const infos = RS.INFOS[modeleSelonParametres()];
+        // Les semaines spéciales (anniversaire de Mimi, Noël…) ont leur modèle de saison.
+        const saison = p.saisons ? RS.saisonDe(donnees.semaine.debut, donnees.foyer.anniversaireChat) : null;
+        const infos = saison ? RS.SAISONS[saison] : RS.INFOS[modeleSelonParametres()];
         el("semaine").textContent = `Semaine ${maquette.numero} (son modèle : ${infos.emoji} ${infos.nom})`;
         [...choix.children].forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.id || null) === maquette.essai)));
 
@@ -260,7 +275,10 @@
           return;
         }
 
-        const id = maquette.essai || modeleSelonParametres();
+        let id = saison ? "saison" : modeleSelonParametres();
+        let saisonChoisie = saison;
+        if (maquette.essai?.startsWith("saison:")) { id = "saison"; saisonChoisie = maquette.essai.slice(7); }
+        else if (maquette.essai) { id = maquette.essai; saisonChoisie = null; }
         await RS.chargerModele(id);
         if (moi !== jeton) return;
         lecteur?.detruire();
@@ -272,6 +290,7 @@
           reduit: p.reduit || systemeReduit,
           vitesse: maquette.vitesse * RS.RYTHMES[p.rythme],
           masquees: p.masquees,
+          saison: saisonChoisie,
         });
         window.lecteur = lecteur; // pratique pour les tests
       }

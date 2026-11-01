@@ -1,0 +1,136 @@
+/* Modèle « Saison » : quatre ambiances pour les semaines spéciales.
+   Les couleurs changent avec [data-saison] ; la mise en page est commune. */
+
+[data-modele="saison"] {
+  --sa-fond: linear-gradient(180deg, #ffe3ec, #fff1d6);
+  --sa-carte: #ffffff;
+  --sa-texte: #4a2340;
+  --sa-accent: #ff5d8f;
+  --sa-sur-accent: #ffffff;
+  --sa-bulle: #ffffff;
+  --sa-jauge: #ff5d8f;
+  --rs-progression: var(--sa-accent);
+  --rs-progression-fond: rgba(0, 0, 0, 0.12);
+  color: var(--sa-texte);
+  background: var(--sa-fond);
+}
+
+[data-modele="saison"][data-saison="noel"] {
+  --sa-fond: linear-gradient(180deg, #14352a, #0f2a21 60%, #0b1f19);
+  --sa-carte: #fff8ef;
+  --sa-texte: #3b2a22;
+  --sa-accent: #d93a3a;
+  --sa-bulle: #fff8ef;
+  --sa-jauge: #2f8a57;
+  --rs-progression: #ffffff;
+  --rs-progression-fond: rgba(255, 255, 255, 0.22);
+}
+
+[data-modele="saison"][data-saison="halloween"] {
+  --sa-fond: linear-gradient(180deg, #1b0f2e, #2d1645 55%, #4a1f3a);
+  --sa-carte: rgba(36, 18, 56, 0.88);
+  --sa-texte: #f7e9ff;
+  --sa-accent: #ff8a1f;
+  --sa-sur-accent: #1b0f2e;
+  --sa-bulle: #2d1645;
+  --sa-jauge: #ff8a1f;
+  --rs-progression: #ff8a1f;
+  --rs-progression-fond: rgba(255, 255, 255, 0.18);
+}
+
+[data-modele="saison"][data-saison="ete"] {
+  --sa-fond: linear-gradient(180deg, #56c1ef, #9fe0f6 55%, #ffeab0);
+  --sa-texte: #0d4a5a;
+  --sa-accent: #ff7a59;
+  --sa-jauge: #0aa5b8;
+  --rs-progression: #ffffff;
+  --rs-progression-fond: rgba(255, 255, 255, 0.35);
+}
+
+/* Décor */
+.sa-particules { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.sa-guirlande {
+  position: absolute;
+  top: 5cqh;
+  left: -2cqw;
+  right: -2cqw;
+  height: 5cqw;
+  background:
+    radial-gradient(circle at 4cqw 3.4cqw, #ffd23f 0 1.3cqw, transparent 1.5cqw),
+    radial-gradient(circle at 12cqw 4cqw, #d93a3a 0 1.3cqw, transparent 1.5cqw),
+    radial-gradient(circle at 20cqw 3.4cqw, #4cc9f0 0 1.3cqw, transparent 1.5cqw),
+    radial-gradient(circle at 28cqw 4cqw, #4ee1a0 0 1.3cqw, transparent 1.5cqw);
+  background-size: 32cqw 100%;
+  filter: drop-shadow(0 0 1.2cqw rgba(255, 220, 120, 0.8));
+  animation: sa-scintille 1.6s steps(2) infinite;
+}
+.sa-guirlande::before { content: ""; position: absolute; inset: 0 0 auto; height: 3cqw; border-bottom: 0.4cqw solid #2b4a3c; border-radius: 0 0 50% 50%; }
+@keyframes sa-scintille { 50% { filter: drop-shadow(0 0 0.4cqw rgba(255, 220, 120, 0.3)) brightness(0.75); } }
+
+.sa-sol { position: absolute; left: 0; right: 0; bottom: 0; height: 9cqh; background: radial-gradient(ellipse 60% 100% at 30% 100%, #ffffff 60%, transparent 61%), radial-gradient(ellipse 70% 100% at 85% 100%, #f2f6ff 60%, transparent 61%); }
+
+.sa-lune { position: absolute; top: 6cqh; right: 8cqw; width: 22cqw; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 40% 38%, #ffd08a, #ff9f43 70%); box-shadow: 0 0 9cqw 3cqw rgba(255, 138, 31, 0.35); }
+.sa-citrouille { position: absolute; left: 3cqw; bottom: 1cqh; font-size: 11cqw; filter: drop-shadow(0 0 3cqw rgba(255, 138, 31, 0.6)); }
+
+.sa-soleil { position: absolute; top: 3cqh; right: -6cqw; width: 34cqw; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #ffe066 0 36%, transparent 37%), repeating-conic-gradient(rgba(255, 230, 120, 0.55) 0 10deg, transparent 10deg 30deg); animation: sa-tourne 24s linear infinite; }
+@keyframes sa-tourne { to { transform: rotate(360deg); } }
+.sa-mer { position: absolute; left: 0; right: 0; bottom: 0; height: 10cqh; background: radial-gradient(ellipse 12cqw 3cqh at 6cqw 0, transparent 70%, #3cc7d6 72%) 0 0 / 12cqw 100% repeat-x, linear-gradient(#3cc7d6, #23a9c4); }
+
+.sa-fanions { position: absolute; top: 4.6cqh; left: 0; right: 0; height: 7cqw; display: flex; justify-content: space-around; }
+.sa-fanions span { width: 7cqw; height: 7cqw; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.sa-fanions span:nth-child(4n + 1) { background: #ff5d8f; }
+.sa-fanions span:nth-child(4n + 2) { background: #ffd23f; }
+.sa-fanions span:nth-child(4n + 3) { background: #4cc9f0; }
+.sa-fanions span:nth-child(4n + 4) { background: #9d7fd6; }
+
+/* La carte */
+[data-modele="saison"] .rs-ecran-contenu {
+  top: 11cqh;
+  bottom: 31cqh;
+  height: fit-content;
+  margin: auto 0;
+  max-height: 58cqh;
+  padding: 5cqw 5.5cqw 5.5cqw;
+  border-radius: 7cqw;
+  background: var(--sa-carte);
+  color: var(--sa-texte);
+  box-shadow: 0 2.4cqw 6cqw rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+[data-modele="saison"] .rs-ecran[data-narrateur="petit"] .rs-ecran-contenu { bottom: 20cqh; max-height: 69cqh; }
+[data-modele="saison"][data-saison="halloween"] .rs-ecran-contenu { box-shadow: 0 0 0 0.5cqw rgba(255, 138, 31, 0.6), 0 0 8cqw rgba(255, 138, 31, 0.25); }
+
+[data-modele="saison"] .rs-entete { align-self: flex-start; padding: 1.3cqw 4.2cqw 1.3cqw 1.8cqw; border-radius: 99px; background: var(--sa-accent); color: var(--sa-sur-accent); }
+[data-modele="saison"] .rs-picto { font-size: 5.6cqw; }
+[data-modele="saison"] .rs-titre { font-size: 5.6cqw; }
+[data-modele="saison"] .rs-chiffre, [data-modele="saison"] .rs-grand-titre { color: var(--sa-accent); }
+
+[data-modele="saison"] .rs-jauge { background: rgba(127, 127, 127, 0.18); }
+[data-modele="saison"] .rs-jauge > span, [data-modele="saison"] .rs-barre { background: var(--sa-jauge); }
+
+[data-modele="saison"] .rs-duo li,
+[data-modele="saison"] .rs-semaine li,
+[data-modele="saison"] .rs-meteo li,
+[data-modele="saison"] .rs-films li,
+[data-modele="saison"] .rs-betises li,
+[data-modele="saison"] .rs-anniv li { background: rgba(127, 127, 127, 0.1); border-radius: 3.5cqw; }
+[data-modele="saison"] .rs-films li,
+[data-modele="saison"] .rs-betises li,
+[data-modele="saison"] .rs-anniv li { display: grid; gap: 0.4cqw; padding: 1.8cqw 3cqw; }
+[data-modele="saison"] .rs-etoiles, [data-modele="saison"] .rs-semaine .rs-jour { color: var(--sa-accent); }
+[data-modele="saison"] .rs-tampon { color: var(--sa-accent); }
+[data-modele="saison"] .rs-photos li { border: 1.2cqw solid #fff; border-radius: 4cqw; }
+
+[data-modele="saison"] .rs-boutons button { background: var(--sa-accent); color: var(--sa-sur-accent); }
+[data-modele="saison"] .rs-boutons button + button { background: rgba(127, 127, 127, 0.15); color: var(--sa-texte); }
+
+[data-modele="saison"] .rs-bulle { background: var(--sa-bulle); color: var(--sa-texte); box-shadow: 0 1.6cqw 4cqw rgba(0, 0, 0, 0.2); transform-origin: 100% 80%; }
+[data-modele="saison"] .rs-bulle::after { content: ""; position: absolute; right: -2.6cqw; bottom: 3.6cqw; border: 2.4cqw solid transparent; border-left: 3.4cqw solid var(--sa-bulle); border-right: 0; }
+
+[data-modele="saison"][data-saison="halloween"] .rs-reaction,
+[data-modele="saison"][data-saison="halloween"] .rs-reaction-autre { background: rgba(255, 255, 255, 0.14); color: var(--sa-texte); }
+[data-modele="saison"][data-saison="halloween"] .rs-evo-mieux { background: rgba(78, 225, 160, 0.18); color: #7df0bd; }
+[data-modele="saison"][data-saison="halloween"] .rs-evo-moins-bien { background: rgba(255, 138, 31, 0.2); color: #ffb26b; }
+[data-modele="saison"][data-saison="halloween"] .rs-evo-pareil,
+[data-modele="saison"][data-saison="halloween"] .rs-evo-neutre { background: rgba(255, 255, 255, 0.12); color: #e6d6f5; }

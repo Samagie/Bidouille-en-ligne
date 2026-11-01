@@ -2,7 +2,7 @@
 titre: Rappel de la semaine (Chez Miaouss)
 statut: en cours
 date: 2026-11-01
-resume: Le journal de la semaine de Mimi en version story animée, avec 5 modèles qui tournent chaque semaine pour ne pas se lasser.
+resume: Le journal de la semaine de Mimi en story animée, avec 5 modèles qui tournent, des modèles de saison, la comparaison avec la semaine d'avant et des réactions.
 tags: web, animation, Chez Miaouss, Mimi
 ---
 
@@ -44,6 +44,34 @@ Le déroulé :
 - dans un même modèle, des variantes **tirées au sort** : couleurs, ciel, ruban, phrases de Mimi, ordre des rubriques, note simulée.
 - Le tirage est **reproductible** : la même semaine donne toujours le même rappel.
 
+### 📈 Comparé à la semaine dernière
+
+Sous chaque grand chiffre, une étiquette indique l'écart avec la semaine précédente : « ↑ 2 points de plus que la semaine dernière », « ↓ 15 % de moins », ou « = comme la semaine dernière ».
+- **Vert** = mieux, **orange** = moins bien. Pour l'argent, dépenser moins est « mieux ».
+- **Gris** : pour le cinéma, la musique, les photos et les repas de Mimi, il n'y a ni mieux ni moins bien.
+- **Mimi commente** la note, et une ou deux rubriques qui ont le plus bougé, tirées au sort pour ne pas se répéter.
+
+### ❤️ Les réactions
+
+Sur la note et sur chaque rubrique du bilan, sous la bulle de Mimi, il y a une rangée ❤️ 😂 😾.
+- On touche un emoji : il est sélectionné, et une gerbe s'envole. On le touche à nouveau : la réaction est retirée.
+- La réaction de l'autre s'affiche à côté (« Lina : 😂 »), ou « L'autre : 😂 » si « qui a fait quoi » est coupé.
+- Le dernier écran fait le compte : « Tes réactions de la semaine : ❤️ ×3 😂 ×2 ».
+- Dans la maquette, les réactions sont gardées sur l'appareil. Dans l'appli, elles seront partagées entre vous deux par la synchro existante.
+
+### 🎄 Les modèles de saison
+
+Les semaines spéciales, le modèle **Saison** remplace la rotation, avec Mimi en costume et des phrases de circonstance :
+
+| Semaine qui contient… | Ambiance | Décor animé | Mimi porte |
+|---|---|---|---|
+| l'anniversaire de Mimi (date inventée : 18 novembre) | 🎂 Anniversaire | fanions, confettis, ballons | un chapeau pointu de fête |
+| le 24 ou 25 décembre | 🎄 Noël | guirlande, neige, sol enneigé | un bonnet et une écharpe |
+| le 31 octobre | 🎃 Halloween | lune orange, chauves-souris, citrouille | un chapeau de sorcière et une cape |
+| le 21 juin | ☀️ L'été | soleil, mer, bulles | des lunettes de soleil et un chapeau de paille |
+
+Les particules (neige, confettis, ballons, chauves-souris, bulles) sont dessinées en code dans un canvas. Elles s'arrêtent en mode « moins d'animations ». Dans la maquette, « Simuler une autre semaine » mène à Halloween (semaine 44), à l'anniversaire de Mimi (semaine 47) et à Noël (semaine 52).
+
 ## 🎯 Ce qu'on veut vérifier
 
 - Est-ce qu'on a envie de l'ouvrir le dimanche soir, et de le regarder jusqu'au bout ?
@@ -75,6 +103,7 @@ Le rappel est **désactivable**. Voici la section « Rappel de la semaine » de 
 | **Rappel de la semaine en story** | activé / désactivé | activé |
 | Quand le proposer | dimanche dès 18 h · lundi matin | dimanche 18 h |
 | Modèle | change chaque semaine · toujours le même | change chaque semaine |
+| Modèles de saison | Noël, Halloween, l'été, l'anniversaire de Mimi remplacent la rotation | activé |
 | Mes modèles | on retire de la rotation ceux qu'on n'aime pas (au moins un reste coché) | les 5 |
 | Rythme | calme (×1,3) · normal · rapide (×0,7) | normal |
 | Rubriques affichées | Argent, Sport, Cuisine, Maison, Soins, Cinéma, DJ, Photos, Tribunal | toutes |
@@ -94,12 +123,13 @@ Nouveau chantier : intégrer le « rappel de la semaine en story » dans Chez Mi
 La maquette est publique : https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/002-rappel-de-la-semaine
 (démo : https://samagie.github.io/Bidouille-en-ligne/experiences/002-rappel-de-la-semaine/). Lis sa fiche README.md en entier.
 
-1. Reprends le moteur (rappel.js, rappel.css, mimi.js) et les 5 modèles (modeles/) dans l'appli, et branche-les sur les données que calcule déjà src/ui/home/weekly.ts, au format de semaine-exemple.json.
+1. Reprends le moteur (rappel.js, rappel.css, mimi.js) et les 6 modèles (modeles/, dont « saison ») dans l'appli, et branche-les sur les données que calcule déjà src/ui/home/weekly.ts, au format de semaine-exemple.json (avec « precedente » pour la semaine d'avant et la date d'anniversaire de Mimi).
 2. Sur le journal de la semaine, ajoute un bouton « Regarder en story ». Le dimanche dès 18 h (ou le lundi matin, selon le réglage), le rappel s'ouvre directement en story s'il n'a pas encore été vu.
-3. Onglet Paramètres : ajoute la section « Rappel de la semaine », avec les réglages du tableau de la fiche (interrupteur principal, quand, modèle, mes modèles, rythme, rubriques, qui a fait quoi, moins d'animations), enregistrés dans les préférences de l'appli. Désactivé = le journal classique exactement comme aujourd'hui.
-4. Poids : la story et chaque modèle se chargent à part, seulement à l'ouverture. Aucun octet de plus dans le paquet principal (budget de 420 Ko presque plein).
-5. Respecte le CLAUDE.md de l'appli : prefs.stats / showWho() pour « qui a fait quoi », jamais de module privé, rien qui dépasse à 360 px, classes CSS préfixées, tests, façon de livrer. Mimi : garde le dessin SVG ou branche avatar(humeur, rôle).
-6. Montre-moi le résultat sur le téléphone, rappel activé puis désactivé.
+3. Onglet Paramètres : ajoute la section « Rappel de la semaine », avec les réglages du tableau de la fiche (interrupteur principal, quand, modèle, modèles de saison, mes modèles, rythme, rubriques, qui a fait quoi, moins d'animations), enregistrés dans les préférences de l'appli. Désactivé = le journal classique exactement comme aujourd'hui.
+4. Réactions ❤️ 😂 😾 : enregistre-les par semaine et par personne dans la synchro existante, pour que chacun voie celles de l'autre (« Prénom : 😂 », ou anonyme selon showWho()).
+5. Poids : la story et chaque modèle se chargent à part, seulement à l'ouverture. Aucun octet de plus dans le paquet principal (budget de 420 Ko presque plein).
+6. Respecte le CLAUDE.md de l'appli : prefs.stats / showWho() pour « qui a fait quoi », jamais de module privé, rien qui dépasse à 360 px, classes CSS préfixées, tests, façon de livrer. Mimi : garde le dessin SVG (costumes de saison compris) ou branche avatar(humeur, rôle).
+7. Montre-moi le résultat sur le téléphone : rappel activé, une réaction envoyée et reçue, une semaine de saison, puis rappel désactivé.
 ```
 
 ### Le format des données
@@ -108,7 +138,7 @@ C'est celui de `semaine-exemple.json`, où **toutes les données sont inventées
 
 | Clé | Contenu |
 |---|---|
-| `foyer` | `personnes` (id, prénom) et le nom du chat |
+| `foyer` | `personnes` (id, prénom), le nom du chat et `anniversaireChat` (« MM-JJ ») |
 | `semaine` | `numero`, `debut`, `fin` (dates ISO) |
 | `note` | `valeur`, `sur`, `verdict` |
 | `bilan.argent` | `depense`, `categories[]`, `equilibre` (qui doit quoi à qui), `budgetUtilise` |
@@ -121,7 +151,9 @@ C'est celui de `semaine-exemple.json`, où **toutes les données sont inventées
 | `bilan.photos` | `nombre`, `legendes[]` (dans l'appli : les vraies photos de la galerie) |
 | `bilan.tribunal` | `betises[]`, `peine` |
 | `aVenir` | `agenda[]`, `anniversaires[]`, `meteo[]` (Open-Meteo) |
+| `precedente` | les chiffres de la semaine d'avant, pour la comparaison : `note`, `argent.depense`, `sport.seances`, `cuisine.cuisines`, `maison.faites`, `soins.repas`, `cinema.films`, `dj.morceaux`, `photos.nombre` |
 | `motDeMimi` | le petit mot de la fin |
+| `reactions` | les réactions de l'autre, par écran : `{ "b": { "note": "❤️", "tribunal": "😂" } }` |
 
 Une rubrique absente est simplement sautée.
 
@@ -129,8 +161,8 @@ Une rubrique absente est simplement sautée.
 
 - **Qui a fait quoi** : `quiFaitQuoi: false` retire tous les prénoms et n'affiche que des totaux. On le branchera sur `prefs.stats` et `showWho()`. C'est vérifié par un test.
 - **Données privées** : aucun module privé n'est lu (budgets perso, cadeaux, santé…). L'argent ne montre que les dépenses communes.
-- **Aucun défilement horizontal**, vérifié à 360 px sur les 16 écrans des 5 modèles.
-- **Classes CSS préfixées** `rs-`, et `pa-`, `ca-`, `px-`, `to-`, `al-` dans les modèles.
+- **Aucun défilement horizontal**, vérifié à 360 px sur les 16 écrans des 5 modèles et des 4 ambiances de saison.
+- **Classes CSS préfixées** `rs-`, et `pa-`, `ca-`, `px-`, `to-`, `al-`, `sa-` dans les modèles.
 - **Moins d'animations** : si le téléphone le demande (`prefers-reduced-motion`), on passe à de simples fondus, les chiffres s'affichent directement et rien ne tourne en boucle.
 
 ### Le poids, mesuré
@@ -139,12 +171,13 @@ L'appli est presque pleine (environ 410 Ko sur 420). Le rappel se **charge à pa
 
 | Fichier | Compressé (gzip) |
 |---|---|
-| Moteur + styles + Mimi | 17,4 Ko (dont les styles de la page de maquette, qui ne partiront pas dans l'appli) |
+| Moteur + styles + Mimi | 21,7 Ko (dont les styles de la page de maquette, qui ne partiront pas dans l'appli) |
 | Pattes de chat | 3,2 Ko |
-| Carnet papier | 3,8 Ko |
-| Rétro pixel | 5,5 Ko |
-| Les toits de Paris | 4,5 Ko |
-| L'album | 3,4 Ko |
+| Carnet papier | 4,0 Ko |
+| Rétro pixel | 5,7 Ko |
+| Les toits de Paris | 4,6 Ko |
+| L'album | 3,5 Ko |
+| Saison (les 4 ambiances) | 5,0 Ko, seulement les semaines spéciales |
 
 Le rappel ne charge aucune bibliothèque, aucune image et aucune police (la police pixel est dessinée en code). Une fois minifiés, ces fichiers seront encore plus légers.
 
@@ -166,14 +199,14 @@ Dans la maquette, il est dessiné en SVG (`mimi.js`) : il cligne des yeux, bouge
 
 ### Pistes d'amélioration
 
-1. 📈 **Comparé à la semaine dernière** : de petites flèches ↑↓ sur chaque chiffre (« sport +2 », « dépenses −15 % »), et Mimi qui le commente.
+1. ✅ *Fait* · 📈 **Comparé à la semaine dernière** : de petites flèches ↑↓ sur chaque chiffre (« sport +2 », « dépenses −15 % »), et Mimi qui le commente.
 2. 🎯 **Les défis de Mimi** : à la fin, Mimi propose 1 ou 2 défis pour la semaine suivante. Le dimanche d'après, il annonce « Défi réussi ! » ou « Raté… ».
 3. 🎵 **Un son par modèle**, désactivable : bips 8 bits, machine à écrire, piano doux, déclic d'appareil photo. Ils sont générés dans le navigateur, donc sans fichier ni poids.
 4. 💌 **Partager la carte de la semaine** : l'écran de la note devient une image à envoyer à l'autre.
-5. ❤️ **Réagir à un écran** (❤️ 😂 😾), et voir les réactions de l'autre.
-6. 🎄 **Des modèles de saison** : Noël, Halloween, l'été, l'anniversaire de Mimi, avec son costume de saison.
+5. ✅ *Fait* · ❤️ **Réagir à un écran** (❤️ 😂 😾), et voir les réactions de l'autre.
+6. ✅ *Fait* · 🎄 **Des modèles de saison** : Noël, Halloween, l'été, l'anniversaire de Mimi, avec son costume de saison.
 7. 🔊 **« Mimi lit le journal »** : la voix du téléphone lit la story.
 8. 📺 **Version Nest Hub** : un diaporama horizontal qui défile tout seul.
 9. 🗓️ **La même story pour le mois et l'année** : le « Wrapped » de l'appli pourrait réutiliser ce moteur.
 
-Mon conseil : commencer par les pistes 1 et 2, qui rendent le rappel *utile* et pas seulement joli. Ensuite la piste 3, qui coûte peu et fait beaucoup d'effet.
+Pour la suite : la piste 2 (les défis de Mimi), qui va bien avec la comparaison, puis la piste 3 (les sons).

@@ -133,3 +133,7 @@
   filter: drop-shadow(0.7cqw 0 0 #fff) drop-shadow(-0.7cqw 0 0 #fff) drop-shadow(0 0.7cqw 0 #fff) drop-shadow(0 -0.7cqw 0 #fff) drop-shadow(0 1.2cqw 1.2cqw rgba(60, 35, 10, 0.35));
   transform: rotate(-5deg);
 }
+
+/* Comparaison et réactions */
+[data-modele="album"] .rs-evolution { border-radius: 0.4cqw; transform: rotate(-1.5deg); font-family: var(--al-main); }
+[data-modele="album"] .rs-reaction-autre { font-family: var(--al-main); background: #fff3a6; color: #4a3b1f; border-radius: 0.4cqw; transform: rotate(-2deg); }
