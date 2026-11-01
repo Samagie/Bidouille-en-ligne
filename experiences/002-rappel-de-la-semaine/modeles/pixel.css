@@ -1,0 +1,120 @@
+/* Modèle « Rétro pixel » : 16 bits, comme les jeux de Mimi sur la borne. */
+
+[data-modele="pixel"] {
+  --px-fond: #0d0b1e;
+  --px-blanc: #f4f4f4;
+  --rs-progression: var(--rs-accent);
+  --rs-progression-fond: rgba(255, 255, 255, 0.15);
+  color: var(--px-blanc);
+  background: var(--px-fond);
+  font-family: "Courier New", "DejaVu Sans Mono", "Droid Sans Mono", monospace;
+  font-weight: 700;
+}
+
+[data-modele="pixel"] .rs-progression span { border-radius: 0; height: max(4px, 1.2cqw); }
+
+/* Ciel étoilé qui défile et lignes d'écran cathodique */
+.px-etoiles, .px-etoiles2 {
+  position: absolute;
+  inset: -100cqh 0 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' shape-rendering='crispEdges'%3E%3Cg fill='%23ffffff'%3E%3Crect x='10' y='14' width='2' height='2'/%3E%3Crect x='70' y='40' width='2' height='2'/%3E%3Crect x='34' y='88' width='2' height='2'/%3E%3Crect x='96' y='102' width='2' height='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 34cqw;
+  animation: px-defile 26s linear infinite;
+  opacity: 0.55;
+}
+.px-etoiles2 { background-size: 52cqw; animation-duration: 15s; opacity: 0.85; background-position: 17cqw 9cqw; }
+@keyframes px-defile { to { transform: translateY(100cqh); } }
+
+.px-ecran-tube {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.px-transition { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; }
+
+.px-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.px-texte { display: block; height: auto; shape-rendering: crispEdges; overflow: visible; }
+
+[data-modele="pixel"] .rs-entete { gap: 2.6cqw; }
+[data-modele="pixel"] .rs-picto { width: 10cqw; height: 10cqw; flex: none; }
+[data-modele="pixel"] .rs-titre { color: var(--rs-accent); font-size: 1px; }
+[data-modele="pixel"] .rs-titre .px-texte { width: auto; }
+
+[data-modele="pixel"] .rs-chiffre { color: #ffd93d; font-size: 1px; display: flex; align-items: flex-end; gap: 2cqw; }
+[data-modele="pixel"] .rs-chiffre .rs-compte { display: block; }
+[data-modele="pixel"] .rs-unite { font-size: 6cqw; color: var(--px-blanc); margin-bottom: 1cqw; }
+[data-modele="pixel"] .rs-legende { font-size: 3.8cqw; text-transform: uppercase; color: #b9b6d3; }
+[data-modele="pixel"] .rs-liste, [data-modele="pixel"] .rs-semaine, [data-modele="pixel"] .rs-meteo { text-transform: uppercase; font-size: 3.5cqw; }
+
+[data-modele="pixel"] .rs-sur-titre { color: #b9b6d3; font-size: 1px; opacity: 1; }
+[data-modele="pixel"] .rs-grand-titre { color: var(--rs-accent); font-size: 1px; }
+
+/* Jauges façon barre de vie */
+[data-modele="pixel"] .rs-jauge { height: 5cqw; border-radius: 0; background: #29264a; box-shadow: 0 0 0 0.8cqw var(--px-blanc); margin: 0.8cqw; }
+[data-modele="pixel"] .rs-jauge > span,
+[data-modele="pixel"] .rs-barre { border-radius: 0; background: var(--rs-accent); }
+[data-modele="pixel"] .rs-barre { height: 3.4cqw; }
+[data-modele="pixel"] .rs-barres li { font-size: 3.4cqw; text-transform: uppercase; }
+
+[data-modele="pixel"] .rs-duo li { border-radius: 0; background: #1d1a3a; box-shadow: inset 0 0 0 0.6cqw #3d3970; font-size: 3.4cqw; text-transform: uppercase; }
+[data-modele="pixel"] .rs-duo b { color: #ffd93d; }
+.px-joueur { margin-right: 1.4cqw; color: var(--rs-accent); font-style: normal; }
+
+[data-modele="pixel"] .rs-liste li::before { content: "▶ "; color: var(--rs-accent); }
+[data-modele="pixel"] .rs-duo li::before, [data-modele="pixel"] .rs-photos li::before,
+[data-modele="pixel"] .rs-meteo li::before, [data-modele="pixel"] .rs-barres li::before { content: none; }
+[data-modele="pixel"] .rs-etoiles { color: #ffd93d; }
+
+[data-modele="pixel"] .rs-semaine li { border-radius: 0; background: #1d1a3a; }
+[data-modele="pixel"] .rs-semaine .rs-jour { color: var(--rs-accent); }
+[data-modele="pixel"] .rs-meteo li { border-radius: 0; background: #1d1a3a; padding: 1.8cqw 0.3cqw; }
+[data-modele="pixel"] .rs-meteo .rs-meteo-icone { display: grid; place-items: center; }
+[data-modele="pixel"] .rs-meteo b { color: #ffd93d; }
+
+[data-modele="pixel"] .rs-photos li { border-radius: 0; box-shadow: inset 0 0 0 0.8cqw var(--px-blanc); background: var(--rs-teinte); }
+[data-modele="pixel"] .rs-photo-dessin { width: 60%; }
+[data-modele="pixel"] .rs-photo-legende { background: var(--px-fond); color: var(--px-blanc); text-transform: uppercase; font-size: 2.3cqw; }
+
+.px-emoji { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+.px-mimi { width: 100%; height: auto; image-rendering: pixelated; animation: px-sautille 0.9s steps(1) infinite; }
+@keyframes px-sautille { 50% { transform: translateY(-3%); } }
+
+[data-modele="pixel"] .rs-tampon { border: 0; padding: 0; color: #ffd93d; font-size: 1px; transform: none; }
+[data-modele="pixel"] .rs-tampon .px-texte { animation: px-clignote 0.5s steps(1) 6; }
+@keyframes px-clignote { 50% { opacity: 0; } }
+
+[data-modele="pixel"] .rs-vinyle { border-radius: 0; background: repeating-linear-gradient(90deg, #1d1a3a 0 2cqw, #2e2a55 2cqw 4cqw); box-shadow: 0 0 0 0.8cqw var(--px-blanc); }
+[data-modele="pixel"] .rs-vinyle::after { border-radius: 0; }
+[data-modele="pixel"] .rs-morceau-titre { color: #ffd93d; text-transform: uppercase; font-size: 4.4cqw; }
+
+[data-modele="pixel"] .rs-citation { font-size: 4.6cqw; text-transform: uppercase; line-height: 1.4; }
+[data-modele="pixel"] .rs-boutons button { border-radius: 0; font-family: inherit; text-transform: uppercase; color: var(--px-fond); background: #ffd93d; box-shadow: 0 1cqw 0 #b8901b; }
+[data-modele="pixel"] .rs-boutons button + button { color: var(--px-blanc); background: #1d1a3a; box-shadow: inset 0 0 0 0.6cqw var(--px-blanc); }
+.px-banniere { color: #ffd93d; }
+
+/* Boîte de dialogue de jeu de rôle */
+[data-modele="pixel"] .rs-bulle {
+  border-radius: 0;
+  background: var(--px-fond);
+  color: var(--px-blanc);
+  text-transform: uppercase;
+  font-size: 3.5cqw;
+  line-height: 1.45;
+  padding: 3cqw 3.4cqw 4cqw;
+  box-shadow: 0 0 0 0.8cqw var(--px-blanc), 0 0 0 1.6cqw var(--px-fond), 0 0 0 2.2cqw #3d3970;
+  margin-left: 2cqw;
+}
+[data-modele="pixel"] .rs-bulle::after {
+  content: "▼";
+  position: absolute;
+  right: 2.4cqw;
+  bottom: 0.6cqw;
+  font-size: 3cqw;
+  color: var(--rs-accent);
+  animation: px-clignote 0.8s steps(1) infinite;
+}

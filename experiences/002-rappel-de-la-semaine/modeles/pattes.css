@@ -1,0 +1,107 @@
+/* Modèle « Pattes de chat » : les couleurs du thème de Chez Miaouss,
+   ombres chaudes façon pâte à modeler, arrondis généreux. */
+
+[data-modele="pattes"] {
+  --rs-progression: #6e5a4c;
+  --rs-progression-fond: rgba(110, 90, 76, 0.18);
+  color: #3a2e2a;
+  background-color: #f6eee4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg fill='%23ecd2bf'%3E%3Cg transform='translate(14 18) rotate(-18 20 20)'%3E%3Cellipse cx='20' cy='26' rx='9' ry='7.5'/%3E%3Cellipse cx='9.5' cy='16' rx='3.6' ry='4.6'/%3E%3Cellipse cx='16.5' cy='10.5' rx='3.6' ry='4.8'/%3E%3Cellipse cx='23.5' cy='10.5' rx='3.6' ry='4.8'/%3E%3Cellipse cx='30.5' cy='16' rx='3.6' ry='4.6'/%3E%3C/g%3E%3Cg transform='translate(70 66) rotate(16 20 20)'%3E%3Cellipse cx='20' cy='26' rx='9' ry='7.5'/%3E%3Cellipse cx='9.5' cy='16' rx='3.6' ry='4.6'/%3E%3Cellipse cx='16.5' cy='10.5' rx='3.6' ry='4.8'/%3E%3Cellipse cx='23.5' cy='10.5' rx='3.6' ry='4.8'/%3E%3Cellipse cx='30.5' cy='16' rx='3.6' ry='4.6'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-size: 42cqw;
+}
+
+/* La carte est centrée dans l'espace libre au-dessus de Mimi. */
+[data-modele="pattes"] .rs-ecran-contenu {
+  top: 7.5cqh;
+  bottom: 31cqh;
+  height: fit-content;
+  margin: auto 0;
+  max-height: 61cqh;
+  padding: 5cqw 5.5cqw 5.5cqw;
+  border-radius: 7cqw;
+  background: var(--pa-fond, #fbdcc4);
+  color: var(--pa-texte, #8f4a1c);
+  box-shadow: 0 2.4cqw 5cqw rgba(150, 100, 80, 0.18), inset 0 -1.2cqw 0 rgba(0, 0, 0, 0.045);
+  overflow: hidden;
+}
+
+[data-modele="pattes"] .rs-ecran[data-narrateur="petit"] .rs-ecran-contenu { bottom: 20cqh; max-height: 72cqh; }
+
+[data-modele="pattes"] .rs-entete {
+  align-self: flex-start;
+  padding: 1.3cqw 4.2cqw 1.3cqw 1.6cqw;
+  border-radius: 99px;
+  background: var(--pa-bandeau, #c9b3ec);
+  color: #3a2e2a;
+  box-shadow: 0 1cqw 0 rgba(0, 0, 0, 0.06);
+}
+
+[data-modele="pattes"] .rs-picto {
+  display: grid;
+  place-items: center;
+  width: 9cqw;
+  height: 9cqw;
+  font-size: 5.4cqw;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+[data-modele="pattes"] .rs-titre { font-size: 5.6cqw; }
+[data-modele="pattes"] .rs-chiffre { color: var(--pa-texte); }
+[data-modele="pattes"] .rs-legende, [data-modele="pattes"] .rs-liste { color: #3a2e2a; }
+
+[data-modele="pattes"] .rs-jauge { background: rgba(255, 255, 255, 0.65); height: 4cqw; }
+[data-modele="pattes"] .rs-jauge > span,
+[data-modele="pattes"] .rs-barre { background: var(--pa-texte); }
+
+[data-modele="pattes"] .rs-duo li,
+[data-modele="pattes"] .rs-semaine li,
+[data-modele="pattes"] .rs-meteo li,
+[data-modele="pattes"] .rs-films li,
+[data-modele="pattes"] .rs-betises li,
+[data-modele="pattes"] .rs-anniv li { background: rgba(255, 255, 255, 0.62); border-radius: 4cqw; color: #3a2e2a; }
+
+[data-modele="pattes"] .rs-films li,
+[data-modele="pattes"] .rs-betises li,
+[data-modele="pattes"] .rs-anniv li { display: grid; gap: 0.4cqw; padding: 2cqw 3.2cqw; }
+[data-modele="pattes"] .rs-etoiles { color: var(--pa-texte); letter-spacing: 0.08em; }
+
+[data-modele="pattes"] .rs-semaine .rs-vide { background: transparent; }
+[data-modele="pattes"] .rs-semaine .rs-jour { color: var(--pa-texte); }
+
+[data-modele="pattes"] .rs-photos li { border-radius: 4.5cqw; box-shadow: 0 1cqw 2.4cqw rgba(150, 100, 80, 0.2); border: 1.2cqw solid #fff; }
+
+[data-modele="pattes"] .rs-tampon { color: var(--pa-texte); background: rgba(255, 255, 255, 0.6); border-radius: 4cqw; }
+
+[data-modele="pattes"] .rs-e-ouverture .rs-ecran-contenu,
+[data-modele="pattes"] .rs-e-transition .rs-ecran-contenu { padding: 7cqw 6cqw; }
+[data-modele="pattes"] .rs-e-transition .rs-grand-titre { font-size: 11cqw; color: var(--pa-texte); }
+[data-modele="pattes"] .rs-e-ouverture .rs-grand-titre { color: var(--pa-texte); }
+
+[data-modele="pattes"] .rs-citation { color: var(--pa-texte); }
+[data-modele="pattes"] .rs-boutons button { background: var(--pa-texte); }
+[data-modele="pattes"] .rs-boutons button + button { background: #fff; color: var(--pa-texte); }
+
+[data-modele="pattes"] .rs-bulle {
+  background: #fff;
+  border-radius: 6cqw;
+  box-shadow: 0 1.6cqw 4cqw rgba(150, 100, 80, 0.18);
+  transform-origin: 100% 80%;
+}
+
+[data-modele="pattes"] .rs-bulle::after {
+  content: "";
+  position: absolute;
+  right: -2.6cqw;
+  bottom: 3.6cqw;
+  border: 2.4cqw solid transparent;
+  border-left: 3.4cqw solid #fff;
+  border-right: 0;
+}
+
+[data-modele="pattes"] .rs-mimi svg { filter: drop-shadow(0 1.6cqw 1.6cqw rgba(150, 100, 80, 0.22)); }
+
+/* Traces de pattes qui traversent l'écran pendant les transitions */
+.pa-traces { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.pa-trace { position: absolute; width: 9cqw; height: 9cqw; color: #c79f86; }
+.pa-trace svg { width: 100%; height: 100%; display: block; }

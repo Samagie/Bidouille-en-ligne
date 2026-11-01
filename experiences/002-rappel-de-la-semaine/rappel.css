@@ -1,0 +1,419 @@
+/* Rappel de la semaine : base commune à tous les modèles.
+   Toutes les classes sont préfixées « rs- » (règle de Chez Miaouss).
+   Chaque modèle se limite à .rs-scene[data-modele="…"]. */
+
+/* ---------- Page de la maquette ---------- */
+
+.rs-page {
+  margin: 0;
+  min-height: 100vh;
+  font: 400 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #d9cabe;
+  background: #2a2324;
+}
+
+.rs-page a { color: #fbbf80; }
+.rs-page :focus-visible { outline: 3px solid #fbbf80; outline-offset: 3px; }
+
+.rs-retour { display: inline-block; margin: 0.75rem 1rem 0; }
+
+.rs-maquette {
+  display: grid;
+  gap: 2rem;
+  justify-content: center;
+  align-items: start;
+  padding: 1.25rem 1rem 3rem;
+}
+
+@media (min-width: 860px) {
+  .rs-maquette { grid-template-columns: auto minmax(0, 22rem); padding-top: 1.5rem; }
+}
+
+/* Le téléphone */
+.rs-telephone {
+  width: 390px;
+  height: 800px;
+  padding: 11px;
+  border-radius: 50px;
+  background: #121012;
+  box-shadow: 0 0 0 2px #3a3234, 0 30px 60px rgba(0, 0, 0, 0.45);
+}
+
+.rs-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 40px;
+  container-type: size;
+  isolation: isolate;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: pointer;
+  color: #3a2e2a;
+  background: #f6eee4;
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Quicksand", system-ui, sans-serif;
+}
+
+.rs-scene:focus-visible { outline: 3px solid #fbbf80; outline-offset: 4px; }
+
+/* Sur un vrai téléphone : la story prend tout l'écran, les réglages sont en dessous. */
+@media (max-width: 560px) {
+  .rs-maquette { padding: 0 0 3rem; gap: 1.25rem; }
+  .rs-retour { margin: 0.5rem 1rem; font-size: 0.9rem; }
+  .rs-telephone { width: 100vw; height: 100svh; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+  .rs-scene { border-radius: 0; }
+  .rs-reglages { padding: 0 1rem; }
+}
+
+/* Réglages de la maquette */
+.rs-reglages h1 { margin: 0; font-size: 1.6rem; line-height: 1.15; color: #f3e6da; }
+.rs-reglages > p { margin: 0.5rem 0 0; }
+.rs-reglages .rs-aide { color: #a8988c; font-size: 0.9rem; }
+
+.rs-groupe { margin-top: 1.4rem; }
+.rs-groupe-titre { display: block; margin-bottom: 0.5rem; font-weight: 700; color: #f3e6da; }
+
+.rs-choix { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.rs-choix button, .rs-semaine-choix button, .rs-recommencer {
+  font: inherit;
+  font-size: 0.95rem;
+  color: #f3e6da;
+  background: #3a3133;
+  border: 1px solid #554749;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.rs-choix button[aria-pressed="true"] { background: #fbbf80; border-color: #fbbf80; color: #2a2324; font-weight: 700; }
+
+.rs-semaine-choix { display: flex; align-items: center; gap: 0.6rem; }
+.rs-semaine-choix output { min-width: 13rem; text-align: center; }
+
+.rs-interrupteur { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.7rem; cursor: pointer; }
+.rs-interrupteur input { width: 1.2rem; height: 1.2rem; accent-color: #fbbf80; }
+
+.rs-recommencer { margin-top: 1.4rem; background: #fbbf80; color: #2a2324; border-color: #fbbf80; font-weight: 700; }
+
+@media (min-width: 860px) {
+  .rs-telephone { position: sticky; top: 1rem; }
+}
+
+.rs-reglages h2 { margin: 1.8rem 0 0; font-size: 1.15rem; color: #f3e6da; }
+.rs-reglages h2 + .rs-aide { margin: 0.3rem 0 0; }
+
+/* Paramètres, dans le style de l'onglet Paramètres de l'appli */
+.rs-carte-param {
+  margin-top: 0.9rem;
+  border-radius: 20px;
+  background: #352d2f;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.rs-ligne-param {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+  margin: 0;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-top: 1px solid #45393b;
+  color: #f3e6da;
+}
+
+.rs-ligne-param:first-child { border-top: 0; }
+.rs-ligne-param > span { display: grid; gap: 0.1rem; }
+.rs-ligne-param small { font-size: 0.82rem; color: #a8988c; }
+.rs-principal { padding-block: 0.9rem; }
+.rs-principal b { font-size: 1.02rem; }
+
+.rs-colonne { display: block; min-inline-size: 0; }
+.rs-colonne legend { float: left; width: 100%; padding: 0; margin-bottom: 0.5rem; }
+.rs-colonne .rs-cases { clear: both; }
+.rs-colonne:disabled { opacity: 0.45; }
+
+.rs-details.rs-eteint { opacity: 0.4; }
+
+.rs-ligne-param select {
+  font: inherit;
+  font-size: 0.92rem;
+  max-width: 13rem;
+  padding: 0.35rem 0.5rem;
+  color: #f3e6da;
+  background: #2a2324;
+  border: 1px solid #554749;
+  border-radius: 10px;
+}
+
+/* Interrupteurs */
+.rs-ligne-param input[role="switch"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  position: relative;
+  width: 46px;
+  height: 28px;
+  margin: 0;
+  border-radius: 99px;
+  background: #554749;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.rs-ligne-param input[role="switch"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f3e6da;
+  transition: transform 0.15s;
+}
+.rs-ligne-param input[role="switch"]:checked { background: #fbbf80; }
+.rs-ligne-param input[role="switch"]:checked::after { transform: translateX(18px); background: #2a2324; }
+
+.rs-cases { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.rs-case {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem 0.3rem 0.45rem;
+  font-size: 0.9rem;
+  border-radius: 99px;
+  background: #2a2324;
+  border: 1px solid #554749;
+  cursor: pointer;
+}
+.rs-case input { accent-color: #fbbf80; margin: 0; }
+
+.rs-segments { display: inline-flex; border: 1px solid #554749; border-radius: 99px; overflow: hidden; }
+.rs-segment input { position: absolute; opacity: 0; pointer-events: none; }
+.rs-segment span { display: block; padding: 0.3rem 0.7rem; font-size: 0.9rem; cursor: pointer; }
+.rs-segment input:checked + span { background: #fbbf80; color: #2a2324; font-weight: 700; }
+.rs-segment input:focus-visible + span { outline: 3px solid #fbbf80; outline-offset: -3px; }
+
+.rs-prochain { margin: 0.7rem 0.2rem 0; font-size: 0.9rem; color: #a8988c; }
+
+/* Rappel désactivé : le journal classique, tel qu'aujourd'hui dans l'appli */
+.rs-scene[data-mode="classique"] { cursor: auto; user-select: text; -webkit-user-select: text; overflow-y: auto; }
+.rs-classique { padding: 9cqw 6cqw 8cqw; font-size: 4cqw; }
+.rs-classique-note { margin: 0 0 4cqw; padding: 2cqw 3cqw; border-radius: 3cqw; font-size: 3.4cqw; background: #e8dff5; color: #62499b; }
+.rs-classique h2 { margin: 0; font-size: 6.4cqw; }
+.rs-classique-sous { margin: 1cqw 0 0; color: #6e5a4c; }
+.rs-classique-chiffre { margin: 4cqw 0; padding: 3cqw 4cqw; border-radius: 4cqw; background: #fbdcc4; color: #8f4a1c; }
+.rs-classique-chiffre b { font-size: 8cqw; margin-right: 2cqw; }
+.rs-classique ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2cqw; }
+.rs-classique li { display: grid; gap: 0.5cqw; padding: 2.4cqw 3.4cqw; border-radius: 4cqw; background: #fff; box-shadow: 0 1cqw 3cqw rgba(150, 100, 80, 0.12); }
+.rs-classique li span { color: #6e5a4c; }
+.rs-classique-mot { margin: 4cqw 0 0; font-style: italic; color: #6e5a4c; }
+
+/* ---------- La story ---------- */
+
+.rs-decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.rs-ecrans { position: absolute; inset: 0; z-index: 1; }
+
+.rs-ecran {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  font-size: 4.3cqw;
+  line-height: 1.35;
+}
+
+.rs-ecran-contenu {
+  position: absolute;
+  inset: 8.5cqh 6.5cqw 33cqh;
+  display: flex;
+  flex-direction: column;
+  gap: 2.6cqw;
+}
+
+.rs-ecran[data-narrateur="petit"] .rs-ecran-contenu { bottom: 21cqh; }
+
+.rs-narrateur {
+  position: absolute;
+  left: 4cqw;
+  right: 4cqw;
+  bottom: 2.5cqh;
+  height: 29cqh;
+  display: flex;
+  align-items: flex-end;
+  gap: 2cqw;
+}
+
+.rs-ecran[data-narrateur="petit"] .rs-narrateur { height: 18cqh; }
+
+.rs-mimi { flex: none; width: 34cqw; height: 100%; display: flex; align-items: flex-end; }
+.rs-ecran[data-narrateur="petit"] .rs-mimi { width: 22cqw; }
+.rs-mimi svg { width: 100%; height: auto; max-height: 100%; overflow: visible; }
+
+.rs-bulle {
+  position: relative;
+  align-self: center;
+  flex: 1;
+  margin: 0 0 6cqh;
+  padding: 3cqw 3.6cqw;
+  font-size: 4.1cqw;
+  line-height: 1.3;
+  border-radius: 5cqw;
+  background: #fff;
+  color: #3a2e2a;
+}
+
+.rs-ecran[data-narrateur="petit"] .rs-bulle { margin-bottom: 2cqh; font-size: 3.8cqw; }
+
+.rs-entete { display: flex; align-items: center; gap: 2.4cqw; }
+.rs-picto { font-size: 7.5cqw; line-height: 1; }
+.rs-titre { margin: 0; font-size: 7.4cqw; line-height: 1.05; font-weight: 800; }
+
+.rs-corps { display: flex; flex-direction: column; gap: 2.6cqw; min-height: 0; }
+
+.rs-chiffre {
+  margin: 0;
+  font-size: 21cqw;
+  line-height: 0.95;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.rs-chiffre.rs-moyen { font-size: 15cqw; }
+.rs-unite { font-size: 0.42em; margin-left: 0.12em; letter-spacing: 0; }
+.rs-legende { margin: 0; font-size: 4.4cqw; }
+
+.rs-sur-titre { margin: 0; font-size: 5cqw; font-weight: 700; opacity: 0.75; }
+.rs-grand-titre { margin: 0; font-size: 12cqw; line-height: 1; font-weight: 800; }
+
+.rs-liste { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.8cqw; }
+.rs-ligne { display: flex; align-items: baseline; gap: 2cqw; }
+.rs-ligne .rs-ligne-picto { flex: none; }
+
+.rs-jauge { position: relative; height: 3.4cqw; border-radius: 99px; overflow: hidden; background: rgba(0, 0, 0, 0.1); }
+.rs-jauge > span { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--rs-part, 0)); border-radius: inherit; background: var(--rs-accent, #f4a894); }
+
+.rs-barres li { display: grid; grid-template-columns: 22cqw 1fr auto; align-items: center; gap: 2cqw; font-size: 3.9cqw; }
+.rs-barres .rs-barre { height: 3.2cqw; border-radius: 99px; transform-origin: left; transform: scaleX(var(--rs-part, 0)); background: var(--rs-accent, #f4a894); }
+
+.rs-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 2cqw; list-style: none; margin: 0; padding: 0; }
+.rs-duo li { padding: 2cqw 3cqw; border-radius: 3.5cqw; background: rgba(255, 255, 255, 0.6); font-size: 3.8cqw; }
+.rs-duo b { display: block; font-size: 6.5cqw; line-height: 1.1; }
+
+.rs-tampon {
+  align-self: flex-start;
+  margin: 1cqw 0 0;
+  padding: 1.2cqw 3.4cqw;
+  font-size: 6.5cqw;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 0.9cqw solid currentColor;
+  border-radius: 2cqw;
+  transform: rotate(-7deg);
+}
+
+.rs-semaine { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.2cqw; }
+.rs-semaine li { display: grid; grid-template-columns: 15cqw 1fr; align-items: baseline; gap: 2cqw; font-size: 3.9cqw; padding: 1.3cqw 2.4cqw; border-radius: 3cqw; }
+.rs-semaine .rs-jour { font-weight: 800; }
+.rs-semaine .rs-vide { opacity: 0.45; }
+
+.rs-meteo { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 1.2cqw; text-align: center; }
+.rs-meteo li { display: grid; gap: 1cqw; padding: 2.4cqw 0.5cqw; border-radius: 3.5cqw; font-size: 3.3cqw; }
+.rs-meteo .rs-meteo-icone { font-size: 7cqw; line-height: 1.1; }
+.rs-meteo b { font-size: 4cqw; }
+
+.rs-photos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.4cqw; }
+.rs-photos li { position: relative; aspect-ratio: 1; display: grid; place-items: center; border-radius: 3cqw; background: var(--rs-teinte, #fbdcc4); overflow: hidden; }
+.rs-photos .rs-photo-dessin { font-size: 10cqw; }
+.rs-photos .rs-photo-legende { position: absolute; left: 0; right: 0; bottom: 0; padding: 0.8cqw 1cqw; font-size: 2.6cqw; line-height: 1.15; text-align: center; background: rgba(255, 255, 255, 0.75); }
+
+.rs-vinyle {
+  position: relative;
+  flex: none;
+  width: 24cqw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #1d1a1f 0 1.2cqw, #2b272e 1.2cqw 1.6cqw);
+  box-shadow: 0 1cqw 3cqw rgba(0, 0, 0, 0.3);
+}
+.rs-vinyle::after { content: ""; position: absolute; inset: 35%; border-radius: 50%; background: var(--rs-accent, #f4a894); box-shadow: 0 0 0 1cqw rgba(0, 0, 0, 0.2) inset; }
+.rs-morceau { display: flex; align-items: center; gap: 4cqw; }
+.rs-morceau-titre { margin: 0; font-size: 5.6cqw; font-weight: 800; line-height: 1.1; }
+.rs-morceau-artiste { margin: 0.6cqw 0 0; font-size: 4cqw; opacity: 0.8; }
+
+.rs-citation { margin: 0; font-size: 6.4cqw; line-height: 1.25; font-weight: 700; }
+
+.rs-boutons { display: flex; gap: 3cqw; margin-top: 2cqw; }
+.rs-boutons button {
+  font: inherit;
+  font-size: 4.4cqw;
+  font-weight: 800;
+  padding: 2.4cqw 5cqw;
+  border: 0;
+  border-radius: 99px;
+  cursor: pointer;
+  color: #fff;
+  background: #3a2e2a;
+}
+.rs-boutons button + button { color: inherit; background: rgba(255, 255, 255, 0.7); }
+
+/* Barres de progression */
+.rs-progression {
+  position: absolute;
+  z-index: 3;
+  top: 2.6cqh;
+  left: 5cqw;
+  right: 5cqw;
+  display: flex;
+  gap: 1cqw;
+  pointer-events: none;
+}
+.rs-progression span { flex: 1; height: max(3px, 0.9cqw); border-radius: 99px; overflow: hidden; background: var(--rs-progression-fond, rgba(58, 46, 42, 0.18)); }
+.rs-progression i { display: block; height: 100%; transform-origin: left; transform: scaleX(0); background: var(--rs-progression, #3a2e2a); }
+
+.rs-pause-signe {
+  position: absolute;
+  z-index: 4;
+  top: 5.5cqh;
+  right: 5cqw;
+  padding: 1cqw 2.6cqw;
+  font-size: 3.4cqw;
+  font-weight: 700;
+  border-radius: 99px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.rs-scene.rs-en-pause .rs-pause-signe { opacity: 1; }
+
+/* Story refermée */
+.rs-fermee { position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; gap: 4cqw; text-align: center; padding: 8cqw; background: #f6eee4; color: #3a2e2a; }
+.rs-fermee p { margin: 0; font-size: 5cqw; }
+.rs-fermee button { justify-self: center; font: inherit; font-size: 4.6cqw; font-weight: 800; padding: 3cqw 6cqw; border: 0; border-radius: 99px; background: #3a2e2a; color: #fff; cursor: pointer; }
+
+/* ---------- Mimi s'anime ---------- */
+
+.rs-mimi-queue { transform-box: view-box; transform-origin: 132px 192px; animation: rs-queue 2.8s ease-in-out infinite alternate; }
+.rs-mimi-yeux { transform-box: view-box; transform-origin: 100px 84px; animation: rs-cligne 4.6s infinite; }
+.rs-mimi-oreille { transform-box: view-box; transform-origin: 72px 60px; animation: rs-oreille 6.5s infinite; }
+.rs-mimi-zzz { animation: rs-zzz 2.4s ease-in-out infinite; }
+
+@keyframes rs-queue { from { transform: rotate(-6deg); } to { transform: rotate(9deg); } }
+@keyframes rs-cligne { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.08); } }
+@keyframes rs-oreille { 0%, 86%, 100% { transform: rotate(0); } 89% { transform: rotate(-12deg); } 92% { transform: rotate(4deg); } }
+@keyframes rs-zzz { 0%, 100% { transform: translateY(0); opacity: 0.9; } 50% { transform: translateY(-6px); opacity: 0.5; } }
+
+/* Moins d'animations : tout ce qui bouge en boucle s'arrête. */
+.rs-scene.rs-reduit *, .rs-scene.rs-reduit *::before, .rs-scene.rs-reduit *::after { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .rs-scene *, .rs-scene *::before, .rs-scene *::after { animation: none !important; }
+}

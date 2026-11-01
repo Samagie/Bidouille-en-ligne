@@ -1,0 +1,132 @@
+/* Modèle « Carnet papier » : le journal de la semaine, imprimé. */
+
+[data-modele="carnet"] {
+  --ca-papier: #f7f1e3;
+  --ca-encre: #2b2a33;
+  --ca-rouge: #c8372d;
+  --ca-filet: #cbbfa6;
+  --rs-progression: #2b2a33;
+  --rs-progression-fond: rgba(43, 42, 51, 0.15);
+  color: var(--ca-encre);
+  background: #3b2a22 repeating-linear-gradient(92deg, rgba(255, 255, 255, 0.025) 0 0.6cqw, transparent 0.6cqw 2.2cqw);
+  font-family: Georgia, "Noto Serif", "DejaVu Serif", "Times New Roman", serif;
+}
+
+[data-modele="carnet"] .rs-ecran {
+  background:
+    linear-gradient(90deg, rgba(60, 40, 20, 0.16), transparent 5cqw),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .34 0 0 0 0 .22 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 50% 40%, var(--ca-papier) 60%, #ece2cc 100%);
+  backface-visibility: hidden;
+  transform-origin: 0 50%;
+}
+
+[data-modele="carnet"] .rs-ecran-contenu { top: 6.5cqh; bottom: 32cqh; gap: 2.2cqw; }
+[data-modele="carnet"] .rs-ecran[data-narrateur="petit"] .rs-ecran-contenu { bottom: 21cqh; }
+
+/* Le bandeau du journal, en haut de chaque page */
+.ca-une {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.8cqw 0;
+  border-top: 0.5cqw solid var(--ca-encre);
+  border-bottom: 0.25cqw solid var(--ca-encre);
+  font-size: 3.1cqw;
+  letter-spacing: 0.04em;
+}
+.ca-une b { font-size: 4.2cqw; font-style: italic; letter-spacing: 0.01em; }
+
+[data-modele="carnet"] .rs-entete { gap: 2cqw; padding-bottom: 1.4cqw; border-bottom: 0.6cqw double var(--ca-encre); }
+[data-modele="carnet"] .rs-picto {
+  display: grid;
+  place-items: center;
+  width: 9.5cqw;
+  height: 9.5cqw;
+  font-size: 5cqw;
+  border: 0.4cqw solid var(--ca-encre);
+  border-radius: 50%;
+  filter: grayscale(1) contrast(1.2);
+}
+[data-modele="carnet"] .rs-titre { font-size: 8.2cqw; font-weight: 700; letter-spacing: -0.01em; }
+
+[data-modele="carnet"] .rs-chiffre { font-size: 23cqw; font-weight: 700; color: var(--ca-encre); }
+[data-modele="carnet"] .rs-chiffre.rs-moyen { font-size: 15cqw; }
+[data-modele="carnet"] .rs-unite { font-style: italic; font-weight: 400; }
+[data-modele="carnet"] .rs-legende { font-style: italic; font-size: 4.5cqw; }
+[data-modele="carnet"] .rs-sur-titre { font-family: "Courier New", "Courier 10 Pitch", "DejaVu Sans Mono", monospace; font-size: 4.4cqw; opacity: 1; }
+[data-modele="carnet"] .rs-grand-titre { font-size: 12.5cqw; font-weight: 700; font-style: italic; }
+
+[data-modele="carnet"] .rs-liste li,
+[data-modele="carnet"] .rs-semaine li { border-bottom: 0.25cqw dotted var(--ca-filet); border-radius: 0; padding: 1cqw 0; }
+[data-modele="carnet"] .rs-films li,
+[data-modele="carnet"] .rs-anniv li { display: flex; justify-content: space-between; gap: 2cqw; }
+[data-modele="carnet"] .rs-etoiles { color: var(--ca-rouge); white-space: nowrap; }
+[data-modele="carnet"] .rs-betises b { font-variant: small-caps; margin-right: 1cqw; }
+[data-modele="carnet"] .rs-ligne-picto { filter: grayscale(1); }
+
+[data-modele="carnet"] .rs-duo { gap: 0; }
+[data-modele="carnet"] .rs-duo li { background: none; border-radius: 0; border-left: 0.3cqw solid var(--ca-encre); padding: 0.4cqw 3cqw; }
+[data-modele="carnet"] .rs-duo li:first-child { border-left: 0; padding-left: 0; }
+[data-modele="carnet"] .rs-duo b { font-size: 8cqw; }
+
+/* Jauges et barres hachurées, façon gravure */
+[data-modele="carnet"] .rs-jauge,
+[data-modele="carnet"] .rs-barre { border-radius: 0; }
+[data-modele="carnet"] .rs-jauge { height: 4.2cqw; background: none; border: 0.35cqw solid var(--ca-encre); }
+[data-modele="carnet"] .rs-jauge > span,
+[data-modele="carnet"] .rs-barre {
+  border-radius: 0;
+  background: repeating-linear-gradient(-45deg, var(--ca-encre) 0 0.45cqw, transparent 0.45cqw 1.2cqw);
+}
+[data-modele="carnet"] .rs-barre { height: 3.6cqw; box-shadow: inset 0 0 0 0.3cqw var(--ca-encre); }
+
+[data-modele="carnet"] .rs-tampon {
+  color: var(--ca-rouge);
+  border: 0.8cqw double var(--ca-rouge);
+  border-radius: 1cqw;
+  font-family: "Courier New", "Courier 10 Pitch", monospace;
+  letter-spacing: 0.08em;
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+}
+
+[data-modele="carnet"] .rs-photos li { border-radius: 0; background: #e6dcc6; border: 1.2cqw solid #fff; box-shadow: 0 0.6cqw 1.4cqw rgba(60, 40, 20, 0.25); }
+[data-modele="carnet"] .rs-photo-dessin { filter: grayscale(1) contrast(1.15); }
+[data-modele="carnet"] .rs-photo-legende { background: rgba(255, 255, 255, 0.85); font-style: italic; }
+
+[data-modele="carnet"] .rs-semaine li { grid-template-columns: 17cqw 1fr; }
+[data-modele="carnet"] .rs-semaine .rs-jour { font-variant: small-caps; }
+[data-modele="carnet"] .rs-semaine .rs-vide { opacity: 0.5; font-style: italic; }
+
+[data-modele="carnet"] .rs-meteo li { border-radius: 0; border-left: 0.25cqw solid var(--ca-filet); }
+[data-modele="carnet"] .rs-meteo li:first-child { border-left: 0; }
+[data-modele="carnet"] .rs-meteo-icone { filter: grayscale(1) contrast(1.2); }
+
+[data-modele="carnet"] .rs-vinyle { filter: grayscale(1); }
+[data-modele="carnet"] .rs-morceau-titre { font-style: italic; }
+
+[data-modele="carnet"] .rs-citation { font-style: italic; font-weight: 400; font-size: 6.6cqw; }
+[data-modele="carnet"] .rs-boutons button { border-radius: 0; background: var(--ca-encre); font-family: "Courier New", monospace; }
+[data-modele="carnet"] .rs-boutons button + button { background: none; color: var(--ca-encre); box-shadow: inset 0 0 0 0.4cqw var(--ca-encre); }
+
+/* Le mot du rédacteur en chef */
+[data-modele="carnet"] .rs-bulle {
+  background: none;
+  border-radius: 0;
+  padding: 1cqw 0 1cqw 3.4cqw;
+  border-left: 1.2cqw solid var(--ca-rouge);
+  font-style: italic;
+  font-size: 4.2cqw;
+}
+[data-modele="carnet"] .rs-bulle::before {
+  content: "Le mot du rédacteur";
+  display: block;
+  margin-bottom: 0.6cqw;
+  font-style: normal;
+  font-size: 3cqw;
+  letter-spacing: 0.06em;
+  font-variant: small-caps;
+  color: var(--ca-rouge);
+}
+[data-modele="carnet"] .rs-mimi svg { filter: drop-shadow(0.5cqw 0.5cqw 0 rgba(43, 42, 51, 0.18)); }

@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le dictaphone de Madeleine · Labo audio · Bidouille en ligne</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📼</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --nuit: #0e1820;
+      --nuit-claire: #1a2733;
+      --texte: #e4e8ec;
+      --texte-doux: #a3afba;
+      --alu-haut: #d5d9dd;
+      --alu-bas: #a7aeb5;
+      --plaque: #1d2024;
+      --plaque-trait: #34383d;
+      --grave: #c7ccd1;
+      --ecran: #140b03;
+      --ambre: #ffb33a;
+      --ambre-doux: rgba(255, 179, 58, 0.35);
+      --voyant: #e8412c;
+      --papier: #f2ede1;
+      --encre: #1f2a6b;
+      --machine: "Big Shoulders Display", "Arial Narrow", system-ui, sans-serif;
+      --main: "Kalam", "Comic Sans MS", cursive;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    html {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      color: var(--texte);
+      background: radial-gradient(ellipse at 50% 0%, var(--nuit-claire), var(--nuit) 70%) fixed, var(--nuit);
+    }
+
+    body { margin: 0; min-height: 100vh; }
+
+    a { color: var(--ambre); }
+
+    :focus-visible { outline: 3px solid var(--ambre); outline-offset: 3px; }
+
+    .retour {
+      display: inline-block;
+      margin: 0.75rem 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    .page {
+      width: min(100% - 2rem, 68rem);
+      margin: 1.5rem auto 4rem;
+    }
+
+    /* ---------- En-tête ---------- */
+
+    h1 {
+      margin: 0;
+      font-family: var(--machine);
+      font-weight: 800;
+      font-size: clamp(2.4rem, 8vw, 4.25rem);
+      line-height: 0.95;
+      letter-spacing: 0.005em;
+    }
+
+    .intro {
+      max-width: 38rem;
+      margin: 1rem 0 0;
+      font-size: 1.075rem;
+      color: var(--texte);
+    }
+
+    .intro .conseil { color: var(--texte-doux); }
+
+    /* ---------- Mise en page ---------- */
+
+    .atelier {
+      display: grid;
+      gap: 2rem;
+      margin-top: 2rem;
+      align-items: start;
+    }
+
+    @media (min-width: 60rem) {
+      .atelier { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+    }
+
+    /* ---------- Le dictaphone ---------- */
+
+    .dictaphone {
+      padding: 1.1rem;
+      border-radius: 22px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 3px),
+        linear-gradient(180deg, var(--alu-haut), var(--alu-bas));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.25),
+        0 18px 40px rgba(0, 0, 0, 0.45);
+      color: #23272b;
+    }
+
+    .marque {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 0.25rem 0.75rem;
+      font-family: var(--machine);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #3d434a;
+    }
+
+    .voyant {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 500;
+    }
+
+    .voyant::before {
+      content: "";
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: 50%;
+      background: #6b2a22;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .voyant.allume::before {
+      background: var(--voyant);
+      box-shadow: 0 0 8px var(--voyant), 0 0 2px #fff inset;
+    }
+
+    /* Les cassettes */
+
+    .cassettes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .cassette {
+      position: relative;
+      padding: 0.35rem 0.3rem 0.45rem;
+      border: 0;
+      border-radius: 6px;
+      background: #2a2d31;
+      color: inherit;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 2px 0 #121416;
+    }
+
+    .cassette .etiquette {
+      display: block;
+      padding: 0.15rem 0.2rem 0.1rem;
+      border-radius: 2px;
+      background: var(--papier);
+      color: var(--encre);
+      font-family: var(--main);
+      font-size: 0.95rem;
+      line-height: 1.15;
+    }
+
+    .cassette .numero {
+      font-weight: 700;
+      margin-right: 0.2rem;
+    }
+
+    .cassette .lieu {
+      display: block;
+      font-size: 0.78rem;
+      color: #4a5180;
+    }
+
+    .cassette .bobines {
+      display: flex;
+      justify-content: center;
+      gap: 1.1rem;
+      margin-top: 0.3rem;
+    }
+
+    .cassette .bobines i {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 50%;
+      background: #0f1012;
+      box-shadow: 0 0 0 2px #4b4f55;
+    }
+
+    .cassette[aria-pressed="true"] {
+      background: #3b2a12;
+      box-shadow: 0 0 0 2px var(--ambre), 0 2px 0 #121416;
+    }
+
+    /* L'écran */
+
+    .ecran {
+      position: relative;
+      border-radius: 10px;
+      background: var(--ecran);
+      box-shadow:
+        inset 0 0 0 2px #050302,
+        inset 0 0 32px rgba(255, 150, 30, 0.12),
+        0 1px 0 rgba(255, 255, 255, 0.6);
+      overflow: hidden;
+      color: var(--ambre);
+      text-shadow: 0 0 6px rgba(255, 179, 58, 0.55);
+    }
+
+    .ecran-infos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.25rem 1rem;
+      padding: 0.5rem 0.75rem 0;
+      font-family: var(--machine);
+      font-weight: 500;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+    }
+
+    .onde {
+      display: block;
+      width: 100%;
+      height: 9.5rem;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    @media (max-width: 30rem) {
+      .onde { height: 7rem; }
+      .ecran-pied { font-size: 0.8rem; }
+      .bilan dd { font-size: 1.35rem; }
+    }
+
+    .onde.retourne { animation: retournement 320ms ease-in-out; }
+
+    @keyframes retournement {
+      0%   { transform: scaleX(1); }
+      50%  { transform: scaleX(0.02); }
+      100% { transform: scaleX(1); }
+    }
+
+    .trace {
+      display: block;
+      width: 100%;
+      height: 2.25rem;
+      border-top: 1px solid rgba(255, 179, 58, 0.2);
+    }
+
+    .ecran-pied {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .ecran-pied button {
+      font: inherit;
+      color: var(--ambre);
+      background: none;
+      border: 1px solid var(--ambre-doux);
+      border-radius: 4px;
+      padding: 0.1rem 0.5rem;
+      cursor: pointer;
+    }
+
+    .chargement {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: var(--machine);
+      font-size: 1.2rem;
+    }
+
+    /* La plaque de commandes */
+
+    .commandes {
+      margin-top: 0.9rem;
+      padding: 1rem 1rem 1.1rem;
+      border-radius: 12px;
+      background: var(--plaque);
+      color: var(--grave);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
+    }
+
+    .rangee {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+    }
+
+    .lire {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 8.5rem;
+      justify-content: center;
+      padding: 0.8rem 1.4rem;
+      font-family: var(--machine);
+      font-weight: 800;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: #1a1c1f;
+      background: linear-gradient(180deg, #f0f2f4, #b9bfc6);
+      border: 0;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 #0b0c0d, inset 0 1px 0 #fff;
+      cursor: pointer;
+    }
+
+    .lire:active { transform: translateY(2px); box-shadow: 0 1px 0 #0b0c0d, inset 0 1px 0 #fff; }
+
+    .lire .symbole { font-size: 1.1rem; }
+
+    .interrupteur {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.9rem;
+      font: inherit;
+      font-family: var(--machine);
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--grave);
+      background: #2a2e33;
+      border: 1px solid var(--plaque-trait);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .interrupteur .levier {
+      position: relative;
+      width: 2.4rem;
+      height: 1.3rem;
+      border-radius: 999px;
+      background: #0d0e10;
+      box-shadow: inset 0 1px 3px #000;
+    }
+
+    .interrupteur .levier::after {
+      content: "";
+      position: absolute;
+      top: 0.15rem;
+      left: 0.15rem;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #eef0f2, #9aa1a8);
+      transition: transform 160ms ease;
+    }
+
+    .interrupteur[aria-pressed="true"] { color: var(--ambre); border-color: var(--ambre-doux); }
+    .interrupteur[aria-pressed="true"] .levier::after { transform: translateX(1.1rem); }
+
+    .reglage { margin-top: 1.15rem; }
+
+    .reglage-tete {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      font-family: var(--machine);
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .reglage-tete output {
+      font-weight: 500;
+      color: var(--ambre);
+    }
+
+    .reglage input[type="range"] {
+      width: 100%;
+      margin: 0.55rem 0 0.15rem;
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      height: 2rem;
+      cursor: pointer;
+    }
+
+    .reglage input[type="range"]::-webkit-slider-runnable-track {
+      height: 0.45rem;
+      border-radius: 999px;
+      background: #0b0c0e;
+      box-shadow: inset 0 1px 2px #000, 0 1px 0 #3a3f45;
+    }
+
+    .reglage input[type="range"]::-moz-range-track {
+      height: 0.45rem;
+      border-radius: 999px;
+      background: #0b0c0e;
+      box-shadow: inset 0 1px 2px #000, 0 1px 0 #3a3f45;
+    }
+
+    .reglage input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 1.9rem;
+      height: 1.9rem;
+      margin-top: -0.73rem;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #ffffff, #c1c7cd 45%, #7d858d);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .reglage input[type="range"]::-moz-range-thumb {
+      width: 1.9rem;
+      height: 1.9rem;
+      border: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #ffffff, #c1c7cd 45%, #7d858d);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .graduations {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--texte-doux);
+    }
+
+    /* ×1 est aux deux tiers du curseur de vitesse (échelle ×0,25 … ×2). */
+    .graduations .normal {
+      position: absolute;
+      left: 66.7%;
+      transform: translateX(-50%);
+    }
+
+    .zero {
+      margin-top: 1rem;
+      font: inherit;
+      font-size: 0.9rem;
+      color: var(--texte-doux);
+      background: none;
+      border: 0;
+      padding: 0;
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+      cursor: pointer;
+    }
+
+    /* ---------- Colonne de droite : coffre, coups de pouce ---------- */
+
+    .colonne { display: grid; gap: 1.5rem; }
+
+    .coffre {
+      padding: 1.25rem 1.25rem 1.4rem;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #3a4048, #262a30);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    .coffre h2, .pouce h2 {
+      margin: 0;
+      font-family: var(--machine);
+      font-weight: 800;
+      font-size: 1.9rem;
+      line-height: 1;
+    }
+
+    .coffre p { margin: 0.4rem 0 0; color: var(--texte-doux); }
+
+    .molettes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 4.6rem));
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .molettes label { display: grid; gap: 0.2rem; text-align: center; font-size: 0.78rem; white-space: nowrap; color: var(--texte-doux); }
+
+    .molettes input {
+      width: 100%;
+      height: 4.2rem;
+      font-family: var(--machine);
+      font-weight: 800;
+      font-size: 2.6rem;
+      text-align: center;
+      color: var(--ambre);
+      background: #0f0a04;
+      border: 2px solid #4a4f57;
+      border-radius: 8px;
+      caret-color: var(--ambre);
+    }
+
+    .ouvrir {
+      margin-top: 1.1rem;
+      padding: 0.75rem 1.2rem;
+      font-family: var(--machine);
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: #1b1406;
+      background: var(--ambre);
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .verdict { min-height: 1.5rem; margin-top: 0.75rem !important; color: var(--texte) !important; }
+    .verdict.piege { color: #ff9c8a !important; }
+
+    .coffre.secoue { animation: secousse 380ms ease; }
+
+    @keyframes secousse {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(3px); }
+    }
+
+    .pouce p { margin: 0.4rem 0 0; color: var(--texte-doux); }
+
+    .pouce button {
+      margin-top: 0.9rem;
+      padding: 0.55rem 0.95rem;
+      font: inherit;
+      font-weight: 600;
+      color: var(--texte);
+      background: none;
+      border: 1px solid #4c5a67;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .notes {
+      list-style: none;
+      margin: 1rem 0 0;
+      padding: 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .notes li {
+      padding: 0.55rem 0.8rem;
+      background: var(--papier);
+      color: var(--encre);
+      font-family: var(--main);
+      font-size: 1.05rem;
+      line-height: 1.35;
+      border-radius: 2px;
+      box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .notes li .de { display: block; font-size: 0.85rem; color: #5a609a; }
+
+    /* ---------- Coffre ouvert ---------- */
+
+    .victoire {
+      margin-top: 2rem;
+      padding: 1.5rem 1.5rem 1.75rem;
+      max-width: 44rem;
+      background: var(--papier);
+      color: #1c2030;
+      border-radius: 4px;
+      box-shadow: 4px 6px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    .victoire:focus { outline: none; }
+
+    .victoire h2 {
+      margin: 0;
+      font-family: var(--machine);
+      font-weight: 800;
+      font-size: 2.4rem;
+      line-height: 1;
+      color: #1c2030;
+    }
+
+    .victoire .carnet {
+      margin: 1rem 0 0;
+      font-family: var(--main);
+      font-size: 1.25rem;
+      color: var(--encre);
+    }
+
+    .bilan {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin: 1.25rem 0 0;
+    }
+
+    .bilan div { padding: 0.6rem 0.75rem; background: #e3dccb; border-radius: 4px; }
+    .bilan dt { font-size: 0.85rem; color: #4b4f5c; }
+    .bilan dd { margin: 0; font-family: var(--machine); font-weight: 800; font-size: 1.7rem; line-height: 1.1; }
+
+    .victoire .labo { margin: 1.25rem 0 0; color: #3a3f4f; }
+
+    .victoire button {
+      margin-top: 1rem;
+      padding: 0.6rem 1.1rem;
+      font: inherit;
+      font-weight: 700;
+      color: #fff;
+      background: #1c2030;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .visuellement-cache {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .onde.retourne, .coffre.secoue { animation: none; }
+      .interrupteur .levier::after { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="retour" href="../../">← Retour au labo</a>
+
+  <div class="page">
+    <header>
+      <h1>Le dictaphone de Madeleine</h1>
+      <p class="intro">
+        Madeleine enquêtait sur les voix qu'on entend dans les vieilles maisons. Elle a disparu.
+        On a retrouvé son dictaphone, quatre cassettes abîmées et un coffre fermé par un code à quatre chiffres.
+        Chaque cassette cache un chiffre.
+        <span class="conseil">Mets un casque ou monte le son.</span>
+      </p>
+    </header>
+
+    <div class="atelier">
+      <section class="dictaphone" aria-label="Le dictaphone">
+        <div class="marque">
+          <span>Dictaphone M.</span>
+          <span class="voyant" id="voyant">Arrêt</span>
+        </div>
+
+        <div class="cassettes" role="group" aria-label="Choisir une cassette" id="cassettes"></div>
+
+        <div class="ecran">
+          <div class="ecran-infos" aria-live="polite">
+            <span id="info-sens">À l'endroit</span>
+            <span id="info-vitesse">Vitesse ×1,00</span>
+            <span id="info-filtre">Filtre neutre</span>
+          </div>
+          <canvas class="onde" id="onde" aria-label="Forme du son. Touche pour te placer, glisse pour écouter un passage en boucle."></canvas>
+          <canvas class="trace" id="trace" aria-hidden="true"></canvas>
+          <div class="ecran-pied">
+            <span id="aide-ecran">Touche l'écran pour te placer, glisse pour écouter un passage en boucle.</span>
+            <button type="button" id="effacer-boucle" hidden>Sans boucle</button>
+          </div>
+          <div class="chargement" id="chargement">Chargement des cassettes…</div>
+        </div>
+
+        <div class="commandes" id="commandes" inert>
+          <div class="rangee">
+            <button type="button" class="lire" id="lire"><span class="symbole" aria-hidden="true">▶</span><span id="lire-texte">Lire</span></button>
+            <button type="button" class="interrupteur" id="envers" aria-pressed="false"><span class="levier" aria-hidden="true"></span>À l'envers</button>
+          </div>
+
+          <div class="reglage">
+            <div class="reglage-tete"><label for="vitesse">Vitesse</label><output id="vitesse-valeur" for="vitesse">×1,00</output></div>
+            <input type="range" id="vitesse" min="0" max="1000" step="1">
+            <div class="graduations" aria-hidden="true"><span>Très lent</span><span class="normal">Normal</span><span>Rapide</span></div>
+          </div>
+
+          <div class="reglage">
+            <div class="reglage-tete"><label for="filtre">Filtre</label><output id="filtre-valeur" for="filtre">Neutre</output></div>
+            <input type="range" id="filtre" min="-100" max="100" step="1" value="0">
+            <div class="graduations" aria-hidden="true"><span>Graves seulement</span><span>Neutre</span><span>Aigus seulement</span></div>
+          </div>
+
+          <button type="button" class="zero" id="zero">Remettre les réglages à zéro</button>
+        </div>
+      </section>
+
+      <div class="colonne">
+        <section class="coffre" id="coffre" aria-labelledby="titre-coffre">
+          <h2 id="titre-coffre">Le coffre</h2>
+          <p>Un chiffre par cassette, dans l'ordre.</p>
+          <div class="molettes" id="molettes"></div>
+          <button type="button" class="ouvrir" id="ouvrir">Ouvrir le coffre</button>
+          <p class="verdict" id="verdict" role="status"></p>
+        </section>
+
+        <section class="pouce" aria-labelledby="titre-pouce">
+          <h2 id="titre-pouce">Les notes de Madeleine</h2>
+          <p>Bloqué sur une cassette ? Ses notes peuvent t'aider, une à la fois.</p>
+          <button type="button" id="indice">Lire une note sur la cassette 1</button>
+          <ul class="notes" id="notes"></ul>
+        </section>
+      </div>
+    </div>
+
+    <section class="victoire" id="victoire" hidden aria-labelledby="titre-victoire" tabindex="-1">
+      <h2 id="titre-victoire">Le coffre s'ouvre.</h2>
+      <p class="carnet">Dedans, son carnet. Sur la dernière page : « Si tu lis ceci, tu sais écouter. Ne laisse jamais l'entité parler plus fort que toi. »</p>
+      <dl class="bilan">
+        <div><dt>Temps</dt><dd id="bilan-temps">—</dd></div>
+        <div><dt>Essais au coffre</dt><dd id="bilan-essais">—</dd></div>
+        <div><dt>Notes lues</dt><dd id="bilan-notes">—</dd></div>
+      </dl>
+      <p class="labo">Ce prototype sert à savoir si cette énigme est amusante avant de l'ajouter à l'appli IRL. Dis à Claude ce qui t'a plu, et où tu as bloqué.</p>
+      <button type="button" id="rejouer">Rejouer depuis le début</button>
+    </section>
+  </div>
+
+  <script>
+    // ---------------------------------------------------------------------------
+    // Contenu de l'énigme
+    // ---------------------------------------------------------------------------
+    const CASSETTES = [
+      {
+        fichier: "sons/cassette-1.wav", lieu: "Cave, 2\u00a0h\u00a010",
+        notes: [
+          "On dirait qu'elle parle… dans l'autre sens.",
+          "Essaie l'interrupteur « À l'envers ».",
+          "À l'envers, elle dit : premier chiffre, sept.",
+        ],
+      },
+      {
+        fichier: "sons/cassette-2.wav", lieu: "Grenier",
+        notes: [
+          "Ça va beaucoup trop vite, et la voix est trop aiguë.",
+          "Baisse la vitesse, bien en dessous de ×1.",
+          "Vers ×0,33, on comprend : deuxième chiffre, quatre.",
+        ],
+      },
+      {
+        fichier: "sons/cassette-3.wav", lieu: "Chambre d'enfant",
+        notes: [
+          "Deux voix parlent en même temps. L'une des deux ment.",
+          "Le filtre sépare les voix graves des voix aiguës. Laquelle est Madeleine ?",
+          "Filtre vers « Aigus » : Madeleine dit deux. La voix grave, c'est l'entité : elle dit cinq.",
+        ],
+      },
+      {
+        fichier: "sons/cassette-4.wav", lieu: "La dernière",
+        notes: [
+          "Cette cassette cumule tout ce que tu as appris.",
+          "À l'envers, vitesse vers ×0,5, puis le filtre.",
+          "Le dernier chiffre est neuf.",
+        ],
+      },
+    ];
+    const CODE = "7429";
+    const CHIFFRES_DE_L_ENTITE = { 2: "5", 3: "1" }; // position → faux chiffre donné par l'entité
+
+    // ---------------------------------------------------------------------------
+    // État
+    // ---------------------------------------------------------------------------
+    const etat = {
+      cassette: 0,
+      envers: false,
+      vitesse: 1,
+      filtre: 0,
+      lecture: false,
+      position: 0,          // en secondes, dans le son affiché (à l'endroit ou à l'envers)
+      boucle: null,         // [début, fin] en fraction du son affiché
+      notesLues: [0, 0, 0, 0],
+      essais: 0,
+      debut: null,
+      ouvert: false,
+    };
+
+    const el = (id) => document.getElementById(id);
+    const nombre = (x, decimales = 2) => x.toFixed(decimales).replace(".", ",");
+
+    // ---------------------------------------------------------------------------
+    // Audio
+    // ---------------------------------------------------------------------------
+    const Contexte = window.AudioContext || window.webkitAudioContext;
+    const ctx = new Contexte();
+    const sons = [];      // AudioBuffer à l'endroit
+    const inverses = [];  // AudioBuffer à l'envers
+
+    // Chaîne : source → 4 filtres → analyseur (avant gain) → volume automatique → limiteur → analyseur → sortie
+    const filtres = Array.from({ length: 4 }, () => ctx.createBiquadFilter());
+    filtres.reduce((a, b) => (a.connect(b), b));
+    const mesure = ctx.createAnalyser();
+    mesure.fftSize = 2048;
+    const volumeAuto = ctx.createGain();
+    const limiteur = ctx.createDynamicsCompressor();
+    limiteur.threshold.value = -8;
+    limiteur.knee.value = 4;
+    limiteur.ratio.value = 20;
+    limiteur.attack.value = 0.003;
+    limiteur.release.value = 0.12;
+    const sortie = ctx.createAnalyser();
+    sortie.fftSize = 1024;
+    filtres[3].connect(mesure);
+    mesure.connect(volumeAuto).connect(limiteur).connect(sortie).connect(ctx.destination);
+
+    let source = null;
+    let dernierInstant = 0;
+    let enveloppe = 0;
+
+    function inverser(buffer) {
+      const copie = ctx.createBuffer(buffer.numberOfChannels, buffer.length, buffer.sampleRate);
+      for (let c = 0; c < buffer.numberOfChannels; c++) {
+        copie.getChannelData(c).set(buffer.getChannelData(c).slice().reverse());
+      }
+      return copie;
+    }
+
+    async function chargerSons() {
+      await Promise.all(CASSETTES.map(async (c, i) => {
+        const reponse = await fetch(c.fichier);
+        if (!reponse.ok) throw new Error(`${c.fichier} : HTTP ${reponse.status}`);
+        sons[i] = await ctx.decodeAudioData(await reponse.arrayBuffer());
+        inverses[i] = inverser(sons[i]);
+      }));
+    }
+
+    const sonAffiche = () => (etat.envers ? inverses : sons)[etat.cassette];
+    const duree = () => sonAffiche().duration;
+
+    function regionBoucle() {
+      if (!etat.boucle) return null;
+      return [etat.boucle[0] * duree(), etat.boucle[1] * duree()];
+    }
+
+    function couperSource() {
+      if (!source) return;
+      source.onended = null;
+      try { source.stop(); } catch (_) { /* déjà arrêtée */ }
+      source.disconnect();
+      source = null;
+    }
+
+    async function lire() {
+      if (ctx.state !== "running") await ctx.resume();
+      couperSource();
+      const s = ctx.createBufferSource();
+      s.buffer = sonAffiche();
+      s.playbackRate.value = etat.vitesse;
+      let depart = etat.position;
+      const region = regionBoucle();
+      if (region) {
+        s.loop = true;
+        s.loopStart = region[0];
+        s.loopEnd = region[1];
+        if (depart < region[0] || depart >= region[1]) depart = region[0];
+      } else if (depart >= s.buffer.duration - 0.02) {
+        depart = 0;
+      }
+      etat.position = depart;
+      enveloppe = 0;
+      volumeAuto.gain.cancelScheduledValues(ctx.currentTime);
+      volumeAuto.gain.setValueAtTime(1, ctx.currentTime);
+      s.connect(filtres[0]);
+      s.onended = () => {
+        if (source !== s) return;
+        source = null;
+        etat.lecture = false;
+        etat.position = 0;
+        majTransport();
+      };
+      s.start(0, depart);
+      source = s;
+      dernierInstant = ctx.currentTime;
+      etat.lecture = true;
+      if (etat.debut === null) etat.debut = Date.now();
+      majTransport();
+      animer();
+    }
+
+    function pause() {
+      couperSource();
+      etat.lecture = false;
+      majTransport();
+      dessiner();
+    }
+
+    function relancerSiLecture() {
+      if (etat.lecture) lire();
+      else dessiner();
+    }
+
+    // Vitesse : curseur 0..1000 → ×0,25 … ×2 (échelle logarithmique, ×1 aux deux tiers)
+    const curseurVersVitesse = (v) => 0.25 * Math.pow(8, v / 1000);
+    const vitesseVersCurseur = (x) => Math.round((Math.log(x / 0.25) / Math.log(8)) * 1000);
+
+    function appliquerVitesse() {
+      if (source) source.playbackRate.setTargetAtTime(etat.vitesse, ctx.currentTime, 0.015);
+      const texte = `×${nombre(etat.vitesse)}`;
+      el("vitesse-valeur").textContent = texte;
+      el("info-vitesse").textContent = `Vitesse ${texte}`;
+      el("vitesse").setAttribute("aria-valuetext", `fois ${nombre(etat.vitesse)}`);
+    }
+
+    // Filtre : -100 (graves seulement) … 0 (neutre) … +100 (aigus seulement)
+    function appliquerFiltre() {
+      const v = etat.filtre;
+      let texte = "Neutre";
+      if (Math.abs(v) < 4) {
+        filtres.forEach((f) => { f.type = "allpass"; f.frequency.value = 1000; });
+      } else if (v < 0) {
+        const hz = 8000 * Math.pow(300 / 8000, -v / 100);
+        filtres.forEach((f) => { f.type = "lowpass"; f.frequency.value = hz; f.Q.value = 0.707; });
+        texte = `Graves ${"▮".repeat(Math.ceil(-v / 25))}`;
+      } else {
+        const hz = 300 * Math.pow(4000 / 300, v / 100);
+        filtres.forEach((f) => { f.type = "highpass"; f.frequency.value = hz; f.Q.value = 0.707; });
+        texte = `Aigus ${"▮".repeat(Math.ceil(v / 25))}`;
+      }
+      el("filtre-valeur").textContent = texte;
+      el("info-filtre").textContent = texte === "Neutre" ? "Filtre neutre" : `Filtre ${texte.toLowerCase()}`;
+      el("filtre").setAttribute("aria-valuetext", texte.replace(/▮+/, (m) => `niveau ${m.length} sur 4`));
+    }
+
+    // Volume automatique : comme un vrai dictaphone, il remonte un son devenu faible après filtrage.
+    function volumeAutomatique() {
+      const donnees = new Float32Array(mesure.fftSize);
+      mesure.getFloatTimeDomainData(donnees);
+      let somme = 0;
+      for (const x of donnees) somme += x * x;
+      const rms = Math.sqrt(somme / donnees.length);
+      enveloppe = Math.max(rms, enveloppe * 0.985);
+      if (enveloppe > 0.0004) {
+        const cible = Math.min(60, Math.max(1, 0.14 / enveloppe));
+        volumeAuto.gain.setTargetAtTime(cible, ctx.currentTime, 0.12);
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Écran
+    // ---------------------------------------------------------------------------
+    const onde = el("onde");
+    const trace = el("trace");
+    const cachePics = new Map();
+
+    function preparerToile(toile) {
+      const ratio = window.devicePixelRatio || 1;
+      const largeur = Math.round(toile.clientWidth * ratio);
+      const hauteur = Math.round(toile.clientHeight * ratio);
+      if (toile.width !== largeur || toile.height !== hauteur) {
+        toile.width = largeur;
+        toile.height = hauteur;
+      }
+      return { c: toile.getContext("2d"), l: largeur, h: hauteur, ratio };
+    }
+
+    function pics(largeur) {
+      const cle = `${etat.cassette}-${etat.envers}-${largeur}`;
+      if (cachePics.has(cle)) return cachePics.get(cle);
+      const donnees = sonAffiche().getChannelData(0);
+      const parColonne = donnees.length / largeur;
+      const resultat = new Float32Array(largeur * 2);
+      for (let x = 0; x < largeur; x++) {
+        let min = 1, max = -1;
+        const debut = Math.floor(x * parColonne);
+        const fin = Math.min(donnees.length, Math.floor((x + 1) * parColonne));
+        for (let i = debut; i < fin; i++) {
+          const v = donnees[i];
+          if (v < min) min = v;
+          if (v > max) max = v;
+        }
+        resultat[x * 2] = min;
+        resultat[x * 2 + 1] = max;
+      }
+      cachePics.set(cle, resultat);
+      return resultat;
+    }
+
+    function dessiner() {
+      if (!sons[etat.cassette]) return;
+      const { c, l, h, ratio } = preparerToile(onde);
+      c.clearRect(0, 0, l, h);
+
+      // Quadrillage d'oscilloscope
+      c.strokeStyle = "rgba(255, 179, 58, 0.09)";
+      c.lineWidth = 1;
+      const pas = 24 * ratio;
+      for (let x = pas; x < l; x += pas) { c.beginPath(); c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, h); c.stroke(); }
+      for (let y = h / 2 % pas; y < h; y += pas) { c.beginPath(); c.moveTo(0, y + 0.5); c.lineTo(l, y + 0.5); c.stroke(); }
+
+      // Boucle
+      if (etat.boucle) {
+        c.fillStyle = "rgba(255, 179, 58, 0.16)";
+        c.fillRect(etat.boucle[0] * l, 0, (etat.boucle[1] - etat.boucle[0]) * l, h);
+        c.fillStyle = "rgba(255, 179, 58, 0.8)";
+        c.fillRect(etat.boucle[0] * l, 0, ratio, h);
+        c.fillRect(etat.boucle[1] * l - ratio, 0, ratio, h);
+      }
+
+      // Forme du son : la partie déjà lue est plus vive
+      const p = pics(l);
+      const lu = (etat.position / duree()) * l;
+      const milieu = h / 2;
+      const amplitude = h * 0.46;
+      for (let x = 0; x < l; x++) {
+        c.fillStyle = x <= lu ? "rgba(255, 190, 80, 0.95)" : "rgba(255, 179, 58, 0.42)";
+        const haut = milieu - p[x * 2 + 1] * amplitude;
+        const bas = milieu - p[x * 2] * amplitude;
+        c.fillRect(x, haut, 1, Math.max(ratio, bas - haut));
+      }
+
+      // Tête de lecture
+      c.fillStyle = "#fff4da";
+      c.shadowColor = "rgba(255, 179, 58, 0.9)";
+      c.shadowBlur = 8 * ratio;
+      c.fillRect(lu - ratio, 0, 2 * ratio, h);
+      c.shadowBlur = 0;
+    }
+
+    function dessinerTrace() {
+      const { c, l, h, ratio } = preparerToile(trace);
+      c.clearRect(0, 0, l, h);
+      const donnees = new Float32Array(sortie.fftSize);
+      sortie.getFloatTimeDomainData(donnees);
+      c.strokeStyle = "rgba(255, 190, 80, 0.9)";
+      c.lineWidth = 1.5 * ratio;
+      c.beginPath();
+      for (let i = 0; i < donnees.length; i++) {
+        const x = (i / (donnees.length - 1)) * l;
+        const y = h / 2 - donnees[i] * h * 0.45;
+        i ? c.lineTo(x, y) : c.moveTo(x, y);
+      }
+      c.stroke();
+    }
+
+    function avancer() {
+      const maintenant = ctx.currentTime;
+      etat.position += (maintenant - dernierInstant) * etat.vitesse;
+      dernierInstant = maintenant;
+      const region = regionBoucle();
+      if (region && etat.position >= region[1]) {
+        etat.position = region[0] + ((etat.position - region[0]) % (region[1] - region[0]));
+      }
+      etat.position = Math.min(etat.position, duree());
+    }
+
+    let animationEnCours = false;
+    function animer() {
+      if (animationEnCours) return;
+      animationEnCours = true;
+      const image = () => {
+        if (etat.lecture) {
+          avancer();
+          volumeAutomatique();
+        }
+        dessiner();
+        dessinerTrace();
+        if (etat.lecture) requestAnimationFrame(image);
+        else { animationEnCours = false; dessinerTrace(); }
+      };
+      requestAnimationFrame(image);
+    }
+
+    // Toucher l'écran : se placer ; glisser : boucle
+    let appui = null;
+    onde.addEventListener("pointerdown", (e) => {
+      if (!sons[etat.cassette]) return;
+      onde.setPointerCapture(e.pointerId);
+      appui = { depart: fraction(e), glisse: false };
+    });
+    onde.addEventListener("pointermove", (e) => {
+      if (!appui) return;
+      const f = fraction(e);
+      if (Math.abs(f - appui.depart) > 0.015) {
+        appui.glisse = true;
+        etat.boucle = [Math.min(f, appui.depart), Math.max(f, appui.depart)];
+        majBoucle();
+        dessiner();
+      }
+    });
+    onde.addEventListener("pointerup", (e) => {
+      if (!appui) return;
+      if (appui.glisse) {
+        etat.position = etat.boucle[0] * duree();
+      } else {
+        etat.boucle = null;
+        etat.position = appui.depart * duree();
+        majBoucle();
+      }
+      appui = null;
+      relancerSiLecture();
+    });
+    onde.addEventListener("pointercancel", () => { appui = null; });
+
+    function fraction(e) {
+      const r = onde.getBoundingClientRect();
+      return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    }
+
+    function majBoucle() {
+      el("effacer-boucle").hidden = !etat.boucle;
+      el("aide-ecran").textContent = etat.boucle
+        ? "Le passage choisi est lu en boucle."
+        : "Touche l'écran pour te placer, glisse pour écouter un passage en boucle.";
+    }
+
+    el("effacer-boucle").addEventListener("click", () => {
+      etat.boucle = null;
+      majBoucle();
+      relancerSiLecture();
+    });
+
+    // ---------------------------------------------------------------------------
+    // Commandes
+    // ---------------------------------------------------------------------------
+    function majTransport() {
+      el("lire-texte").textContent = etat.lecture ? "Pause" : "Lire";
+      el("lire").querySelector(".symbole").textContent = etat.lecture ? "❚❚" : "▶";
+      el("voyant").textContent = etat.lecture ? "Lecture" : "Arrêt";
+      el("voyant").classList.toggle("allume", etat.lecture);
+    }
+
+    el("lire").addEventListener("click", () => (etat.lecture ? pause() : lire()));
+
+    el("envers").addEventListener("click", () => {
+      etat.envers = !etat.envers;
+      el("envers").setAttribute("aria-pressed", String(etat.envers));
+      el("info-sens").textContent = etat.envers ? "À l'envers" : "À l'endroit";
+      etat.position = Math.max(0, duree() - etat.position);
+      if (etat.boucle) etat.boucle = [1 - etat.boucle[1], 1 - etat.boucle[0]];
+      onde.classList.remove("retourne");
+      void onde.offsetWidth;
+      onde.classList.add("retourne");
+      relancerSiLecture();
+    });
+
+    el("vitesse").addEventListener("input", (e) => {
+      let v = Number(e.target.value);
+      const normal = vitesseVersCurseur(1);
+      if (Math.abs(v - normal) < 12) v = normal; // petit cran sur ×1
+      etat.vitesse = curseurVersVitesse(v);
+      appliquerVitesse();
+    });
+
+    el("filtre").addEventListener("input", (e) => {
+      etat.filtre = Number(e.target.value);
+      appliquerFiltre();
+    });
+
+    function remettreAZero() {
+      etat.envers = false;
+      etat.vitesse = 1;
+      etat.filtre = 0;
+      el("envers").setAttribute("aria-pressed", "false");
+      el("info-sens").textContent = "À l'endroit";
+      el("vitesse").value = vitesseVersCurseur(1);
+      el("filtre").value = 0;
+      appliquerVitesse();
+      appliquerFiltre();
+    }
+
+    el("zero").addEventListener("click", () => {
+      const etaitEnvers = etat.envers;
+      remettreAZero();
+      if (etaitEnvers) {
+        etat.position = Math.max(0, duree() - etat.position);
+        if (etat.boucle) etat.boucle = [1 - etat.boucle[1], 1 - etat.boucle[0]];
+      }
+      relancerSiLecture();
+    });
+
+    // Cassettes
+    CASSETTES.forEach((c, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cassette";
+      b.setAttribute("aria-pressed", String(i === 0));
+      b.innerHTML = `<span class="etiquette"><span class="numero">${i + 1}</span><span class="lieu"></span></span><span class="bobines" aria-hidden="true"><i></i><i></i></span>`;
+      b.querySelector(".lieu").textContent = c.lieu;
+      b.setAttribute("aria-label", `Cassette ${i + 1}, ${c.lieu}`);
+      b.addEventListener("click", () => choisirCassette(i));
+      el("cassettes").append(b);
+    });
+
+    function choisirCassette(i) {
+      if (i === etat.cassette) return;
+      pause();
+      etat.cassette = i;
+      etat.position = 0;
+      etat.boucle = null;
+      majBoucle();
+      [...el("cassettes").children].forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+      majBoutonNote();
+      dessiner();
+    }
+
+    // ---------------------------------------------------------------------------
+    // Notes de Madeleine (coups de pouce)
+    // ---------------------------------------------------------------------------
+    function majBoutonNote() {
+      const lues = etat.notesLues[etat.cassette];
+      const bouton = el("indice");
+      const toutes = lues >= CASSETTES[etat.cassette].notes.length;
+      bouton.disabled = toutes;
+      bouton.textContent = toutes
+        ? `Plus de notes sur la cassette ${etat.cassette + 1}`
+        : `Lire une note sur la cassette ${etat.cassette + 1}`;
+    }
+
+    el("indice").addEventListener("click", () => {
+      const i = etat.cassette;
+      const n = etat.notesLues[i];
+      const note = CASSETTES[i].notes[n];
+      if (!note) return;
+      etat.notesLues[i] = n + 1;
+      const li = document.createElement("li");
+      const de = document.createElement("span");
+      de.className = "de";
+      de.textContent = `Cassette ${i + 1}, note ${n + 1} sur ${CASSETTES[i].notes.length}`;
+      li.append(de, note);
+      el("notes").prepend(li);
+      majBoutonNote();
+    });
+
+    // ---------------------------------------------------------------------------
+    // Le coffre
+    // ---------------------------------------------------------------------------
+    const molettes = CASSETTES.map((_, i) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.inputMode = "numeric";
+      input.maxLength = 1;
+      input.autocomplete = "off";
+      input.setAttribute("aria-label", `Chiffre de la cassette ${i + 1}`);
+      label.append(input, `Cassette ${i + 1}`);
+      el("molettes").append(label);
+      input.addEventListener("input", () => {
+        input.value = input.value.replace(/\D/g, "").slice(-1);
+        if (input.value && i < 3) molettes[i + 1].focus();
+      });
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace" && !input.value && i > 0) molettes[i - 1].focus();
+        if (e.key === "Enter") ouvrir();
+      });
+      return input;
+    });
+
+    function ouvrir() {
+      const code = molettes.map((m) => m.value).join("");
+      const verdict = el("verdict");
+      verdict.classList.remove("piege");
+      if (code.length < 4) {
+        verdict.textContent = "Il manque des chiffres : un par cassette.";
+        return;
+      }
+      etat.essais += 1;
+      if (code === CODE) return victoire();
+
+      const piege = Object.entries(CHIFFRES_DE_L_ENTITE).some(([pos, faux]) => code[pos] === faux);
+      verdict.textContent = piege
+        ? "Le coffre reste fermé. Un rire grave sort du haut-parleur : tu as écouté l'entité."
+        : "Le coffre reste fermé.";
+      verdict.classList.toggle("piege", piege);
+      const coffre = el("coffre");
+      coffre.classList.remove("secoue");
+      void coffre.offsetWidth;
+      coffre.classList.add("secoue");
+    }
+
+    el("ouvrir").addEventListener("click", ouvrir);
+
+    function victoire() {
+      pause();
+      etat.ouvert = true;
+      const secondes = Math.round((Date.now() - (etat.debut ?? Date.now())) / 1000);
+      el("bilan-temps").textContent = secondes < 60
+        ? `${secondes}\u00a0s`
+        : `${Math.floor(secondes / 60)}\u00a0min\u00a0${String(secondes % 60).padStart(2, "0")}`;
+      el("bilan-essais").textContent = etat.essais;
+      el("bilan-notes").textContent = etat.notesLues.reduce((a, b) => a + b, 0);
+      el("verdict").textContent = "Le coffre est ouvert.";
+      const v = el("victoire");
+      v.hidden = false;
+      v.focus();
+      v.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }
+
+    el("rejouer").addEventListener("click", () => {
+      pause();
+      remettreAZero();
+      molettes.forEach((m) => (m.value = ""));
+      etat.notesLues = [0, 0, 0, 0];
+      etat.essais = 0;
+      etat.debut = null;
+      etat.ouvert = false;
+      el("notes").replaceChildren();
+      el("verdict").textContent = "";
+      el("victoire").hidden = true;
+      choisirCassette(0);
+      etat.position = 0;
+      majBoutonNote();
+      dessiner();
+      window.scrollTo({ top: 0 });
+    });
+
+    // ---------------------------------------------------------------------------
+    // Démarrage
+    // ---------------------------------------------------------------------------
+    remettreAZero();
+    majBoutonNote();
+    majTransport();
+    window.addEventListener("resize", () => { cachePics.clear(); dessiner(); dessinerTrace(); });
+
+    chargerSons()
+      .then(() => {
+        el("chargement").hidden = true;
+        el("commandes").inert = false;
+        dessiner();
+        dessinerTrace();
+      })
+      .catch((erreur) => {
+        el("chargement").textContent = "Les cassettes n'ont pas pu être chargées. Recharge la page.";
+        console.error(erreur);
+      });
+  </script>
+</body>
+</html>

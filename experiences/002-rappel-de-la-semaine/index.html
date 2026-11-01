@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Rappel de la semaine · maquette Chez Miaouss · Bidouille en ligne</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <link rel="stylesheet" href="rappel.css">
+</head>
+<body class="rs-page">
+  <a class="rs-retour" href="../../">← Retour au labo</a>
+
+  <main class="rs-maquette">
+    <div class="rs-telephone">
+      <div class="rs-scene" id="scene" tabindex="0" aria-roledescription="story" aria-label="Le journal de la semaine de Mimi"></div>
+    </div>
+
+    <aside class="rs-reglages" aria-label="Réglages">
+      <h1>Rappel de la semaine</h1>
+      <p>La version animée du journal de la semaine de Mimi, pour Chez Miaouss. Les données sont inventées.</p>
+
+      <!-- Aperçu de la section qui ira dans l'onglet Paramètres de l'appli -->
+      <section class="rs-parametres" aria-labelledby="titre-parametres">
+        <h2 id="titre-parametres">⚙️ Paramètres</h2>
+        <p class="rs-aide">Aperçu de la section « Rappel de la semaine » de l'onglet Paramètres de Chez Miaouss. Les réglages sont gardés sur cet appareil.</p>
+
+        <div class="rs-carte-param">
+          <label class="rs-ligne-param rs-principal">
+            <span><b>Rappel de la semaine en story</b><small>Le journal de la semaine de Mimi, en version animée</small></span>
+            <input type="checkbox" role="switch" id="p-actif">
+          </label>
+
+          <div class="rs-details" id="p-details">
+            <label class="rs-ligne-param">
+              <span>Quand le proposer</span>
+              <select id="p-quand">
+                <option value="dimanche">Dimanche dès 18 h</option>
+                <option value="lundi">Lundi matin</option>
+              </select>
+            </label>
+
+            <label class="rs-ligne-param">
+              <span>Modèle</span>
+              <select id="p-modele"></select>
+            </label>
+
+            <fieldset class="rs-ligne-param rs-colonne" id="p-mes-modeles">
+              <legend>Mes modèles <small>(ceux de la rotation)</small></legend>
+              <div class="rs-cases" id="p-modeles-cases"></div>
+            </fieldset>
+
+            <div class="rs-ligne-param">
+              <span id="titre-rythme">Rythme</span>
+              <div class="rs-segments" role="radiogroup" aria-labelledby="titre-rythme" id="p-rythme"></div>
+            </div>
+
+            <fieldset class="rs-ligne-param rs-colonne">
+              <legend>Rubriques affichées</legend>
+              <div class="rs-cases" id="p-rubriques"></div>
+            </fieldset>
+
+            <label class="rs-ligne-param">
+              <span>Afficher qui a fait quoi</span>
+              <input type="checkbox" role="switch" id="p-qui">
+            </label>
+
+            <label class="rs-ligne-param">
+              <span>Moins d'animations<small>Suit aussi le réglage du téléphone</small></span>
+              <input type="checkbox" role="switch" id="p-reduit">
+            </label>
+          </div>
+        </div>
+        <p class="rs-prochain" id="p-prochain" aria-live="polite"></p>
+      </section>
+
+      <!-- Ce qui ne sert qu'à la maquette -->
+      <section class="rs-outils" aria-labelledby="titre-outils">
+        <h2 id="titre-outils">🧪 Outils de la maquette</h2>
+
+        <div class="rs-groupe">
+          <span class="rs-groupe-titre">Simuler une autre semaine</span>
+          <div class="rs-semaine-choix">
+            <button type="button" id="semaine-avant" aria-label="Semaine précédente">◀</button>
+            <output id="semaine" aria-live="polite"></output>
+            <button type="button" id="semaine-apres" aria-label="Semaine suivante">▶</button>
+          </div>
+        </div>
+
+        <div class="rs-groupe">
+          <span class="rs-groupe-titre" id="titre-essai">Essayer un modèle</span>
+          <div class="rs-choix" id="choix-modele" role="group" aria-labelledby="titre-essai"></div>
+        </div>
+
+        <button type="button" class="rs-recommencer" id="recommencer">Recommencer</button>
+        <p class="rs-aide">Touche à droite pour avancer, à gauche pour revenir. Appui long : pause. Au clavier : flèches et barre d'espace.</p>
+      </section>
+    </aside>
+  </main>
+
+  <script src="mimi.js"></script>
+  <script src="rappel.js"></script>
+  <script>
+    (async () => {
+      const el = (id) => document.getElementById(id);
+      const params = new URLSearchParams(location.search);
+      const scene = el("scene");
+      const base = await (await fetch("semaine-exemple.json")).json();
+      const { esc, euros, periode, dateDe, ajouterJours } = RS.outilsTexte;
+
+      // ---------------------------------------------------------------------
+      // Les paramètres, gardés sur l'appareil (comme les préférences de l'appli)
+      // ---------------------------------------------------------------------
+      const CLE = "rs-parametres";
+      const DEFAUT = {
+        actif: true,
+        quand: "dimanche",
+        modele: "rotation",            // ou l'identifiant d'un modèle fixe
+        mesModeles: [...RS.ORDRE],
+        rythme: "normal",
+        masquees: [],
+        qui: true,
+        reduit: false,
+      };
+      let p;
+      try { p = { ...DEFAUT, ...JSON.parse(localStorage.getItem(CLE) || "{}") }; } catch (_) { p = { ...DEFAUT }; }
+      const enregistrer = () => { try { localStorage.setItem(CLE, JSON.stringify(p)); } catch (_) { /* navigation privée */ } };
+
+      // Les paramètres d'adresse servent aux tests et ne sont pas enregistrés.
+      if (params.has("qui")) p.qui = params.get("qui") !== "0";
+      if (params.has("reduit")) p.reduit = params.get("reduit") === "1";
+      if (params.has("actif")) p.actif = params.get("actif") !== "0";
+
+      const maquette = {
+        numero: Number(params.get("semaine")) || base.semaine.numero,
+        essai: params.get("modele") || null,  // modèle forcé par les outils de la maquette
+        vitesse: Number(params.get("vitesse")) || 1,
+      };
+      const systemeReduit = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // ---------------------------------------------------------------------
+      // Construction du panneau Paramètres
+      // ---------------------------------------------------------------------
+      const selModele = el("p-modele");
+      selModele.innerHTML = `<option value="rotation">Change chaque semaine</option>` +
+        RS.ORDRE.map((id) => `<option value="${id}">Toujours ${RS.INFOS[id].emoji} ${RS.INFOS[id].nom}</option>`).join("");
+
+      el("p-modeles-cases").innerHTML = RS.ORDRE.map((id) =>
+        `<label class="rs-case"><input type="checkbox" value="${id}"> ${RS.INFOS[id].emoji} ${RS.INFOS[id].nom}</label>`).join("");
+      el("p-rubriques").innerHTML = RS.RUBRIQUES.map(([id, nom]) =>
+        `<label class="rs-case"><input type="checkbox" value="${id}"> ${nom}</label>`).join("");
+      el("p-rythme").innerHTML = [["calme", "Calme"], ["normal", "Normal"], ["rapide", "Rapide"]].map(([v, t]) =>
+        `<label class="rs-segment"><input type="radio" name="rythme" value="${v}"><span>${t}</span></label>`).join("");
+
+      function afficherParametres() {
+        el("p-actif").checked = p.actif;
+        el("p-details").classList.toggle("rs-eteint", !p.actif);
+        el("p-details").inert = !p.actif;
+        el("p-quand").value = p.quand;
+        selModele.value = p.modele;
+        el("p-mes-modeles").disabled = p.modele !== "rotation";
+        el("p-modeles-cases").querySelectorAll("input").forEach((c) => (c.checked = p.mesModeles.includes(c.value)));
+        el("p-rubriques").querySelectorAll("input").forEach((c) => (c.checked = !p.masquees.includes(c.value)));
+        el("p-rythme").querySelectorAll("input").forEach((r) => (r.checked = r.value === p.rythme));
+        el("p-qui").checked = p.qui;
+        el("p-reduit").checked = p.reduit;
+        const fin = base.semaine.fin;
+        const jour = p.quand === "dimanche"
+          ? `${dateDe(fin).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}, dès 18 h`
+          : `${dateDe(ajouterJours(fin, 1)).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}, le matin`;
+        el("p-prochain").textContent = p.actif
+          ? `Le rappel de la semaine ${base.semaine.numero} apparaîtra ${jour}.`
+          : "Rappel désactivé : le journal de la semaine reste disponible dans sa version classique.";
+      }
+
+      const changer = (modif) => { modif(); enregistrer(); afficherParametres(); lancer(); };
+      el("p-actif").addEventListener("change", (e) => changer(() => (p.actif = e.target.checked)));
+      el("p-quand").addEventListener("change", (e) => changer(() => (p.quand = e.target.value)));
+      selModele.addEventListener("change", (e) => changer(() => { p.modele = e.target.value; maquette.essai = null; }));
+      el("p-modeles-cases").addEventListener("change", (e) => {
+        const coches = [...el("p-modeles-cases").querySelectorAll("input:checked")].map((c) => c.value);
+        if (!coches.length) { e.target.checked = true; return; } // il faut garder au moins un modèle
+        changer(() => { p.mesModeles = coches; maquette.essai = null; });
+      });
+      el("p-rubriques").addEventListener("change", () => changer(() => {
+        p.masquees = [...el("p-rubriques").querySelectorAll("input:not(:checked)")].map((c) => c.value);
+      }));
+      el("p-rythme").addEventListener("change", (e) => changer(() => (p.rythme = e.target.value)));
+      el("p-qui").addEventListener("change", (e) => changer(() => (p.qui = e.target.checked)));
+      el("p-reduit").addEventListener("change", (e) => changer(() => (p.reduit = e.target.checked)));
+
+      // ---------------------------------------------------------------------
+      // Outils de la maquette
+      // ---------------------------------------------------------------------
+      const choix = el("choix-modele");
+      for (const id of [null, ...RS.ORDRE]) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.id = id ?? "";
+        b.textContent = id ? `${RS.INFOS[id].emoji} ${RS.INFOS[id].nom}` : "Selon les paramètres";
+        b.addEventListener("click", () => { maquette.essai = id; lancer(); });
+        choix.append(b);
+      }
+      el("semaine-avant").addEventListener("click", () => { maquette.numero -= 1; lancer(); });
+      el("semaine-apres").addEventListener("click", () => { maquette.numero += 1; lancer(); });
+      el("recommencer").addEventListener("click", lancer);
+
+      const modeleSelonParametres = () =>
+        p.modele === "rotation" ? RS.modeleDeLaSemaine(maquette.numero, p.mesModeles) : p.modele;
+
+      // ---------------------------------------------------------------------
+      // Rappel désactivé : le journal de la semaine classique, comme aujourd'hui
+      // ---------------------------------------------------------------------
+      function journalClassique(d) {
+        const b = d.bilan;
+        const prenom = (id) => d.foyer.personnes.find((x) => x.id === id)?.prenom ?? "";
+        const eq = b.argent?.equilibre;
+        const lignes = [
+          b.argent && ["💶 Argent", `${euros(b.argent.depense)} dépensés${eq ? (p.qui ? `, ${esc(prenom(eq.de))} doit ${euros(eq.montant)} à ${esc(prenom(eq.a))}` : `, ${euros(eq.montant)} à rééquilibrer`) : ""}`],
+          b.sport && ["🏃 Sport", `${b.sport.seances} séances sur ${b.sport.objectif}`],
+          b.cuisine && ["🍳 Cuisine", `${b.cuisine.cuisines} repas maison sur ${b.cuisine.planifies}`],
+          b.maison && ["🧹 Maison", `${b.maison.faites} tâches faites, ${b.maison.enRetard} en retard`],
+          b.soins && ["🩺 Soins de Mimi", `${b.soins.repas} repas, ${b.soins.brossages} brossages`],
+          b.cinema && ["🎬 Cinéma", b.cinema.films.map((f) => esc(f.titre)).join(", ")],
+          b.dj && ["🎧 DJ Mimi", `${b.dj.morceaux} morceaux partagés`],
+          b.photos && ["📸 Photos", `${b.photos.nombre} photos`],
+          b.tribunal && ["⚖️ Tribunal", `${b.tribunal.betises.length} bêtises`],
+          ["📅 À venir", `${d.aVenir.agenda.length} rendez-vous, ${d.aVenir.anniversaires.length} anniversaires`],
+        ].filter(Boolean);
+        return `<div class="rs-classique">
+          <p class="rs-classique-note">La story est désactivée dans Paramètres.</p>
+          <h2>📰 Le journal de la semaine</h2>
+          <p class="rs-classique-sous">Semaine ${d.semaine.numero}, ${esc(periode(d.semaine.debut, d.semaine.fin))}</p>
+          <p class="rs-classique-chiffre"><b>${d.note.valeur}/${d.note.sur}</b> ${esc(d.note.verdict)}</p>
+          <ul>${lignes.map(([t, v]) => `<li><b>${t}</b><span>${v}</span></li>`).join("")}</ul>
+          <p class="rs-classique-mot">🐾 « ${esc(d.motDeMimi)} »</p>
+        </div>`;
+      }
+
+      // ---------------------------------------------------------------------
+      // Lancement
+      // ---------------------------------------------------------------------
+      let lecteur = null;
+      let jeton = 0;
+      async function lancer() {
+        const moi = ++jeton;
+        const donnees = RS.semaineSimulee(base, maquette.numero);
+        const infos = RS.INFOS[modeleSelonParametres()];
+        el("semaine").textContent = `Semaine ${maquette.numero} (son modèle : ${infos.emoji} ${infos.nom})`;
+        [...choix.children].forEach((b) => b.setAttribute("aria-pressed", String((b.dataset.id || null) === maquette.essai)));
+
+        if (!p.actif) {
+          lecteur?.detruire();
+          lecteur = window.lecteur = null;
+          scene.replaceChildren();
+          scene.removeAttribute("style");
+          scene.className = "rs-scene";
+          scene.dataset.mode = "classique";
+          delete scene.dataset.modele;
+          scene.innerHTML = journalClassique(donnees);
+          return;
+        }
+
+        const id = maquette.essai || modeleSelonParametres();
+        await RS.chargerModele(id);
+        if (moi !== jeton) return;
+        lecteur?.detruire();
+        scene.removeAttribute("style");
+        lecteur = new RS.Lecteur(scene, {
+          donnees,
+          modeleId: id,
+          quiFaitQuoi: p.qui,
+          reduit: p.reduit || systemeReduit,
+          vitesse: maquette.vitesse * RS.RYTHMES[p.rythme],
+          masquees: p.masquees,
+        });
+        window.lecteur = lecteur; // pratique pour les tests
+      }
+
+      afficherParametres();
+      lancer();
+    })();
+  </script>
+</body>
+</html>
