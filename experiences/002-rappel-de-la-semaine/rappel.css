@@ -61,8 +61,9 @@
 /* Sur un vrai téléphone : la story prend tout l'écran, les réglages sont en dessous. */
 @media (max-width: 560px) {
   .rs-maquette { padding: 0 0 3rem; gap: 1.25rem; }
-  .rs-retour { margin: 0.5rem 1rem; font-size: 0.9rem; }
-  .rs-telephone { width: 100vw; height: 100svh; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+  /* Le lien de retour garde une hauteur fixe, et la story tient dans ce qui reste de l'écran. */
+  .rs-retour { display: block; height: 2.4rem; margin: 0 1rem; line-height: 2.4rem; font-size: 0.9rem; }
+  .rs-telephone { width: 100vw; height: calc(100svh - 2.4rem); padding: 0; border-radius: 0; background: none; box-shadow: none; }
   .rs-scene { border-radius: 0; }
   .rs-reglages { padding: 0 1rem; }
 }
@@ -417,3 +418,40 @@
 @media (prefers-reduced-motion: reduce) {
   .rs-scene *, .rs-scene *::before, .rs-scene *::after { animation: none !important; }
 }
+
+/* ---------- Comparé à la semaine dernière ---------- */
+
+.rs-evolution {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0.8cqw 2.6cqw;
+  border-radius: 99px;
+  font-size: 3.5cqw;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.rs-evo-mieux { background: #dff3e7; color: #1f6b41; }
+.rs-evo-moins-bien { background: #fde3d6; color: #a2410f; }
+.rs-evo-pareil, .rs-evo-neutre { background: rgba(127, 127, 127, 0.14); color: inherit; }
+
+/* ---------- Réactions ---------- */
+
+.rs-reactions { position: absolute; left: 0; bottom: 0; z-index: 2; display: flex; align-items: center; gap: 1.6cqw; }
+.rs-reaction {
+  display: grid;
+  place-items: center;
+  width: 9cqw;
+  height: 9cqw;
+  padding: 0;
+  font-size: 4.8cqw;
+  line-height: 1;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0.6cqw 1.6cqw rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+.rs-reaction[aria-pressed="true"] { background: var(--rs-accent, #fbbf80); box-shadow: 0 0 0 0.7cqw rgba(255, 255, 255, 0.95), 0 0.8cqw 2cqw rgba(0, 0, 0, 0.25); }
+.rs-reaction-autre { padding: 1cqw 2.6cqw; font-size: 3.3cqw; font-weight: 700; white-space: nowrap; border-radius: 99px; background: rgba(255, 255, 255, 0.85); color: #3a2e2a; }
+.rs-gerbe { position: absolute; z-index: 6; font-size: 6cqw; line-height: 1; pointer-events: none; }
+.rs-bilan-reactions { margin: 1cqw 0 0; font-size: 4cqw; font-weight: 700; }
