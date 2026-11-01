@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bidouille en ligne · le labo d'idées</title>
+  <meta name="description" content="Un labo d'idées : de petites expériences rapides, une fiche pour chacune, et les prototypes à ouvrir en un clic.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --papier: #fcfcf9;
+      --fiche: #ffffff;
+      --ligne: #e3e8f6;
+      --ligne-forte: #c5cfee;
+      --marge: #e04a5f;
+      --encre: #1e3796;
+      --texte: #1a1d33;
+      --texte-doux: #4a5070;
+      --fluo: #fff06a;
+
+      --t-en-cours: #5b2da8;
+      --t-prometteur: #17723f;
+      --t-en-pause: #9a5b00;
+      --t-abandonne: #5f6470;
+      --t-promu: #c21f38;
+
+      --marge-x: clamp(1.25rem, 7vw, 6rem);
+      --police: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    [hidden] { display: none !important; }
+
+    html {
+      font-family: var(--police);
+      font-optical-sizing: auto;
+      font-size: 100%;
+      line-height: 1.5;
+      color: var(--texte);
+      background-color: var(--papier);
+      /* Le quadrillage Seyès des cahiers d'école. */
+      background-image:
+        repeating-linear-gradient(to bottom, transparent 0 31px, var(--ligne-forte) 31px 32px),
+        repeating-linear-gradient(to bottom, transparent 0 7px, var(--ligne) 7px 8px),
+        repeating-linear-gradient(to right, transparent 0 31px, var(--ligne) 31px 32px);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* La marge rouge. */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 var(--marge-x);
+      width: 2px;
+      background: var(--marge);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .page {
+      padding: clamp(2.5rem, 7vw, 5rem) clamp(1rem, 4vw, 3rem) 3rem calc(var(--marge-x) + clamp(1rem, 3vw, 2.5rem));
+      max-width: 78rem;
+    }
+
+    a { color: var(--encre); }
+
+    :focus-visible {
+      outline: 3px solid var(--encre);
+      outline-offset: 3px;
+    }
+
+    .visuellement-cache {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* ---------- En-tête ---------- */
+
+    .entete h1 {
+      margin: 0;
+      font-size: clamp(3rem, 10vw, 6.5rem);
+      font-weight: 800;
+      font-stretch: 75%;
+      line-height: 0.92;
+      letter-spacing: -0.025em;
+      color: var(--encre);
+    }
+
+    .chapo {
+      margin: 1.25rem 0 0;
+      max-width: 34em;
+      font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+      line-height: 1.45;
+      color: var(--texte);
+    }
+
+    .compteur {
+      margin: 0.75rem 0 0;
+      color: var(--texte-doux);
+    }
+
+    /* ---------- Filtres et recherche ---------- */
+
+    .outils {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 1rem 2.5rem;
+      margin: clamp(2rem, 5vw, 3rem) 0 2rem;
+    }
+
+    .filtres {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 0.5rem;
+    }
+
+    .filtre {
+      font: inherit;
+      font-size: 1rem;
+      color: var(--texte);
+      background: none;
+      border: 0;
+      padding: 0.35rem 0.5rem;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+
+    .filtre .nombre { color: var(--texte-doux); }
+
+    .filtre:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+
+    /* Le filtre actif est passé au surligneur. */
+    .filtre[aria-pressed="true"] {
+      font-weight: 700;
+      background: linear-gradient(176deg, transparent 0 38%, var(--fluo) 38% 88%, transparent 88%);
+    }
+
+    /* Labo vide : sans la barre de filtres, on garde la respiration sous l'en-tête. */
+    .outils[hidden] + main { margin-top: clamp(2rem, 5vw, 3rem); }
+
+    .recherche input {
+      font: inherit;
+      font-size: 1rem;
+      color: var(--texte);
+      width: min(18rem, 80vw);
+      padding: 0.35rem 0.1rem;
+      background: transparent;
+      border: 0;
+      border-bottom: 2px solid var(--encre);
+      border-radius: 0;
+    }
+
+    .recherche input::placeholder { color: var(--texte-doux); }
+
+    /* ---------- Fiches ---------- */
+
+    .fiches {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+      gap: 1.75rem;
+    }
+
+    .fiche {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: var(--fiche);
+      border: 1px solid var(--ligne-forte);
+      box-shadow: 3px 3px 0 rgba(30, 55, 150, 0.09);
+      padding: 1rem 1.25rem 1.25rem;
+    }
+
+    .fiche-haut {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--marge);
+    }
+
+    .numero {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--texte-doux);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tampon {
+      --couleur: var(--t-en-cours);
+      flex: none;
+      margin: -0.1rem -0.2rem 0 0;
+      padding: 0.15rem 0.55rem;
+      font-size: 0.9375rem;
+      font-weight: 800;
+      font-stretch: 85%;
+      letter-spacing: 0.01em;
+      color: var(--couleur);
+      border: 2px solid var(--couleur);
+      outline: 1px solid var(--couleur);
+      outline-offset: 2px;
+      border-radius: 3px;
+      transform: rotate(-6deg);
+      opacity: 0.9;
+      mix-blend-mode: multiply;
+    }
+
+    .tampon[data-statut="prometteur"] { --couleur: var(--t-prometteur); }
+    .tampon[data-statut="en-pause"]   { --couleur: var(--t-en-pause); }
+    .tampon[data-statut="abandonne"]  { --couleur: var(--t-abandonne); }
+    .tampon[data-statut="promu"]      { --couleur: var(--t-promu); }
+
+    .fiche h2 {
+      margin: 0.85rem 0 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-stretch: 90%;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    .fiche .resume {
+      margin: 0.5rem 0 0;
+      color: var(--texte);
+    }
+
+    .details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 0.75rem;
+      margin: 0.75rem 0 0;
+      font-size: 0.9375rem;
+      color: var(--texte-doux);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1.25rem;
+      margin-top: auto;
+      padding-top: 1.25rem;
+    }
+
+    .bouton {
+      display: inline-block;
+      padding: 0.5rem 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: var(--encre);
+      text-decoration: none;
+      border-radius: 3px;
+    }
+
+    .bouton:hover { background: #172b78; }
+
+    .lien {
+      font-weight: 600;
+      text-underline-offset: 0.2em;
+    }
+
+    /* ---------- Messages (labo vide, aucun résultat, erreur) ---------- */
+
+    .message {
+      max-width: 36rem;
+      padding: 1.5rem 1.5rem 1.75rem;
+      background: var(--fiche);
+      border: 2px dashed var(--ligne-forte);
+    }
+
+    .message h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-stretch: 90%;
+      color: var(--encre);
+    }
+
+    .message p { margin: 0.5rem 0 0; }
+
+    .message code {
+      font-size: 0.9em;
+      background: var(--ligne);
+      padding: 0.05em 0.3em;
+    }
+
+    .message button {
+      font: inherit;
+      font-weight: 700;
+      margin-top: 1rem;
+      padding: 0.45rem 0.9rem;
+      color: var(--encre);
+      background: none;
+      border: 2px solid var(--encre);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    /* ---------- Pied de page ---------- */
+
+    .pied {
+      margin-top: 4rem;
+      font-size: 0.9375rem;
+      color: var(--texte-doux);
+    }
+
+    .pied p { margin: 0.25rem 0; }
+
+    /* ---------- Le seul mouvement : les tampons tombent sur les fiches ---------- */
+
+    @keyframes coup-de-tampon {
+      0%   { transform: rotate(-6deg) scale(1.7); opacity: 0; }
+      60%  { transform: rotate(-6deg) scale(0.94); opacity: 0.95; }
+      100% { transform: rotate(-6deg) scale(1); opacity: 0.9; }
+    }
+
+    .tampon.anime {
+      animation: coup-de-tampon 420ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
+      animation-delay: calc(var(--rang, 0) * 90ms + 150ms);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tampon.anime { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="entete">
+      <h1>Bidouille en ligne</h1>
+      <p class="chapo">Mon labo d'idées. Chaque fiche est un essai rapide&nbsp;: on teste, on note ce qu'on apprend, et on développe ce qui marche.</p>
+      <p class="compteur" id="compteur" hidden></p>
+    </header>
+
+    <nav class="outils" id="outils" aria-label="Trier les expériences" hidden>
+      <div class="filtres" id="filtres" role="group" aria-label="Filtrer par statut"></div>
+      <label class="recherche">
+        <span class="visuellement-cache">Chercher une expérience</span>
+        <input type="search" id="recherche" placeholder="Chercher une expérience" autocomplete="off">
+      </label>
+    </nav>
+
+    <main>
+      <ul class="fiches" id="fiches" aria-live="polite"></ul>
+      <div id="message"></div>
+    </main>
+
+    <footer class="pied">
+      <p>Les fiches et le code de chaque expérience sont sur <a href="https://github.com/Samagie/Bidouille-en-ligne">GitHub</a>.</p>
+      <p>Cette page se met à jour toute seule après chaque fusion dans la branche principale.</p>
+    </footer>
+  </div>
+
+  <template id="modele-fiche">
+    <li class="fiche">
+      <div class="fiche-haut">
+        <span class="numero"></span>
+        <span class="tampon"></span>
+      </div>
+      <h2></h2>
+      <p class="resume"></p>
+      <p class="details"><span class="date"></span><span class="tags"></span></p>
+      <div class="actions">
+        <a class="bouton">Ouvrir la démo</a>
+        <a class="lien">Lire la fiche</a>
+      </div>
+    </li>
+  </template>
+
+  <script>
+    const etat = { statuts: [], experiences: [], filtre: "tous", recherche: "" };
+
+    const el = {
+      compteur: document.getElementById("compteur"),
+      outils: document.getElementById("outils"),
+      filtres: document.getElementById("filtres"),
+      recherche: document.getElementById("recherche"),
+      fiches: document.getElementById("fiches"),
+      message: document.getElementById("message"),
+      modele: document.getElementById("modele-fiche"),
+    };
+
+    const pluriel = (n, un, plusieurs) => `${n} ${n > 1 ? plusieurs : un}`;
+
+    function sansAccents(texte) {
+      return texte.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    }
+
+    function dateLisible(iso) {
+      const date = new Date(`${iso}T12:00:00`);
+      if (Number.isNaN(date.getTime())) return iso;
+      const texte = date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+      return date.getDate() === 1 ? texte.replace(/^1 /, "1er ") : texte;
+    }
+
+    function afficherMessage(titre, lignes, action) {
+      el.message.replaceChildren();
+      if (!titre) return;
+      const boite = document.createElement("div");
+      boite.className = "message";
+      const h2 = document.createElement("h2");
+      h2.textContent = titre;
+      boite.append(h2);
+      for (const ligne of lignes) {
+        const p = document.createElement("p");
+        p.innerHTML = ligne;
+        boite.append(p);
+      }
+      if (action) {
+        const bouton = document.createElement("button");
+        bouton.type = "button";
+        bouton.textContent = action.libelle;
+        bouton.addEventListener("click", action.faire);
+        boite.append(bouton);
+      }
+      el.message.append(boite);
+    }
+
+    function compteur() {
+      const total = etat.experiences.length;
+      const combien = (cle) => etat.experiences.filter((e) => e.statut === cle).length;
+      const bonus = [];
+      const prometteuses = combien("prometteur");
+      const promues = combien("promu");
+      if (prometteuses) bonus.push(pluriel(prometteuses, "prometteuse", "prometteuses"));
+      if (promues) bonus.push(pluriel(promues, "promue", "promues"));
+      let phrase = `${pluriel(total, "expérience", "expériences")} au compteur`;
+      if (bonus.length) phrase += `, dont ${bonus.join(" et ")}`;
+      el.compteur.textContent = `${phrase}.`;
+      el.compteur.hidden = false;
+    }
+
+    function construireFiltres() {
+      const options = [{ cle: "tous", libelle: "Toutes", emoji: "", nombre: etat.experiences.length }];
+      for (const s of etat.statuts) {
+        const nombre = etat.experiences.filter((e) => e.statut === s.cle).length;
+        if (nombre) options.push({ ...s, nombre });
+      }
+      el.filtres.replaceChildren();
+      for (const option of options) {
+        const bouton = document.createElement("button");
+        bouton.type = "button";
+        bouton.className = "filtre";
+        bouton.dataset.cle = option.cle;
+        bouton.setAttribute("aria-pressed", String(option.cle === etat.filtre));
+        bouton.append(`${option.emoji ? option.emoji + " " : ""}${option.libelle} `);
+        const nombre = document.createElement("span");
+        nombre.className = "nombre";
+        nombre.textContent = option.nombre;
+        bouton.append(nombre);
+        bouton.addEventListener("click", () => {
+          etat.filtre = option.cle;
+          for (const b of el.filtres.children) b.setAttribute("aria-pressed", String(b.dataset.cle === etat.filtre));
+          afficherFiches(false);
+        });
+        el.filtres.append(bouton);
+      }
+    }
+
+    function correspond(e) {
+      if (etat.filtre !== "tous" && e.statut !== etat.filtre) return false;
+      if (!etat.recherche) return true;
+      const botte = sansAccents([e.titre, e.resume, e.tags.join(" "), e.numero].join(" "));
+      return sansAccents(etat.recherche).split(/\s+/).every((mot) => botte.includes(mot));
+    }
+
+    function creerFiche(e, rang, animer) {
+      const fiche = el.modele.content.firstElementChild.cloneNode(true);
+      const statut = etat.statuts.find((s) => s.cle === e.statut);
+
+      fiche.querySelector(".numero").textContent = `N° ${e.numero}`;
+      const tampon = fiche.querySelector(".tampon");
+      tampon.textContent = statut ? statut.libelle : e.statut;
+      tampon.dataset.statut = e.statut;
+      if (animer) {
+        tampon.classList.add("anime");
+        tampon.style.setProperty("--rang", Math.min(rang, 8));
+      }
+
+      fiche.querySelector("h2").textContent = e.titre;
+      fiche.querySelector(".resume").textContent = e.resume;
+      fiche.querySelector(".date").textContent = e.date ? `Lancée le ${dateLisible(e.date)}` : "";
+      fiche.querySelector(".tags").textContent = e.tags.map((t) => `#${t}`).join(" ");
+
+      const demo = fiche.querySelector(".bouton");
+      if (e.demo) demo.href = e.demo;
+      else demo.remove();
+      fiche.querySelector(".lien").href = e.fiche;
+      return fiche;
+    }
+
+    function afficherFiches(animer) {
+      const visibles = etat.experiences.filter(correspond);
+      el.fiches.replaceChildren(...visibles.map((e, i) => creerFiche(e, i, animer)));
+
+      if (!etat.experiences.length) {
+        afficherMessage("Le labo est vide", [
+          "Aucune expérience pour l'instant. Décris une idée à Claude dans la conversation&nbsp;: elle arrivera ici avec sa fiche et sa démo.",
+        ]);
+      } else if (!visibles.length) {
+        const quoi = etat.recherche ? `à «&nbsp;${etat.recherche.replace(/[<>&]/g, "")}&nbsp;»` : "à ce filtre";
+        afficherMessage("Aucune expérience trouvée", [`Rien ne correspond ${quoi}.`], {
+          libelle: "Tout afficher",
+          faire: () => {
+            etat.filtre = "tous";
+            etat.recherche = "";
+            el.recherche.value = "";
+            construireFiltres();
+            afficherFiches(false);
+          },
+        });
+      } else {
+        afficherMessage(null);
+      }
+    }
+
+    async function demarrer() {
+      try {
+        const reponse = await fetch("experiences.json", { cache: "no-cache" });
+        if (!reponse.ok) throw new Error(`HTTP ${reponse.status}`);
+        const donnees = await reponse.json();
+        etat.statuts = donnees.statuts || [];
+        etat.experiences = donnees.experiences || [];
+      } catch (erreur) {
+        afficherMessage("La liste n'a pas pu être chargée", [
+          "Le fichier <code>experiences.json</code> est introuvable ou illisible.",
+          "Ouvre cette page depuis le site en ligne, ou lance un petit serveur local avec <code>python3 -m http.server</code>.",
+        ]);
+        return;
+      }
+
+      if (etat.experiences.length) {
+        compteur();
+        construireFiltres();
+        el.outils.hidden = false;
+      }
+      afficherFiches(true);
+
+      el.recherche.addEventListener("input", () => {
+        etat.recherche = el.recherche.value.trim();
+        afficherFiches(false);
+      });
+    }
+
+    demarrer();
+  </script>
+</body>
+</html>

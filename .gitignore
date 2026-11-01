@@ -1,0 +1,22 @@
+# Secrets : ne jamais les envoyer (le dépôt est public)
+.env
+.env.*
+!.env.exemple
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# JavaScript
+node_modules/
+
+# Systèmes
+.DS_Store
+Thumbs.db
+
+# Divers
+*.log
