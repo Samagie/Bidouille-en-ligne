@@ -7,7 +7,6 @@ Quand on en lance une, elle part dans `experiences/` et on la retire d'ici.
 
 Dans l'ordre conseillé. Entre crochets : le projet que l'expérience sert à tester.
 
-- 🎧 **Labo audio** [IRL] : un enregistrement mystérieux à inverser, ralentir et filtrer jusqu'à entendre le message caché. *Est-ce que l'énigme est amusante avant de coder l'outil `audio_lab` dans l'appli ?*
 - 💞 **Match à deux** [Chez Miaouss] : chacun fait défiler des films ou des recettes et garde ou passe ; à la fin, on voit ce qui plaît aux deux. Les choix voyagent dans un lien, sans serveur. *Utile au quotidien ?*
 - 🧩 **Le défi du jour** [Motsaïque] : une grille par jour, la même pour tous, avec un résultat à partager en mosaïque d'emojis. *Un rendez-vous quotidien donne-t-il envie de revenir et de partager ?*
 - 🗣️ **Sorts à la voix** [IRL] : prononcer une formule, le téléphone la reconnaît et déclenche un effet (son, flash, vibration). *La reconnaissance vocale tient-elle dans le bruit d'une soirée ?*

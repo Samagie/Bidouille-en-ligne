@@ -26,5 +26,22 @@
       "emoji": "🚀"
     }
   ],
-  "experiences": []
+  "experiences": [
+    {
+      "numero": "001",
+      "dossier": "001-labo-audio",
+      "titre": "Le dictaphone de Madeleine",
+      "statut": "en-cours",
+      "date": "2026-11-01",
+      "resume": "Quatre cassettes abîmées à remettre en état (à l'envers, trop vite, couvertes par une autre voix) pour trouver le code d'un coffre.",
+      "tags": [
+        "web",
+        "son",
+        "énigme",
+        "IRL"
+      ],
+      "demo": "experiences/001-labo-audio/",
+      "fiche": "https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/001-labo-audio"
+    }
+  ]
 }

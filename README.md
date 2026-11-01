@@ -8,7 +8,9 @@ Mon labo d'idées : de petites expériences rapides pour tester des idées, puis
 
 <!-- Ce tableau est généré par `python3 outils/labo.py index` : ne pas le modifier à la main. -->
 <!-- DEBUT-SOMMAIRE -->
-_Aucune expérience pour l'instant._
+| N° | Expérience | Statut | En une phrase | Démo |
+|---|---|---|---|---|
+| 001 | [Le dictaphone de Madeleine](experiences/001-labo-audio/) | 🧪 En cours | Quatre cassettes abîmées à remettre en état (à l'envers, trop vite, couvertes par une autre voix) pour trouver le code d'un coffre. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/001-labo-audio/) |
 <!-- FIN-SOMMAIRE -->
 
 ## Comment ça marche
