@@ -28,6 +28,22 @@
   ],
   "experiences": [
     {
+      "numero": "002",
+      "dossier": "002-rappel-de-la-semaine",
+      "titre": "Rappel de la semaine (Chez Miaouss)",
+      "statut": "en-cours",
+      "date": "2026-11-01",
+      "resume": "Le journal de la semaine de Mimi en version story animée, avec 5 modèles qui tournent chaque semaine pour ne pas se lasser.",
+      "tags": [
+        "web",
+        "animation",
+        "Chez Miaouss",
+        "Mimi"
+      ],
+      "demo": "experiences/002-rappel-de-la-semaine/",
+      "fiche": "https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/002-rappel-de-la-semaine"
+    },
+    {
       "numero": "001",
       "dossier": "001-labo-audio",
       "titre": "Le dictaphone de Madeleine",

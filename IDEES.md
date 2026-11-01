@@ -13,6 +13,11 @@ Dans l'ordre conseillé. Entre crochets : le projet que l'expérience sert à te
 - 🧵 **Tableau d'indices** [IRL, Manoir Blackwood] : épingler des documents sur un tableau de liège et tirer des fils rouges entre eux. *Relier les indices aide-t-il vraiment à déduire ?*
 - 🎤 **Qui a dit ? entre amis** [Qui a dit ?] : la même mécanique avec les phrases cultes de la bande, saisies par l'organisateur, à deviner sur un écran partagé. *Ça marche en soirée ? Si oui, piste pour un scénario IRL.*
 - 🕹️ **Bac à sable Mimi** [borne d'arcade] : un mini-jeu de Mimi dans le navigateur, jouable à la manette. *Est-ce amusant avant de le refaire en Mega Drive ?*
+- 📹 **Mimi-cam** [Chez Miaouss], *à lancer quand la caméra sera arrivée* :
+  - **la caméra** : TP-Link **Tapo C210**, environ 20 à 27 € sur Amazon.fr. Elle est orientable à 360° à distance, pilotée depuis l'appli Tapo, **sans PC allumé** ;
+  - **dans Chez Miaouss** : une tuile qui ouvre l'appli Tapo en un geste ;
+  - **plus tard, en option** : l'image directement dans l'appli, grâce à un petit relais go2rtc sur un Raspberry Pi Zero 2 W (environ 20 €).
+  - *Pratique au quotidien ?*
 
 Dépôt public : ces expériences n'utilisent que des données inventées, sans nom ni information personnelle.
 

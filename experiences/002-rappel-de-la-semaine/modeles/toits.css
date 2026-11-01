@@ -1,0 +1,140 @@
+/* Modèle « Les toits de Paris » : la nuit, Mimi saute de toit en toit. */
+
+[data-modele="toits"] {
+  --to-lumiere: #ffcf6b;
+  --to-texte: #f3ead8;
+  --rs-progression: var(--to-lumiere);
+  --rs-progression-fond: rgba(255, 255, 255, 0.18);
+  color: var(--to-texte);
+  background: var(--to-ciel, linear-gradient(180deg, #0a0f2c, #1a1f4d 55%, #3b2f63));
+}
+
+.to-etoiles, .to-etoiles2 {
+  position: absolute;
+  inset: 0 0 40%;
+  background-image:
+    radial-gradient(circle at 20% 30%, #fff 0.25cqw, transparent 0.4cqw),
+    radial-gradient(circle at 70% 12%, #fff 0.2cqw, transparent 0.35cqw),
+    radial-gradient(circle at 45% 70%, #fff 0.3cqw, transparent 0.45cqw),
+    radial-gradient(circle at 88% 55%, #fff 0.2cqw, transparent 0.35cqw);
+  background-size: 37cqw 29cqw;
+  animation: to-scintille 3.2s ease-in-out infinite alternate;
+}
+.to-etoiles2 { background-size: 53cqw 41cqw; background-position: 11cqw 7cqw; animation-duration: 4.6s; animation-delay: -2s; }
+@keyframes to-scintille { from { opacity: 0.35; } to { opacity: 1; } }
+
+.to-lune {
+  position: absolute;
+  top: 4.5cqh;
+  right: 7cqw;
+  width: 12cqw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 62% 38%, rgba(160, 140, 90, 0.35) 0 1.4cqw, transparent 1.6cqw),
+    radial-gradient(circle at 38% 64%, rgba(160, 140, 90, 0.28) 0 2cqw, transparent 2.2cqw),
+    radial-gradient(circle at 35% 35%, #fffbe6, #f3e4a8 60%, #dcc480);
+  box-shadow: 0 0 7cqw 2cqw rgba(255, 236, 170, 0.28);
+}
+
+.to-plan { position: absolute; left: 0; bottom: 0; width: 900cqw; background-repeat: repeat-x; background-position: left bottom; background-size: auto 100%; will-change: transform; }
+.to-loin { height: 47cqh; opacity: 0.85; }
+.to-milieu { height: 33cqh; }
+.to-pres { height: 13cqh; }
+
+.to-filante {
+  position: absolute;
+  top: 8cqh;
+  left: 20cqw;
+  width: 22cqw;
+  height: 0.5cqw;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, #fff);
+  transform: rotate(-24deg);
+}
+
+/* Contenu en verre fumé */
+[data-modele="toits"] .rs-ecran-contenu {
+  top: 7cqh;
+  bottom: 38cqh;
+  height: fit-content;
+  margin: auto 0;
+  max-height: 55cqh;
+  padding: 5cqw 5.5cqw;
+  border-radius: 5cqw;
+  background: rgba(10, 13, 38, 0.7);
+  -webkit-backdrop-filter: blur(1.4cqw);
+  backdrop-filter: blur(1.4cqw);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+[data-modele="toits"] .rs-ecran[data-narrateur="petit"] .rs-ecran-contenu { bottom: 27cqh; max-height: 66cqh; }
+
+[data-modele="toits"] .rs-narrateur { bottom: 9cqh; height: 26cqh; }
+[data-modele="toits"] .rs-ecran[data-narrateur="petit"] .rs-narrateur { height: 16cqh; }
+[data-modele="toits"] .rs-mimi { width: 28cqw; }
+[data-modele="toits"] .rs-mimi svg { filter: drop-shadow(0 0 2.4cqw rgba(255, 236, 170, 0.28)); }
+
+[data-modele="toits"] .rs-picto { font-size: 6cqw; }
+[data-modele="toits"] .rs-titre,
+[data-modele="toits"] .rs-grand-titre {
+  font-family: Georgia, "Noto Serif", "DejaVu Serif", serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--to-lumiere);
+}
+[data-modele="toits"] .rs-titre { font-size: 7.6cqw; }
+[data-modele="toits"] .rs-grand-titre { font-size: 11.5cqw; }
+[data-modele="toits"] .rs-sur-titre { opacity: 0.8; font-weight: 400; letter-spacing: 0.08em; }
+
+[data-modele="toits"] .rs-chiffre { font-family: Georgia, "Noto Serif", "DejaVu Serif", serif; font-weight: 400; color: #fff7e2; text-shadow: 0 0 5cqw rgba(255, 207, 107, 0.45); }
+[data-modele="toits"] .rs-unite { color: var(--to-lumiere); font-style: italic; }
+[data-modele="toits"] .rs-legende { opacity: 0.9; }
+
+[data-modele="toits"] .rs-jauge { background: rgba(255, 255, 255, 0.14); }
+[data-modele="toits"] .rs-jauge > span,
+[data-modele="toits"] .rs-barre { background: linear-gradient(90deg, #ffcf6b, #ff9f6b); }
+
+[data-modele="toits"] .rs-duo li,
+[data-modele="toits"] .rs-semaine li,
+[data-modele="toits"] .rs-meteo li,
+[data-modele="toits"] .rs-films li,
+[data-modele="toits"] .rs-betises li,
+[data-modele="toits"] .rs-anniv li { background: rgba(255, 255, 255, 0.07); border-radius: 3cqw; }
+[data-modele="toits"] .rs-films li,
+[data-modele="toits"] .rs-betises li,
+[data-modele="toits"] .rs-anniv li { display: grid; gap: 0.4cqw; padding: 1.8cqw 3cqw; }
+[data-modele="toits"] .rs-duo b,
+[data-modele="toits"] .rs-meteo b,
+[data-modele="toits"] .rs-etoiles,
+[data-modele="toits"] .rs-semaine .rs-jour { color: var(--to-lumiere); }
+
+[data-modele="toits"] .rs-semaine li { grid-template-columns: 21cqw 1fr; }
+[data-modele="toits"] .rs-semaine .rs-jour { white-space: nowrap; }
+.to-etoile { display: inline-block; margin-right: 1.2cqw; color: var(--to-lumiere); text-shadow: 0 0 2cqw rgba(255, 207, 107, 0.9); }
+
+[data-modele="toits"] .rs-photos li { box-shadow: 0 0 3cqw rgba(255, 207, 107, 0.35); }
+[data-modele="toits"] .rs-photo-legende { color: #3a2e2a; }
+
+[data-modele="toits"] .rs-tampon { color: var(--to-lumiere); border-color: var(--to-lumiere); text-shadow: 0 0 3cqw rgba(255, 207, 107, 0.6); }
+
+[data-modele="toits"] .rs-citation { font-family: Georgia, "Noto Serif", serif; font-style: italic; font-weight: 400; }
+[data-modele="toits"] .rs-boutons button { background: var(--to-lumiere); color: #1a1f4d; }
+[data-modele="toits"] .rs-boutons button + button { background: rgba(255, 255, 255, 0.12); color: var(--to-texte); }
+
+[data-modele="toits"] .rs-bulle {
+  background: rgba(10, 13, 38, 0.72);
+  color: var(--to-texte);
+  box-shadow: inset 0 0 0 1px rgba(255, 207, 107, 0.4);
+  -webkit-backdrop-filter: blur(1.2cqw);
+  backdrop-filter: blur(1.2cqw);
+}
+[data-modele="toits"] .rs-bulle::after {
+  content: "";
+  position: absolute;
+  right: -2.2cqw;
+  bottom: 3.6cqw;
+  border: 2cqw solid transparent;
+  border-left: 2.8cqw solid rgba(10, 13, 38, 0.72);
+  border-right: 0;
+}

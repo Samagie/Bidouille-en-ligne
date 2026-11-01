@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Rappel de la semaine · maquette Chez Miaouss · Bidouille en ligne</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <link rel="stylesheet" href="rappel.css">
+</head>
+<body class="rs-page">
+  <a class="rs-retour" href="../../">← Retour au labo</a>
+
+  <main class="rs-maquette">
+    <div class="rs-telephone">
+      <div class="rs-scene" id="scene" tabindex="0" aria-roledescription="story" aria-label="Le journal de la semaine de Mimi"></div>
+    </div>
+
+    <aside class="rs-reglages" aria-label="Réglages de la maquette">
+      <h1>Rappel de la semaine</h1>
+      <p>La version animée du journal de la semaine de Mimi, pour Chez Miaouss. Les données sont inventées.</p>
+
+      <div class="rs-groupe">
+        <span class="rs-groupe-titre" id="titre-modele">Modèle</span>
+        <div class="rs-choix" id="choix-modele" role="group" aria-labelledby="titre-modele"></div>
+      </div>
+
+      <div class="rs-groupe">
+        <span class="rs-groupe-titre">Simuler une autre semaine</span>
+        <div class="rs-semaine-choix">
+          <button type="button" id="semaine-avant" aria-label="Semaine précédente">◀</button>
+          <output id="semaine" aria-live="polite"></output>
+          <button type="button" id="semaine-apres" aria-label="Semaine suivante">▶</button>
+        </div>
+      </div>
+
+      <div class="rs-groupe">
+        <label class="rs-interrupteur"><input type="checkbox" id="qui" checked> Afficher qui a fait quoi</label>
+        <label class="rs-interrupteur"><input type="checkbox" id="reduit"> Moins d'animations</label>
+      </div>
+
+      <button type="button" class="rs-recommencer" id="recommencer">Recommencer</button>
+      <p class="rs-aide">Touche à droite pour avancer, à gauche pour revenir. Appui long : pause. Au clavier : flèches et barre d'espace.</p>
+    </aside>
+  </main>
+
+  <script src="mimi.js"></script>
+  <script src="rappel.js"></script>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const scene = document.getElementById("scene");
+      const base = await (await fetch("semaine-exemple.json")).json();
+
+      const etat = {
+        numero: Number(params.get("semaine")) || base.semaine.numero,
+        choix: params.get("modele") || "auto",            // "auto" = le modèle de la semaine
+        qui: params.get("qui") !== "0",
+        reduit: params.get("reduit") === "1" || matchMedia("(prefers-reduced-motion: reduce)").matches,
+        vitesse: Number(params.get("vitesse")) || 1,
+      };
+      document.getElementById("qui").checked = etat.qui;
+      document.getElementById("reduit").checked = etat.reduit;
+
+      const modeleCourant = () => (etat.choix === "auto" ? RS.modeleDeLaSemaine(etat.numero) : etat.choix);
+
+      // Boutons de choix du modèle
+      const choix = document.getElementById("choix-modele");
+      for (const id of ["auto", ...RS.ORDRE]) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.id = id;
+        b.textContent = id === "auto" ? "Selon la semaine" : `${RS.INFOS[id].emoji} ${RS.INFOS[id].nom}`;
+        b.addEventListener("click", () => { etat.choix = id; lancer(); });
+        choix.append(b);
+      }
+
+      let lecteur = null;
+      let jeton = 0;
+      async function lancer() {
+        const moi = ++jeton;
+        const id = modeleCourant();
+        [...choix.children].forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === etat.choix)));
+        const infos = RS.INFOS[RS.modeleDeLaSemaine(etat.numero)];
+        document.getElementById("semaine").textContent = `Semaine ${etat.numero} (son modèle : ${infos.emoji} ${infos.nom})`;
+        await RS.chargerModele(id);
+        if (moi !== jeton) return;
+        lecteur?.detruire();
+        lecteur = new RS.Lecteur(scene, {
+          donnees: RS.semaineSimulee(base, etat.numero),
+          modeleId: id,
+          quiFaitQuoi: etat.qui,
+          reduit: etat.reduit,
+          vitesse: etat.vitesse,
+        });
+        window.lecteur = lecteur; // pratique pour les tests
+      }
+
+      document.getElementById("semaine-avant").addEventListener("click", () => { etat.numero -= 1; lancer(); });
+      document.getElementById("semaine-apres").addEventListener("click", () => { etat.numero += 1; lancer(); });
+      document.getElementById("qui").addEventListener("change", (e) => { etat.qui = e.target.checked; lancer(); });
+      document.getElementById("reduit").addEventListener("change", (e) => { etat.reduit = e.target.checked; lancer(); });
+      document.getElementById("recommencer").addEventListener("click", lancer);
+
+      lancer();
+    })();
+  </script>
+</body>
+</html>
