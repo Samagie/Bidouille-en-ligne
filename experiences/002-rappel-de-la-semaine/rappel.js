@@ -20,7 +20,17 @@
   };
   RS.ORDRE = ORDRE;
   RS.INFOS = INFOS;
-  RS.modeleDeLaSemaine = (numero) => ORDRE[((numero % ORDRE.length) + ORDRE.length) % ORDRE.length];
+  // Le modèle tourne chaque semaine, parmi « mes modèles » (Paramètres) s'ils sont précisés.
+  RS.modeleDeLaSemaine = (numero, mesModeles = ORDRE) => {
+    const liste = ORDRE.filter((m) => mesModeles.includes(m));
+    const l = liste.length ? liste : ORDRE;
+    return l[((numero % l.length) + l.length) % l.length];
+  };
+  RS.RUBRIQUES = [
+    ["argent", "💶 Argent"], ["sport", "🏃 Sport"], ["cuisine", "🍳 Cuisine"], ["maison", "🧹 Maison"],
+    ["soins", "🩺 Soins de Mimi"], ["cinema", "🎬 Cinéma"], ["dj", "🎧 DJ Mimi"], ["photos", "📸 Photos"], ["tribunal", "⚖️ Tribunal des bêtises"],
+  ];
+  RS.RYTHMES = { calme: 1.3, normal: 1, rapide: 0.7 };
 
   // ---------------------------------------------------------------------------
   // Hasard reproductible : la même semaine donne toujours le même rappel.
@@ -139,7 +149,7 @@
     return `<span class="rs-compte" data-rs-compte="${valeur}" data-format="${format}">${format === "euros" ? euros(valeur) : fmtEntier.format(valeur)}</span>`;
   }
 
-  function fabriquerEcrans(donnees, { quiFaitQuoi, h }) {
+  function fabriquerEcrans(donnees, { quiFaitQuoi, h, masquees = [] }) {
     const prenom = (id) => donnees.foyer.personnes.find((p) => p.id === id)?.prenom ?? "";
     const duo = (parPersonne, unite) => {
       if (!quiFaitQuoi || !parPersonne) return "";
@@ -295,7 +305,7 @@
       });
     }
 
-    ecrans.push(...melanger(h, rubriques));
+    ecrans.push(...melanger(h, rubriques).filter((r) => !masquees.includes(r.type)));
 
     ecrans.push({
       type: "transition", picto: "", titre: "", role: "hote", humeur: "content", duree: 3600,
@@ -351,7 +361,7 @@
   // Le lecteur
   // ---------------------------------------------------------------------------
   class Lecteur {
-    constructor(scene, { donnees, modeleId, quiFaitQuoi, reduit, vitesse = 1 }) {
+    constructor(scene, { donnees, modeleId, quiFaitQuoi, reduit, vitesse = 1, masquees = [] }) {
       this.scene = scene;
       this.modeleId = modeleId;
       this.modele = RS.modeles[modeleId] || {};
@@ -365,10 +375,11 @@
 
       const numero = donnees.semaine.numero;
       this.h = hasard(graine("variante", numero, modeleId));
-      this.ecrans = fabriquerEcrans(donnees, { quiFaitQuoi, h: hasard(graine("contenu", numero)) });
+      this.ecrans = fabriquerEcrans(donnees, { quiFaitQuoi, masquees, h: hasard(graine("contenu", numero)) });
       this.accent = this.modele.accents ? choisir(this.h, this.modele.accents) : "#f4a894";
 
       scene.replaceChildren();
+      scene.dataset.mode = "story";
       scene.dataset.modele = modeleId;
       scene.style.setProperty("--rs-accent", this.accent);
       scene.classList.toggle("rs-reduit", reduit);
@@ -629,5 +640,5 @@
 
   RS.Lecteur = Lecteur;
   RS.semaineSimulee = semaineSimulee;
-  RS.outilsTexte = { esc, euros, jourCourt, ajouterJours };
+  RS.outilsTexte = { esc, euros, jourCourt, ajouterJours, periode, dateDe };
 })();
