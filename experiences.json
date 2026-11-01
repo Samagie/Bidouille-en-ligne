@@ -1,0 +1,30 @@
+{
+  "statuts": [
+    {
+      "cle": "en-cours",
+      "libelle": "En cours",
+      "emoji": "🧪"
+    },
+    {
+      "cle": "prometteur",
+      "libelle": "Prometteur",
+      "emoji": "⭐"
+    },
+    {
+      "cle": "en-pause",
+      "libelle": "En pause",
+      "emoji": "⏸️"
+    },
+    {
+      "cle": "abandonne",
+      "libelle": "Abandonné",
+      "emoji": "❌"
+    },
+    {
+      "cle": "promu",
+      "libelle": "Promu",
+      "emoji": "🚀"
+    }
+  ],
+  "experiences": []
+}

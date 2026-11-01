@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{TITRE}} · Bidouille en ligne</title>
+  <style>
+    /* Point de départ volontairement neutre : chaque expérience trouve son propre style. */
+    :root {
+      color-scheme: light dark;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .retour {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+    }
+    main {
+      flex: 1;
+      width: min(100% - 2rem, 42rem);
+      margin: 2rem auto;
+    }
+  </style>
+</head>
+<body>
+  <a class="retour" href="../../">← Retour au labo</a>
+
+  <main>
+    <h1>{{TITRE}}</h1>
+    <p>Expérience n° {{NUMERO}}. Le prototype se construit ici.</p>
+  </main>
+
+  <script>
+    // Le code de l'expérience va ici.
+  </script>
+</body>
+</html>
