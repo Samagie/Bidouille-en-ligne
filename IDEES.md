@@ -18,6 +18,7 @@ Dans l'ordre conseillé. Entre crochets : le projet que l'expérience sert à te
   - **dans Chez Miaouss** : une tuile qui ouvre l'appli Tapo en un geste ;
   - **plus tard, en option** : l'image directement dans l'appli, grâce à un petit relais go2rtc sur un Raspberry Pi Zero 2 W (environ 20 €).
   - *Pratique au quotidien ?*
+- 📶 **Qui est à la maison ?** [Chez Miaouss] : savoir qui est là grâce aux téléphones connectés au Wi-Fi (liste des appareils de la box, ou petit programme sur un Raspberry Pi). Plus tard, en option : sentir un mouvement dans une pièce avec un module ESP32 (environ 5 à 10 €) qui « écoute » les ondes Wi-Fi. Tourne en local, aucune donnée de présence dans le dépôt. *Fiable malgré les téléphones en veille… et Mimi qui bouge ?*
 
 Dépôt public : ces expériences n'utilisent que des données inventées, sans nom ni information personnelle.
 
