@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mind the Gap">
+  <meta name="theme-color" content="#eef1f6">
+  <title>Mind the Gap</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='42' y='0' width='16' height='100' fill='%23d42a20'/><circle cx='50' cy='50' r='24' fill='white' stroke='%2313203a' stroke-width='10'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <style>
+    /* Idée : la séance du jour est une ligne de métro. Chaque bloc est une station de couleur,
+       et les exercices à trous reprennent le « gap » du nom. */
+    :root {
+      --fond: #eef1f6;
+      --surface: #ffffff;
+      --encre: #13203a;
+      --doux: #566179;
+      --trait: #d3d9e3;
+      --ombre: rgba(19, 32, 58, 0.45);
+      --l-vocab: #d42a20;
+      --l-gram: #0b5fc4;
+      --l-conj: #0b8743;
+      --l-bases: #e09b00;
+      --l-diction: #8a3aa0;
+      --bon: #0b7a3d;
+      --faux: #c62828;
+      --sur-accent: #ffffff;
+      --sur-bases: #231a00;
+      --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+      --corps: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --fond: #0e1422;
+        --surface: #172033;
+        --encre: #e7ebf3;
+        --doux: #9da8bd;
+        --trait: #2b3753;
+        --ombre: rgba(0, 0, 0, 0.6);
+        --l-vocab: #ff6a5e;
+        --l-gram: #5aa0ff;
+        --l-conj: #35c47a;
+        --l-bases: #ffc23d;
+        --l-diction: #c788e3;
+        --bon: #44d08a;
+        --faux: #ff7b7b;
+        --sur-accent: #0e1422;
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --fond: #0e1422;
+      --surface: #172033;
+      --encre: #e7ebf3;
+      --doux: #9da8bd;
+      --trait: #2b3753;
+      --ombre: rgba(0, 0, 0, 0.6);
+      --l-vocab: #ff6a5e;
+      --l-gram: #5aa0ff;
+      --l-conj: #35c47a;
+      --l-bases: #ffc23d;
+      --l-diction: #c788e3;
+      --bon: #44d08a;
+      --faux: #ff7b7b;
+      --sur-accent: #0e1422;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    html {
+      background: var(--fond);
+      color: var(--encre);
+      font-family: var(--corps);
+      font-size: 17px;
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+    }
+    body { margin: 0; background: var(--fond); }
+    a { color: var(--l-gram); }
+    :focus-visible { outline: 3px solid var(--l-gram); outline-offset: 3px; border-radius: 6px; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .retour { display: inline-block; margin: 0.75rem 1rem 0; font-size: 0.9rem; }
+    #app { width: min(100% - 2rem, 70rem); margin: 0 auto; padding: 0.5rem 0 4rem; }
+
+    h1, h2 { font-family: var(--display); text-wrap: balance; line-height: 1.08; letter-spacing: -0.02em; }
+
+    /* ---------- Boutons ---------- */
+    .bouton {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      font: inherit; font-weight: 700;
+      min-height: 52px; padding: 0.7rem 1.2rem;
+      border-radius: 14px; border: 2px solid var(--trait);
+      background: var(--surface); color: var(--encre);
+      cursor: pointer; touch-action: manipulation;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .bouton:hover { border-color: var(--encre); }
+    .bouton:active { transform: scale(0.98); }
+    .bouton.principal { background: var(--accent, var(--encre)); color: var(--sur, var(--fond)); border-color: transparent; }
+    .bouton.discret { min-height: 44px; padding: 0.4rem 0.9rem; font-size: 0.9rem; }
+    .bouton svg { flex: none; }
+    .rond {
+      display: inline-grid; place-items: center; flex: none;
+      width: 42px; height: 42px; padding: 0;
+      border-radius: 50%; border: 2px solid var(--trait);
+      background: var(--surface); color: var(--encre); cursor: pointer;
+    }
+    .rond:hover { border-color: var(--accent, var(--encre)); }
+
+    /* ---------- Accueil ---------- */
+    .tete {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+      padding: 0.75rem 0 1.25rem; border-bottom: 3px solid var(--encre);
+    }
+    .logo { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 7vw, 2.8rem); line-height: 1; letter-spacing: -0.03em; }
+    .trou-logo { display: inline-block; padding: 0 0.12em; color: var(--l-vocab); border-bottom: 0.13em solid var(--l-vocab); }
+    .devise { margin: 0.4rem 0 0; color: var(--doux); }
+    .puce-serie { margin: 0; padding: 0.35rem 0.9rem; border: 2px solid var(--encre); border-radius: 999px; font-weight: 700; font-size: 0.9rem; }
+    .puce-serie b { font-family: var(--display); font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+
+    .accueil { display: grid; gap: 2.75rem; padding-top: 1.75rem; }
+    @media (min-width: 860px) { .accueil { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 4rem; } }
+
+    .surtitre { margin: 0; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--doux); }
+    h1 { font-size: clamp(2.3rem, 8vw, 3.5rem); font-weight: 800; margin: 0.35rem 0 0.5rem; }
+    .chapo { margin: 0 0 1.25rem; color: var(--doux); max-width: 34rem; }
+
+    .ligne { list-style: none; margin: 1.75rem 0 0; padding: 0; }
+    .station { display: grid; grid-template-columns: 52px minmax(0, 1fr); }
+    .rail { position: relative; }
+    .rail::before {
+      content: ""; position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 12px; margin-left: -6px; background: var(--c); opacity: 0.3;
+    }
+    .station.faite .rail::before { opacity: 1; }
+    .station:first-child .rail::before { top: 33px; }
+    .station:last-child .rail::before { bottom: auto; height: 33px; }
+    .pastille {
+      position: absolute; z-index: 1; left: 50%; top: 33px;
+      width: 30px; height: 30px; margin: -15px 0 0 -15px;
+      display: grid; place-items: center;
+      border-radius: 50%; border: 6px solid var(--c); background: var(--surface);
+    }
+    .station.faite .pastille { background: var(--c); }
+    .station.faite .pastille::after {
+      content: ""; width: 9px; height: 5px; margin-top: -2px;
+      border-left: 3px solid var(--surface); border-bottom: 3px solid var(--surface);
+      transform: rotate(-45deg);
+    }
+    .station.prochaine .pastille {
+      width: 38px; height: 38px; margin: -19px 0 0 -19px; border-width: 8px;
+      animation: pouls 2.2s ease-out infinite;
+    }
+    @keyframes pouls {
+      0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 55%, transparent); }
+      70% { box-shadow: 0 0 0 16px transparent; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+    .st {
+      all: unset; box-sizing: border-box; cursor: pointer;
+      display: grid; gap: 0.1rem; width: 100%;
+      padding: 0.85rem 0.9rem 1.35rem 0.6rem; border-radius: 12px;
+    }
+    .st:hover { background: color-mix(in srgb, var(--c) 9%, transparent); }
+    .st:focus-visible { outline: 3px solid var(--c); outline-offset: 0; }
+    .st-haut { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+    .st-nom { font-family: var(--display); font-weight: 800; font-size: 1.4rem; line-height: 1.4; }
+    .st-min { font-size: 0.85rem; color: var(--doux); font-variant-numeric: tabular-nums; }
+    .st-sujet { font-size: 1rem; }
+    .st-etat { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--doux); }
+    .station.prochaine .st-etat { color: var(--encre); }
+
+    .col-cote { display: grid; gap: 2.25rem; align-content: start; }
+    .col-cote h2 { font-size: 1.3rem; margin: 0 0 0.75rem; padding-bottom: 0.45rem; border-bottom: 3px solid var(--encre); }
+    .jours { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+    .jour {
+      all: unset; box-sizing: border-box; cursor: pointer;
+      display: grid; grid-template-columns: 2.6rem minmax(0, 1fr) auto; align-items: center; gap: 0.75rem;
+      width: 100%; padding: 0.55rem 0.75rem; border-radius: 12px; border: 2px solid transparent;
+    }
+    .jour:hover { background: var(--surface); }
+    .jour:focus-visible { outline: 3px solid var(--l-gram); }
+    .jour.choisi { background: var(--surface); border-color: var(--encre); }
+    .j-num { font-family: var(--display); font-weight: 800; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+    .j-etat { font-size: 0.8rem; font-weight: 700; color: var(--doux); font-variant-numeric: tabular-nums; }
+    .j-etat.fini { color: var(--bon); }
+    .note { margin: 0.75rem 0 0; font-size: 0.88rem; color: var(--doux); }
+
+    .chiffres { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem 1.5rem; margin: 0; }
+    .chiffres > div { border-left: 4px solid var(--trait); padding-left: 0.75rem; }
+    .chiffres dt { font-size: 0.85rem; color: var(--doux); }
+    .chiffres dd { margin: 0; font-family: var(--display); font-weight: 800; font-size: 1.9rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .aide p { margin: 0 0 0.6rem; color: var(--doux); max-width: 38rem; }
+    .aide b { color: var(--encre); }
+
+    /* ---------- Séance ---------- */
+    .barre {
+      position: sticky; top: 0; z-index: 5;
+      display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 0.9rem;
+      padding: 0.75rem 0; background: var(--fond);
+    }
+    .mini-ligne { display: flex; gap: 4px; }
+    .seg { flex: 1; height: 10px; border-radius: 5px; overflow: hidden; background: color-mix(in srgb, var(--c) 22%, var(--fond)); }
+    .rempli { display: block; width: 0; height: 100%; background: var(--c); transition: width 0.4s ease; }
+    .chrono { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .chrono .sur { color: var(--doux); font-weight: 400; }
+
+    .scene { width: min(100%, 44rem); margin: 0.75rem auto 0; }
+    .etiquette { margin: 0 0 0.75rem; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--doux); }
+    .etiquette b { color: var(--accent); }
+    .carte {
+      background: var(--surface); border-radius: 20px; border-top: 8px solid var(--accent);
+      padding: clamp(1.25rem, 5vw, 2.5rem);
+      box-shadow: 0 22px 44px -32px var(--ombre);
+    }
+    .carte h2 { font-size: clamp(1.6rem, 5.5vw, 2.2rem); margin: 0 0 1rem; }
+    .consigne { margin: 0 0 0.5rem; font-weight: 700; color: var(--doux); }
+    .texte { max-width: 38rem; }
+    .texte p { margin: 0 0 0.75rem; }
+    .texte ul { margin: 0 0 0.75rem; padding-left: 1.2rem; }
+    .texte li { margin: 0.35rem 0; }
+    .piege {
+      padding: 0.7rem 0.9rem; border-left: 5px solid var(--l-bases); border-radius: 0 10px 10px 0;
+      background: color-mix(in srgb, var(--l-bases) 15%, var(--surface));
+    }
+
+    .exemples { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.7rem; }
+    .exemples li { display: flex; align-items: center; gap: 0.8rem; }
+    .ex-en { display: block; font-weight: 700; font-size: 1.1rem; }
+    .ex-fr { display: block; color: var(--doux); font-size: 0.95rem; }
+
+    .mot-zone { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin: 0.25rem 0 1.25rem; }
+    .mot { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(2.5rem, 11vw, 4.2rem); line-height: 1; letter-spacing: -0.03em; }
+    .verso { padding-top: 1rem; border-top: 2px dashed var(--trait); }
+    .traduction { margin: 0 0 0.75rem; font-size: 1.5rem; font-weight: 700; }
+    .exemple { display: flex; align-items: center; gap: 0.75rem; margin: 0; font-size: 1.15rem; }
+    .exemple-fr { margin: 0.25rem 0 0; color: var(--doux); }
+
+    .enonce { margin: 0.25rem 0 1.5rem; font-size: clamp(1.35rem, 5vw, 1.85rem); line-height: 1.55; }
+    .trou {
+      display: inline-block; min-width: 4.2em; padding: 0 0.3em;
+      border-bottom: 4px solid var(--accent); text-align: center; font-weight: 700; line-height: 1.25;
+    }
+    .trou.bon { color: var(--bon); border-color: var(--bon); }
+    .options { display: grid; gap: 0.6rem; }
+    @media (min-width: 600px) { .options { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); } }
+    .option {
+      font: inherit; font-size: 1.1rem; font-weight: 700; text-align: left;
+      min-height: 58px; padding: 0.8rem 1rem; border-radius: 14px;
+      border: 2px solid var(--trait); background: var(--surface); color: var(--encre); cursor: pointer;
+      touch-action: manipulation;
+    }
+    .option:hover:not(:disabled) { border-color: var(--accent); }
+    .option:disabled { cursor: default; }
+    .option:disabled:not(.bon):not(.faux) { opacity: 0.5; }
+    .option.bon { border-color: var(--bon); background: color-mix(in srgb, var(--bon) 14%, var(--surface)); }
+    .option.faux { border-color: var(--faux); background: color-mix(in srgb, var(--faux) 12%, var(--surface)); text-decoration: line-through; }
+
+    .retour-rep { display: grid; gap: 0.6rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 2px dashed var(--trait); }
+    .verdict { margin: 0; font-family: var(--display); font-weight: 800; font-size: 1.45rem; }
+    .verdict.bon { color: var(--bon); }
+    .verdict.faux { color: var(--faux); }
+    .expl { margin: 0; }
+    .ecoute-ligne { display: flex; align-items: center; gap: 0.75rem; margin: 0; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin-top: 1.5rem; }
+    .actions .bouton { flex: 1 1 12rem; }
+
+    .table-defile { overflow-x: auto; margin: 0 -0.25rem; }
+    .verbes { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+    .verbes th { padding: 0.4rem 0.5rem; text-align: left; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--doux); border-bottom: 3px solid var(--encre); }
+    .verbes td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--trait); vertical-align: middle; }
+    .verbes .base { font-family: var(--display); font-weight: 800; font-size: 1.25rem; }
+    .verbes .sens { display: block; font-family: var(--corps); font-weight: 400; font-size: 0.85rem; color: var(--doux); }
+    .astuce { margin: 1rem 0 0; color: var(--doux); }
+
+    .saisie { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .saisie input {
+      flex: 1 1 12rem; min-height: 56px; padding: 0.6rem 0.9rem;
+      font: inherit; font-size: 1.3rem; color: var(--encre);
+      background: var(--fond); border: 2px solid var(--trait); border-radius: 14px;
+    }
+    .saisie input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent); }
+    .lien { all: unset; cursor: pointer; display: inline-block; margin-top: 0.9rem; font-size: 0.95rem; color: var(--doux); text-decoration: underline; }
+    .lien:focus-visible { outline: 3px solid var(--accent); }
+
+    .phrase-dite { margin: 0.25rem 0 0.35rem; font-size: clamp(1.55rem, 6vw, 2.2rem); font-weight: 700; line-height: 1.35; }
+    .phrase-dite .m { transition: color 0.2s; }
+    .phrase-dite .m.ok { color: var(--bon); }
+    .phrase-dite .m.rate { color: var(--faux); text-decoration: underline wavy; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+    .trad { margin: 0 0 1.25rem; color: var(--doux); }
+    .ecoutes { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .micro-zone { display: grid; justify-items: start; gap: 0.5rem; margin-top: 1.25rem; }
+    .bouton.micro { min-height: 60px; padding-inline: 1.5rem; font-size: 1.1rem; background: var(--accent); color: var(--sur); border-color: transparent; }
+    .bouton.micro.actif { animation: pouls-micro 1.2s ease-out infinite; }
+    @keyframes pouls-micro {
+      0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); }
+      100% { box-shadow: 0 0 0 18px transparent; }
+    }
+    .micro-info { margin: 0; color: var(--doux); }
+    .question-auto { flex-basis: 100%; margin: 0; font-weight: 700; }
+
+    .bilan-chiffres { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 1.25rem 0 1.5rem; }
+    .bilan-chiffres > div { border-left-color: var(--accent); }
+    .recap { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+    .recap li { display: flex; align-items: center; gap: 0.6rem; }
+    .recap .point { width: 14px; height: 14px; border-radius: 50%; background: var(--c); flex: none; }
+    .recap .vide { background: transparent; border: 3px solid var(--c); }
+    .recap span:last-child { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 700; }
+    .bravo { animation: entree 0.5s cubic-bezier(.2, .9, .3, 1.2) both; }
+    @keyframes entree { from { transform: translateY(14px) scale(0.97); opacity: 0.4; } to { transform: none; opacity: 1; } }
+
+    .toast {
+      position: fixed; z-index: 20; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
+      max-width: calc(100% - 2rem); padding: 0.75rem 1.1rem; border-radius: 12px;
+      background: var(--encre); color: var(--fond); font-weight: 700;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="retour" href="../../">← Retour au labo</a>
+  <div id="app"></div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    /* =========================================================
+       Le programme : 5 stations par jour, 5 jours pour commencer
+       ========================================================= */
+
+    const BLOCS = [
+      { id: 'vocab',   nom: 'Vocabulaire', min: 6, c: '--l-vocab',   sur: '--sur-accent' },
+      { id: 'gram',    nom: 'Grammaire',   min: 6, c: '--l-gram',    sur: '--sur-accent' },
+      { id: 'conj',    nom: 'Conjugaison', min: 4, c: '--l-conj',    sur: '--sur-accent' },
+      { id: 'bases',   nom: 'Les bases',   min: 3, c: '--l-bases',   sur: '--sur-bases' },
+      { id: 'diction', nom: 'Diction',     min: 6, c: '--l-diction', sur: '--sur-accent' },
+    ];
+    const OBJECTIF_MIN = BLOCS.reduce((s, b) => s + b.min, 0);
+
+    const JOURS = [
+      {
+        n: 1, theme: 'Se présenter',
+        vocab: [
+          ['job', 'métier, travail', "What's your job? I'm a nurse.", 'Quel est ton métier ? Je suis infirmière.'],
+          ['to live', 'habiter, vivre', 'I live in a small flat in Lyon.', 'J’habite dans un petit appartement à Lyon.'],
+          ['neighbour', 'voisin, voisine', 'My neighbour has a very noisy dog.', 'Mon voisin a un chien très bruyant.'],
+          ['siblings', 'frères et sœurs', 'I have two siblings: a brother and a sister.', 'J’ai un frère et une sœur.'],
+          ['married', 'marié, mariée', 'They have been married for ten years.', 'Ils sont mariés depuis dix ans.'],
+          ['hometown', 'ville natale', 'My hometown is near the sea.', 'Ma ville natale est près de la mer.'],
+          ['to grow up', 'grandir', 'I grew up in the countryside.', 'J’ai grandi à la campagne.'],
+          ['hobby', 'loisir, passe-temps', 'My favourite hobby is cooking.', 'Mon passe-temps préféré, c’est la cuisine.'],
+        ],
+        gram: {
+          titre: 'Le verbe be : am, is, are',
+          regle: `<p><b>Be</b> veut dire <i>être</i>. Il change selon le sujet :</p>
+            <ul><li><b>I am</b></li><li><b>you are</b>, <b>we are</b>, <b>they are</b></li><li><b>he is</b>, <b>she is</b>, <b>it is</b></li></ul>
+            <p>À l’oral, on contracte presque toujours : <b>I’m, you’re, he’s, we’re</b>. Négation : <b>I’m not, he isn’t, they aren’t</b>. Question : on inverse, <b>Are you French?</b></p>
+            <p class="piege">Piège : l’âge se dit avec <b>be</b>, pas avec <i>have</i>. <b>I am 30</b> = j’ai 30 ans.</p>`,
+          exemples: [["I'm from Lyon.", 'Je viens de Lyon.'], ["She isn't at home.", 'Elle n’est pas à la maison.'], ['Are they your friends?', 'Ce sont tes amis ?']],
+          questions: [
+            ['She ___ a teacher.', ['is', 'are', 'am'], 0, 'Avec he, she ou it : is.'],
+            ['We ___ from France.', ['is', 'are', 'am'], 1, 'Avec we : are.'],
+            ['I ___ not tired at all.', ['am', 'is', 'are'], 0, 'Avec I : am (à l’oral, I’m not).'],
+            ['___ they at home tonight?', ['Is', 'Are', 'Do'], 1, 'Pour poser la question, on inverse be et le sujet : Are they… ?'],
+            ['My brother ___ 25 years old.', ['has', 'is', 'have'], 1, 'L’âge se dit avec be : he is 25.'],
+          ],
+        },
+        conj: {
+          titre: 'Verbes irréguliers : be, have, do, go',
+          verbes: [['be', 'was / were', 'been', 'être'], ['have', 'had', 'had', 'avoir'], ['do', 'did', 'done', 'faire'], ['go', 'went', 'gone', 'aller']],
+          questions: [
+            ['Yesterday I ___ to the cinema.', 'go', ['went']],
+            ['They have ___ home already.', 'go', ['gone']],
+            ['We ___ a great time last night.', 'have', ['had']],
+            ['I ___ my homework this morning.', 'do', ['did']],
+            ['Have you ___ the dishes?', 'do', ['done']],
+            ['We ___ in Spain last summer.', 'be', ['were']],
+          ],
+        },
+        bases: {
+          titre: 'Les faux amis',
+          astuce: `<p>Certains mots ressemblent au français mais ne veulent pas dire la même chose. Ce sont les <b>faux amis</b>.</p>
+            <ul><li><b>actually</b> = en fait. « Actuellement » se dit <i>currently</i>.</li>
+            <li><b>library</b> = bibliothèque. Une librairie, c’est un <i>bookshop</i>.</li>
+            <li><b>sensible</b> = raisonnable. « Sensible » se dit <i>sensitive</i>.</li>
+            <li><b>eventually</b> = finalement. « Éventuellement » se dit <i>possibly</i>.</li></ul>`,
+          questions: [
+            ['« Actually, I’m Belgian. » Actually veut dire…', ['en fait', 'actuellement', 'activement'], 0, 'Actually = en fait. Actuellement = currently.'],
+            ['« I borrowed it from the library. » Library, c’est…', ['une librairie', 'une bibliothèque', 'un libraire'], 1, 'Library = bibliothèque. Une librairie = a bookshop.'],
+            ['« She’s very sensible. » Elle est…', ['très sensible', 'très raisonnable', 'très sensuelle'], 1, 'Sensible = raisonnable. Sensible se dit sensitive.'],
+            ['« Eventually, he said yes. »', ['Éventuellement, il a dit oui.', 'Finalement, il a dit oui.', 'Évidemment, il a dit oui.'], 1, 'Eventually = finalement, au bout du compte.'],
+          ],
+        },
+        diction: {
+          titre: 'Le son TH',
+          astuce: `<p>Le <b>th</b> n’existe pas en français. Place le bout de la langue <b>entre les dents</b>, puis souffle.</p>
+            <ul><li><b>th</b> soufflé : <i>think, three, thank</i>. Comme un « s » zozoté.</li>
+            <li><b>th</b> vibré : <i>this, the, mother</i>. Comme un « z » zozoté.</li></ul>
+            <p class="piege">Évite « sink » pour <i>think</i> et « ze » pour <i>the</i>.</p>`,
+          phrases: [
+            ['Thank you very much.', 'Merci beaucoup.'],
+            ['I think this is the right one.', 'Je pense que c’est le bon.'],
+            ['My mother and my brother are there.', 'Ma mère et mon frère sont là-bas.'],
+            ['They think the weather is better there.', 'Ils pensent qu’il fait meilleur là-bas.'],
+          ],
+        },
+      },
+      {
+        n: 2, theme: 'La maison et le quotidien',
+        vocab: [
+          ['to wake up', 'se réveiller', 'I wake up at seven every day.', 'Je me réveille à sept heures tous les jours.'],
+          ['breakfast', 'petit-déjeuner', 'I never skip breakfast.', 'Je ne saute jamais le petit-déjeuner.'],
+          ['to get dressed', 's’habiller', "Get dressed, we're late!", 'Habille-toi, on est en retard !'],
+          ['kitchen', 'cuisine (la pièce)', 'The kitchen is next to the living room.', 'La cuisine est à côté du salon.'],
+          ['bedroom', 'chambre', 'My bedroom is upstairs.', 'Ma chambre est à l’étage.'],
+          ['stairs', 'escalier', 'Be careful on the stairs.', 'Fais attention dans l’escalier.'],
+          ['to tidy up', 'ranger', 'Please tidy up your room.', 'Range ta chambre, s’il te plaît.'],
+          ['to do the dishes', 'faire la vaisselle', 'I cook, you do the dishes.', 'Je cuisine, tu fais la vaisselle.'],
+        ],
+        gram: {
+          titre: 'Le présent simple, pour les habitudes',
+          regle: `<p>Le <b>présent simple</b> sert pour les habitudes et les vérités générales : <i>every day, usually, often, never</i>.</p>
+            <ul><li>Avec <b>he, she, it</b>, on ajoute un <b>-s</b> : I work, she work<b>s</b>.</li>
+            <li>Négation : <b>don’t</b> ou <b>doesn’t</b> + verbe sans -s : <i>He doesn’t work.</i></li>
+            <li>Question : <b>Do</b> ou <b>Does</b> + sujet + verbe : <i>Does she work?</i></li></ul>
+            <p class="piege">Piège : après <b>does</b> et <b>doesn’t</b>, le -s disparaît du verbe. <i>Does he like…?</i> et jamais <i>Does he likes…?</i></p>`,
+          exemples: [['She works in a hospital.', 'Elle travaille dans un hôpital.'], ["I don't eat meat.", 'Je ne mange pas de viande.'], ['Does he live here?', 'Est-ce qu’il habite ici ?']],
+          questions: [
+            ['He ___ coffee every morning.', ['drink', 'drinks', 'is drink'], 1, 'Avec he, she ou it, on ajoute -s : he drinks.'],
+            ['They ___ like vegetables.', ["don't", "doesn't", "aren't"], 0, 'Avec they : don’t.'],
+            ['___ she work on Sundays?', ['Do', 'Does', 'Is'], 1, 'Question avec she : Does she work… ?'],
+            ['My sister ___ in London.', ['live', 'lives', 'living'], 1, 'My sister = she, donc on ajoute -s.'],
+            ["He doesn't ___ TV in the evening.", ['watch', 'watches', 'watching'], 0, 'Après doesn’t, le verbe reste sans -s.'],
+          ],
+        },
+        conj: {
+          titre: 'Verbes irréguliers : get, take, make, come',
+          verbes: [['get', 'got', 'got (US : gotten)', 'obtenir, devenir'], ['take', 'took', 'taken', 'prendre'], ['make', 'made', 'made', 'fabriquer, faire'], ['come', 'came', 'come', 'venir']],
+          questions: [
+            ['I ___ up late this morning.', 'get', ['got']],
+            ['She ___ the bus to work yesterday.', 'take', ['took']],
+            ['Have you ___ your medicine?', 'take', ['taken']],
+            ['We ___ a cake for her birthday.', 'make', ['made']],
+            ['They ___ home very late last night.', 'come', ['came']],
+            ['He has ___ back from holiday.', 'come', ['come']],
+          ],
+        },
+        bases: {
+          titre: 'Dire l’heure',
+          astuce: `<ul><li><b>o’clock</b> : l’heure pile. <i>It’s nine o’clock</i> = 9 h.</li>
+            <li><b>past</b> : après. <i>quarter past nine</i> = 9 h 15, <i>half past nine</i> = 9 h 30.</li>
+            <li><b>to</b> : avant l’heure suivante. <i>quarter to ten</i> = 9 h 45, <i>ten to ten</i> = 9 h 50.</li>
+            <li><b>noon</b> = midi, <b>midnight</b> = minuit. <b>a.m.</b> le matin, <b>p.m.</b> l’après-midi et le soir.</li></ul>`,
+          questions: [
+            ['« It’s half past seven. »', ['7 h 30', '6 h 30', '7 h 15'], 0, 'Half past seven = la moitié après sept heures, donc 7 h 30.'],
+            ['« It’s quarter to nine. »', ['9 h 15', '8 h 45', '9 h 45'], 1, 'Quarter to nine = un quart avant neuf heures, donc 8 h 45.'],
+            ['Comment dit-on 10 h 15 ?', ['quarter to ten', 'quarter past ten', 'half past ten'], 1, 'Quarter past ten = un quart après dix heures.'],
+            ['« See you at 3 p.m. »', ['à 3 h du matin', 'à 15 h', 'à 13 h'], 1, 'p.m. = l’après-midi, donc 3 p.m. = 15 h.'],
+          ],
+        },
+        diction: {
+          titre: 'Le H qui se souffle',
+          astuce: `<p>En français, le h est muet. En anglais, il se <b>souffle</b>, comme pour faire de la buée sur une vitre : <i>hello, house, happy</i>.</p>
+            <p>Il reste muet dans quelques mots : <i>hour, honest, honour</i>.</p>
+            <p class="piege">N’ajoute pas de h là où il n’y en a pas : <i>I’m angry</i> et pas « I’m hangry ».</p>`,
+          phrases: [
+            ['Hello, how are you?', 'Bonjour, comment ça va ?'],
+            ['He has a huge house on the hill.', 'Il a une immense maison sur la colline.'],
+            ["I'm happy to help.", 'Je suis content d’aider.'],
+            ['Her husband is at the hospital.', 'Son mari est à l’hôpital.'],
+          ],
+        },
+      },
+      {
+        n: 3, theme: 'Au travail',
+        vocab: [
+          ['meeting', 'réunion', 'The meeting starts at ten.', 'La réunion commence à dix heures.'],
+          ['deadline', 'date limite', 'The deadline is next Friday.', 'La date limite est vendredi prochain.'],
+          ['colleague', 'collègue', 'My colleagues are really nice.', 'Mes collègues sont vraiment sympas.'],
+          ['to hire', 'embaucher', 'They hired three new people.', 'Ils ont embauché trois nouvelles personnes.'],
+          ['salary', 'salaire', 'She asked for a higher salary.', 'Elle a demandé un salaire plus élevé.'],
+          ['to be in charge of', 'être responsable de', "I'm in charge of the budget.", 'Je suis responsable du budget.'],
+          ['skills', 'compétences', 'You need good communication skills.', 'Il faut de bonnes compétences en communication.'],
+          ['day off', 'jour de congé', "I'm taking a day off on Monday.", 'Je prends un jour de congé lundi.'],
+        ],
+        gram: {
+          titre: 'Présent simple ou présent en -ing ?',
+          regle: `<p>Le <b>présent en -ing</b> (be + verbe-ing) décrit ce qui se passe <b>en ce moment</b> : <i>now, right now, at the moment, look!</i></p>
+            <ul><li><b>I’m working</b> now. En ce moment.</li><li><b>I work</b> every day. Une habitude.</li></ul>
+            <p class="piege">Piège : les verbes d’état ne se mettent presque jamais en -ing : <i>know, like, want, need, believe</i>. On dit <b>I know</b>, jamais « I’m knowing ».</p>`,
+          exemples: [["She's having lunch right now.", 'Elle est en train de déjeuner.'], ['I usually take the train.', 'D’habitude, je prends le train.'], ['What are you doing?', 'Qu’est-ce que tu fais ?']],
+          questions: [
+            ['Look! It ___.', ['rains', 'is raining', 'rain'], 1, 'Look! = en ce moment, donc be + -ing.'],
+            ['She usually ___ the bus to work.', ['takes', 'is taking', 'take'], 0, 'Usually = une habitude, donc présent simple.'],
+            ["Sorry, I can't talk, I ___ a meeting.", ['have', 'am having', 'has'], 1, 'C’est en train de se passer, donc be + -ing.'],
+            ['I ___ what you mean.', ['know', 'am knowing', 'knows'], 0, 'Know est un verbe d’état : jamais en -ing.'],
+            ['What ___ you doing right now?', ['do', 'are', 'is'], 1, 'Right now, donc be + -ing : What are you doing?'],
+          ],
+        },
+        conj: {
+          titre: 'Verbes irréguliers : say, tell, think, know',
+          verbes: [['say', 'said', 'said', 'dire'], ['tell', 'told', 'told', 'dire à, raconter'], ['think', 'thought', 'thought', 'penser'], ['know', 'knew', 'known', 'savoir, connaître']],
+          questions: [
+            ['She ___ she was sorry.', 'say', ['said']],
+            ['He ___ me a funny story.', 'tell', ['told']],
+            ['I ___ it was a good idea.', 'think', ['thought']],
+            ['We ___ the answer.', 'know', ['knew']],
+            ["I've ___ him for years.", 'know', ['known']],
+            ['Have you ___ your boss?', 'tell', ['told']],
+          ],
+        },
+        bases: {
+          titre: 'Make ou do ?',
+          astuce: `<p>Les deux se traduisent par <i>faire</i>. Un repère simple :</p>
+            <ul><li><b>make</b> = créer, fabriquer, produire : <i>make a cake, make a mistake, make a decision, make money</i>.</li>
+            <li><b>do</b> = accomplir une tâche, une activité : <i>do your homework, do the shopping, do sport, do a job</i>.</li></ul>`,
+          questions: [
+            ['Everyone ___ mistakes.', ['makes', 'does'], 0, 'Make a mistake : on « produit » une erreur.'],
+            ['I have to ___ the shopping.', ['make', 'do'], 1, 'Do the shopping : c’est une tâche.'],
+            ['We need to ___ a decision.', ['make', 'do'], 0, 'Make a decision.'],
+            ['Can you ___ me a favour?', ['make', 'do'], 1, 'Do someone a favour : expression toute faite.'],
+          ],
+        },
+        diction: {
+          titre: 'Ship ou sheep : le i court et le i long',
+          astuce: `<p>L’anglais a deux « i » :</p>
+            <ul><li><b>i court</b> : bref et relâché, presque un « é ». <i>ship, live, sit, it</i>.</li>
+            <li><b>i long</b> : tendu et allongé, on sourit. <i>sheep, leave, seat, eat</i>.</li></ul>
+            <p class="piege">Les confondre change le sens : <i>ship</i> (bateau) et <i>sheep</i> (mouton), <i>live</i> (vivre) et <i>leave</i> (partir).</p>`,
+          phrases: [
+            ['Please sit in this seat.', 'Assieds-toi sur ce siège, s’il te plaît.'],
+            ['Is it his ship or his sheep?', 'C’est son bateau ou son mouton ?'],
+            ['I live here but I leave at six.', 'J’habite ici mais je pars à six heures.'],
+            ['We need a bit more cheese.', 'Il nous faut un peu plus de fromage.'],
+          ],
+        },
+      },
+      {
+        n: 4, theme: 'Voyager',
+        vocab: [
+          ['luggage', 'bagages', 'How much luggage do you have?', 'Combien de bagages avez-vous ?'],
+          ['boarding pass', 'carte d’embarquement', 'Can I see your boarding pass?', 'Puis-je voir votre carte d’embarquement ?'],
+          ['to book', 'réserver', 'I booked a room for two nights.', 'J’ai réservé une chambre pour deux nuits.'],
+          ['delay', 'retard', 'There is a two-hour delay.', 'Il y a deux heures de retard.'],
+          ['return ticket', 'billet aller-retour', 'A return ticket to Bath, please.', 'Un aller-retour pour Bath, s’il vous plaît.'],
+          ['to check in', 's’enregistrer', 'We can check in after two.', 'On peut s’enregistrer après 14 h.'],
+          ['abroad', 'à l’étranger', 'She lives abroad now.', 'Elle vit à l’étranger maintenant.'],
+          ['sightseeing', 'visites touristiques', 'We did some sightseeing in Rome.', 'On a fait des visites à Rome.'],
+        ],
+        gram: {
+          titre: 'Le prétérit, pour raconter',
+          regle: `<p>Le <b>prétérit</b> raconte une action <b>terminée</b>, à un moment précis du passé : <i>yesterday, last week, in 2019, two days ago</i>.</p>
+            <ul><li>Verbes réguliers : on ajoute <b>-ed</b>. visit, visit<b>ed</b>.</li>
+            <li>Négation : <b>didn’t</b> + verbe de base : <i>I didn’t go.</i></li>
+            <li>Question : <b>Did</b> + sujet + verbe de base : <i>Did you see it?</i></li></ul>
+            <p class="piege">Piège : <b>ago</b> se place après la durée. <i>Two days ago</i> = il y a deux jours.</p>`,
+          exemples: [['We visited London last year.', 'On a visité Londres l’année dernière.'], ["I didn't see the email.", 'Je n’ai pas vu le mail.'], ['Did you have a good trip?', 'Tu as fait bon voyage ?']],
+          questions: [
+            ['We ___ to Rome last summer.', ['go', 'went', 'have gone'], 1, 'Last summer = un moment précis du passé, donc prétérit : went.'],
+            ['She ___ the museum yesterday.', ['visits', 'visited', 'visit'], 1, 'Yesterday, donc prétérit : visited.'],
+            ['I ___ see him at the airport.', ["didn't", "don't", "wasn't"], 0, 'Négation au prétérit : didn’t + verbe de base.'],
+            ['___ you book the hotel?', ['Did', 'Do', 'Were'], 0, 'Question au prétérit : Did + sujet + verbe.'],
+            ['They arrived two hours ___.', ['ago', 'before', 'since'], 0, 'Il y a deux heures = two hours ago.'],
+          ],
+        },
+        conj: {
+          titre: 'Verbes irréguliers : buy, leave, fly, see',
+          verbes: [['buy', 'bought', 'bought', 'acheter'], ['leave', 'left', 'left', 'partir, quitter'], ['fly', 'flew', 'flown', 'voler, prendre l’avion'], ['see', 'saw', 'seen', 'voir']],
+          questions: [
+            ['I ___ a new suitcase.', 'buy', ['bought']],
+            ['The train ___ at eight.', 'leave', ['left']],
+            ['We ___ to Dublin last week.', 'fly', ['flew']],
+            ['Have you ever ___ with this airline?', 'fly', ['flown']],
+            ['I ___ the Eiffel Tower from my window.', 'see', ['saw']],
+            ['Have you ___ my passport?', 'see', ['seen']],
+          ],
+        },
+        bases: {
+          titre: 'In, on, at pour dire quand',
+          astuce: `<ul><li><b>at</b> + une heure, un moment précis : <i>at 6 o’clock, at noon, at night</i>.</li>
+            <li><b>on</b> + un jour, une date : <i>on Monday, on 14 July, on my birthday</i>.</li>
+            <li><b>in</b> + un mois, une saison, une année, une partie de la journée : <i>in July, in winter, in 2020, in the morning</i>.</li></ul>`,
+          questions: [
+            ['See you ___ Monday!', ['in', 'on', 'at'], 1, 'Un jour : on.'],
+            ['My birthday is ___ July.', ['in', 'on', 'at'], 0, 'Un mois : in.'],
+            ["The film starts ___ 8 o'clock.", ['in', 'on', 'at'], 2, 'Une heure précise : at.'],
+            ['I always run ___ the morning.', ['in', 'on', 'at'], 0, 'Une partie de la journée : in the morning (mais at night).'],
+          ],
+        },
+        diction: {
+          titre: 'La terminaison -ed',
+          astuce: `<p>Le <b>-ed</b> du prétérit se prononce de trois façons. Le <b>e</b> est presque toujours muet :</p>
+            <ul><li>un son <b>t</b> après p, k, s, sh, ch, f : <i>walked, stopped, washed</i>.</li>
+            <li>un son <b>d</b> après les autres sons : <i>played, stayed, called</i>.</li>
+            <li><b>id</b>, avec une syllabe en plus, seulement après t ou d : <i>wanted, needed, waited</i>.</li></ul>
+            <p class="piege">On ne dit pas « walk-ède » mais « walkt ».</p>`,
+          phrases: [
+            ['I walked to the station.', 'J’ai marché jusqu’à la gare.'],
+            ['We stayed in a small hotel.', 'On a logé dans un petit hôtel.'],
+            ['She wanted to visit the castle.', 'Elle voulait visiter le château.'],
+            ['They booked a table and waited.', 'Ils ont réservé une table et ont attendu.'],
+          ],
+        },
+      },
+      {
+        n: 5, theme: 'Donner son avis',
+        vocab: [
+          ['to agree', 'être d’accord', 'I totally agree with you.', 'Je suis tout à fait d’accord avec toi.'],
+          ['however', 'cependant', "It's expensive. However, it's worth it.", 'C’est cher. Cependant, ça vaut le coup.'],
+          ['to suggest', 'proposer, suggérer', 'I suggest we leave now.', 'Je propose qu’on parte maintenant.'],
+          ['worth it', 'ça vaut le coup', 'Was the film worth it?', 'Le film valait le coup ?'],
+          ['to look forward to', 'avoir hâte de', "I'm looking forward to the weekend.", 'J’ai hâte d’être au week-end.'],
+          ["I'd rather", 'je préférerais', "I'd rather stay at home tonight.", 'Je préférerais rester à la maison ce soir.'],
+          ['to be keen on', 'aimer bien, être fan de', "I'm not very keen on jazz.", 'Je ne suis pas très fan de jazz.'],
+          ['to be fed up with', 'en avoir marre de', "I'm fed up with this rain!", 'J’en ai marre de cette pluie !'],
+        ],
+        gram: {
+          titre: 'Comparer : -er, more, the most',
+          regle: `<ul><li>Adjectif court (une syllabe, ou deux finissant par -y) : <b>-er than</b> et <b>the -est</b>. <i>big, bigger than, the biggest</i> ; <i>easy, easier</i>.</li>
+            <li>Adjectif long : <b>more … than</b> et <b>the most …</b>. <i>more expensive than, the most beautiful</i>.</li>
+            <li>Égalité : <b>as … as</b>. <i>as tall as</i>.</li></ul>
+            <p class="piege">À connaître par cœur : <b>good, better, the best</b> et <b>bad, worse, the worst</b>.</p>`,
+          exemples: [['Lyon is smaller than Paris.', 'Lyon est plus petite que Paris.'], ["It's the most beautiful beach.", 'C’est la plus belle plage.'], ['Your idea is better than mine.', 'Ton idée est meilleure que la mienne.']],
+          questions: [
+            ['London is ___ than Paris.', ['bigger', 'more big', 'biggest'], 0, 'Big est court : bigger (on double le g).'],
+            ['This book is ___ than the film.', ['interestinger', 'more interesting', 'most interesting'], 1, 'Interesting est long : more interesting.'],
+            ["It's the ___ day of my life!", ['better', 'best', 'goodest'], 1, 'Good, better, the best.'],
+            ['The weather is ___ today than yesterday.', ['worse', 'badder', 'worst'], 0, 'Bad, worse, the worst. On compare deux jours : worse.'],
+            ['She is as tall ___ her brother.', ['than', 'as', 'that'], 1, 'Égalité : as … as.'],
+          ],
+        },
+        conj: {
+          titre: 'Verbes irréguliers : give, write, speak, choose',
+          verbes: [['give', 'gave', 'given', 'donner'], ['write', 'wrote', 'written', 'écrire'], ['speak', 'spoke', 'spoken', 'parler'], ['choose', 'chose', 'chosen', 'choisir']],
+          questions: [
+            ['He ___ me his opinion.', 'give', ['gave']],
+            ['She has ___ a great article.', 'write', ['written']],
+            ['I ___ to the manager this morning.', 'speak', ['spoke']],
+            ['Have you ___ a restaurant?', 'choose', ['chosen']],
+            ['We ___ the red one.', 'choose', ['chose']],
+            ['They have ___ us a lot of help.', 'give', ['given']],
+          ],
+        },
+        bases: {
+          titre: 'Les pluriels irréguliers',
+          astuce: `<p>La plupart des noms prennent un <b>-s</b> au pluriel. Quelques-uns, très courants, changent complètement :</p>
+            <ul><li>a man, two <b>men</b> ; a woman, two <b>women</b></li><li>a child, two <b>children</b></li><li>a person, two <b>people</b></li>
+            <li>a foot, two <b>feet</b> ; a tooth, two <b>teeth</b> ; a mouse, two <b>mice</b></li></ul>`,
+          questions: [
+            ['One child, two ___.', ['childs', 'children', 'childrens'], 1, 'Child donne children, sans -s en plus.'],
+            ['There were a lot of ___ at the party.', ['persons', 'people', 'peoples'], 1, 'Le pluriel courant de person est people.'],
+            ['I brush my ___ twice a day.', ['tooths', 'teeth', 'teeths'], 1, 'Tooth donne teeth.'],
+            ['My ___ hurt after the walk.', ['foots', 'feet', 'feets'], 1, 'Foot donne feet.'],
+          ],
+        },
+        diction: {
+          titre: 'L’accent tonique',
+          astuce: `<p>En anglais, chaque mot a une syllabe <b>plus forte</b> que les autres. La mettre au mauvais endroit rend le mot difficile à comprendre.</p>
+            <ul><li><b>COM</b>fortable, qui se dit en trois temps : « COMF-teu-beul »</li>
+            <li><b>VE</b>getable, <b>IN</b>teresting, <b>PHO</b>tograph</li>
+            <li>to<b>MOR</b>row, o<b>PI</b>nion, de<b>VE</b>lop</li></ul>
+            <p>Le reste du mot est plus court et plus faible.</p>`,
+          phrases: [
+            ["In my opinion, it's worth it.", 'À mon avis, ça vaut le coup.'],
+            ['This hotel is really comfortable.', 'Cet hôtel est vraiment confortable.'],
+            ["I'm looking forward to tomorrow.", 'J’ai hâte d’être à demain.'],
+            ["That's an interesting photograph.", 'C’est une photo intéressante.'],
+          ],
+        },
+      },
+    ];
+
+    function sujetBloc(J, id) {
+      if (id === 'vocab') return `${J.vocab.length} mots : ${J.theme.toLowerCase()}`;
+      return J[id].titre;
+    }
+
+    /* =========================================================
+       Mémoire (dans ce navigateur uniquement)
+       ========================================================= */
+
+    const CLE = 'mind-the-gap:v1';
+    function lire() {
+      try { return JSON.parse(localStorage.getItem(CLE) || 'null') || {}; } catch (e) { return {}; }
+    }
+    const etat = Object.assign({ jours: {}, mots: {}, serie: { n: 0, dernier: null }, secondes: 0, seances: 0 }, lire());
+    function sauver() {
+      try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) { /* mémoire indisponible : tant pis */ }
+    }
+    function etatJour(n) {
+      if (!etat.jours[n]) etat.jours[n] = { blocs: {}, secondes: 0 };
+      return etat.jours[n];
+    }
+    function dateCle(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    function hierCle() { const d = new Date(); d.setDate(d.getDate() - 1); return dateCle(d); }
+    function serieActuelle() {
+      const s = etat.serie;
+      if (!s.dernier) return 0;
+      return (s.dernier === dateCle(new Date()) || s.dernier === hierCle()) ? s.n : 0;
+    }
+    function majSerie() {
+      const auj = dateCle(new Date());
+      if (etat.serie.dernier === auj) return;
+      etat.serie.n = etat.serie.dernier === hierCle() ? etat.serie.n + 1 : 1;
+      etat.serie.dernier = auj;
+    }
+
+    /* =========================================================
+       Petits outils
+       ========================================================= */
+
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    function melanger(t) {
+      const a = t.slice();
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+      return a;
+    }
+    function avecTrou(texte, rempli) {
+      return esc(texte).replace('___', `<span class="trou${rempli ? ' bon' : ''}">${rempli ? esc(rempli) : '&nbsp;'}</span>`);
+    }
+    function mmss(s) {
+      s = Math.max(0, Math.floor(s));
+      return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+    }
+    const pluriel = (n, mot) => `${n} ${mot}${n > 1 ? 's' : ''}`;
+    let toastId = null;
+    function toast(msg) {
+      let t = $('.toast');
+      if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.append(t); }
+      t.textContent = msg; t.hidden = false;
+      clearTimeout(toastId); toastId = setTimeout(() => { t.hidden = true; }, 3500);
+    }
+
+    const ICONE_SON = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    const ICONE_MICRO = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4M9 21h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+    /* =========================================================
+       La voix : écouter (synthèse) et répéter (reconnaissance)
+       ========================================================= */
+
+    const synth = window.speechSynthesis || null;
+    let voix = null;
+    function choisirVoix() {
+      if (!synth) return;
+      const v = synth.getVoices();
+      voix = v.find(x => /en[-_]GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null;
+    }
+    if (synth) {
+      choisirVoix();
+      if (synth.addEventListener) synth.addEventListener('voiceschanged', choisirVoix);
+    }
+    function dire(texte, lent) {
+      if (!synth || !window.SpeechSynthesisUtterance) { toast('La voix n’est pas disponible sur ce navigateur.'); return; }
+      try {
+        synth.cancel();
+        const u = new SpeechSynthesisUtterance(texte.replace(/\s*\(.*?\)/g, '').replace(/ \/ /g, ', '));
+        u.lang = voix ? voix.lang : 'en-GB';
+        if (voix) u.voice = voix;
+        u.rate = lent ? 0.6 : 0.92;
+        synth.speak(u);
+      } catch (e) { toast('La voix n’a pas pu démarrer.'); }
+    }
+
+    const Reco = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+    const CONTRACTIONS = {
+      "i'm": 'i am', "you're": 'you are', "we're": 'we are', "they're": 'they are', "it's": 'it is', "that's": 'that is',
+      "he's": 'he is', "she's": 'she is', "what's": 'what is', "there's": 'there is', "i'd": 'i would', "i've": 'i have',
+      "don't": 'do not', "doesn't": 'does not', "didn't": 'did not', "can't": 'can not', 'cannot': 'can not',
+      "isn't": 'is not', "aren't": 'are not', "won't": 'will not', "let's": 'let us', "i'll": 'i will',
+    };
+    function normaliser(mot) {
+      const m = mot.toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9']/g, '');
+      if (!m) return [];
+      return (CONTRACTIONS[m] || m.replace(/'/g, '')).split(' ').filter(Boolean);
+    }
+    // Compare la phrase attendue et ce qui a été entendu, mot à mot (plus longue sous-suite commune).
+    function comparer(cible, entendu) {
+      const affiches = cible.split(/\s+/);
+      const plat = [];
+      affiches.forEach((w, i) => normaliser(w).forEach(t => plat.push({ t, i })));
+      const dits = entendu.split(/\s+/).flatMap(normaliser);
+      const n = plat.length, m = dits.length;
+      const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+      for (let a = n - 1; a >= 0; a--) for (let b = m - 1; b >= 0; b--) {
+        dp[a][b] = plat[a].t === dits[b] ? dp[a + 1][b + 1] + 1 : Math.max(dp[a + 1][b], dp[a][b + 1]);
+      }
+      const ok = new Array(n).fill(false);
+      let a = 0, b = 0;
+      while (a < n && b < m) {
+        if (plat[a].t === dits[b]) { ok[a] = true; a++; b++; }
+        else if (dp[a + 1][b] >= dp[a][b + 1]) a++;
+        else b++;
+      }
+      const mots = affiches.map((w, i) => ({ w, ok: plat.every((p, k) => p.i !== i || ok[k]) }));
+      return { mots, score: n ? ok.filter(Boolean).length / n : 0, texte: entendu };
+    }
+
+    /* =========================================================
+       Les étapes de chaque station
+       ========================================================= */
+
+    function qcmMot(mot, liste, revision) {
+      const autres = melanger(liste.filter(x => x !== mot)).slice(0, 2).map(x => x[0]);
+      return {
+        type: 'qcm',
+        consigne: revision ? 'Révision d’un mot à revoir : comment dit-on en anglais ?' : 'Comment dit-on en anglais ?',
+        texte: `« ${mot[1]} »`,
+        options: melanger([mot[0], ...autres]),
+        bonne: mot[0], expl: `Exemple : ${mot[2]}`, ecoute: mot[0], mot: mot[0],
+      };
+    }
+
+    function etapesDuBloc(n, id) {
+      const J = JOURS[n - 1];
+      if (id === 'vocab') {
+        const cartes = J.vocab.map(m => ({ type: 'carte', mot: m }));
+        const quiz = melanger(J.vocab).slice(0, 4).map(m => qcmMot(m, J.vocab, false));
+        // Jusqu'à 2 mots des jours précédents marqués « à revoir ».
+        const anciens = JOURS.filter(j => j.n < n)
+          .flatMap(j => j.vocab.map(m => ({ m, liste: j.vocab })))
+          .filter(x => etat.mots[x.m[0]] === 1);
+        const revisions = melanger(anciens).slice(0, 2).map(x => qcmMot(x.m, x.liste, true));
+        return [...cartes, ...melanger([...quiz, ...revisions])];
+      }
+      if (id === 'gram') {
+        const g = J.gram;
+        return [
+          { type: 'lecon', consigne: 'La règle', titre: g.titre, html: g.regle, exemples: g.exemples },
+          ...g.questions.map(q => ({
+            type: 'qcm', consigne: 'Complète la phrase', texte: q[0], anglais: true,
+            options: melanger(q[1]), bonne: q[1][q[2]], expl: q[3], ecoute: q[0].replace('___', q[1][q[2]]),
+          })),
+        ];
+      }
+      if (id === 'conj') {
+        const c = J.conj;
+        return [
+          { type: 'tableau', titre: c.titre, verbes: c.verbes },
+          ...melanger(c.questions).map(q => ({ type: 'saisie', texte: q[0], verbe: q[1], reps: q[2] })),
+        ];
+      }
+      if (id === 'bases') {
+        const b = J.bases;
+        return [
+          { type: 'lecon', consigne: 'À savoir', titre: b.titre, html: b.astuce },
+          ...b.questions.map(q => {
+            const trou = q[0].includes('___');
+            return {
+              type: 'qcm', consigne: 'Choisis la bonne réponse', texte: q[0], anglais: trou,
+              options: q[1].slice(), bonne: q[1][q[2]], expl: q[3], ecoute: trou ? q[0].replace('___', q[1][q[2]]) : null,
+            };
+          }),
+        ];
+      }
+      const d = J.diction;
+      return [
+        { type: 'lecon', consigne: 'Le son du jour', titre: d.titre, html: d.astuce },
+        ...d.phrases.map(p => ({ type: 'parole', en: p[0], fr: p[1] })),
+      ];
+    }
+
+    /* =========================================================
+       Accueil
+       ========================================================= */
+
+    const app = $('#app');
+    let jourSel = (JOURS.find(j => !etatJour(j.n).fini) || JOURS[JOURS.length - 1]).n;
+    let seance = null;
+    let chronoId = null;
+
+    function renderAccueil() {
+      arreterChrono();
+      if (Reco && recoActive) { try { recoActive.abort(); } catch (e) { /* rien */ } }
+      seance = null;
+      const J = JOURS[jourSel - 1];
+      const ej = etatJour(jourSel);
+      const faits = BLOCS.filter(b => ej.blocs[b.id]);
+      const prochain = BLOCS.find(b => !ej.blocs[b.id]);
+      const libelle = faits.length === 0 ? 'Commencer la séance' : prochain ? `Reprendre : ${prochain.nom}` : 'Refaire la séance';
+      const serie = serieActuelle();
+      const minutesJour = Math.round(ej.secondes / 60);
+      const motsVus = Object.keys(etat.mots).length;
+      const motsRetenus = Object.values(etat.mots).filter(b => b >= 2).length;
+
+      app.innerHTML = `
+        <header class="tete">
+          <div class="marque">
+            <p class="logo">Mind the <span class="trou-logo">gap</span></p>
+            <p class="devise">L’anglais, ${OBJECTIF_MIN} minutes par jour</p>
+          </div>
+          <p class="puce-serie" title="Jours d’affilée avec une séance complète"><b>${serie}</b> ${serie > 1 ? 'jours' : 'jour'} d’affilée</p>
+        </header>
+        <div class="accueil">
+          <section class="col-ligne" aria-labelledby="titre-jour">
+            <p class="surtitre">Jour ${J.n} sur ${JOURS.length} · ${esc(J.theme)}</p>
+            <h1 id="titre-jour">La ligne du jour</h1>
+            <p class="chapo">${BLOCS.length} stations, environ ${OBJECTIF_MIN} minutes.${minutesJour ? ` Déjà ${minutesJour} min sur ce jour.` : ' Touche une station pour y aller directement.'}</p>
+            <button class="bouton principal" id="go">${libelle}</button>
+            <ol class="ligne">
+              ${BLOCS.map(b => {
+                const r = ej.blocs[b.id];
+                const cls = r ? 'faite' : b === prochain ? 'prochaine' : '';
+                const etiquette = r ? `Faite · ${r.ok}/${r.total} bonnes réponses` : b === prochain ? 'Prochaine station' : 'À faire';
+                return `<li class="station ${cls}" style="--c: var(${b.c})">
+                  <span class="rail" aria-hidden="true"><span class="pastille"></span></span>
+                  <button class="st" data-bloc="${b.id}" aria-label="${esc(`${b.nom}, ${b.min} minutes : ${sujetBloc(J, b.id)}. ${etiquette}`)}">
+                    <span class="st-haut"><span class="st-nom">${b.nom}</span><span class="st-min">${b.min} min</span></span>
+                    <span class="st-sujet">${esc(sujetBloc(J, b.id))}</span>
+                    <span class="st-etat">${etiquette}</span>
+                  </button>
+                </li>`;
+              }).join('')}
+            </ol>
+          </section>
+
+          <aside class="col-cote">
+            <section aria-labelledby="t-prog">
+              <h2 id="t-prog">Le programme</h2>
+              <ol class="jours">
+                ${JOURS.map(j => {
+                  const e = etatJour(j.n);
+                  const nb = BLOCS.filter(b => e.blocs[b.id]).length;
+                  const txt = e.fini ? 'Terminé' : nb ? `${nb}/${BLOCS.length}` : '';
+                  return `<li><button class="jour${j.n === jourSel ? ' choisi' : ''}" data-jour="${j.n}" aria-pressed="${j.n === jourSel}">
+                    <span class="j-num">J${j.n}</span><span>${esc(j.theme)}</span><span class="j-etat${e.fini ? ' fini' : ''}">${txt}</span>
+                  </button></li>`;
+                }).join('')}
+              </ol>
+              <p class="note">Ce prototype contient la première semaine : 5 jours, 40 mots, 20 verbes irréguliers.</p>
+            </section>
+
+            <section aria-labelledby="t-chiffres">
+              <h2 id="t-chiffres">Tes chiffres</h2>
+              <dl class="chiffres">
+                <div><dt>Séances complètes</dt><dd>${etat.seances}</dd></div>
+                <div><dt>Minutes au total</dt><dd>${Math.round(etat.secondes / 60)}</dd></div>
+                <div><dt>Mots vus</dt><dd>${motsVus}</dd></div>
+                <div><dt>Mots retenus</dt><dd>${motsRetenus}</dd></div>
+              </dl>
+            </section>
+
+            <section class="aide" aria-labelledby="t-aide">
+              <h2 id="t-aide">Sur téléphone et iPad</h2>
+              <p>Pour l’avoir comme une appli : dans Safari, bouton <b>Partager</b> puis <b>Sur l’écran d’accueil</b>.</p>
+              <p>La diction utilise le <b>micro</b> : autorise-le quand on te le demande. ${Reco ? '' : 'Ce navigateur ne sait pas écouter ta voix : tu pourras te noter toi-même.'}</p>
+              <p>Ta progression reste sur cet appareil.</p>
+            </section>
+          </aside>
+        </div>`;
+
+      $('#go').addEventListener('click', () => demarrer(jourSel));
+      $$('.st').forEach(b => b.addEventListener('click', () => demarrer(jourSel, b.dataset.bloc)));
+      $$('.jour').forEach(b => b.addEventListener('click', () => { jourSel = Number(b.dataset.jour); renderAccueil(); }));
+    }
+
+    /* =========================================================
+       Séance
+       ========================================================= */
+
+    function demarrer(n, depuis) {
+      const ej = etatJour(n);
+      let ids;
+      if (depuis) ids = BLOCS.slice(BLOCS.findIndex(b => b.id === depuis)).map(b => b.id);
+      else {
+        ids = BLOCS.filter(b => !ej.blocs[b.id]).map(b => b.id);
+        if (!ids.length) ids = BLOCS.map(b => b.id);
+      }
+      seance = { n, ids, bi: 0, etapes: [], ei: 0, ok: 0, total: 0, t0: null, enCours: new Set(ids) };
+      app.innerHTML = `
+        <div class="seance">
+          <header class="barre">
+            <button class="bouton discret" id="quitter">Quitter</button>
+            <div class="mini-ligne" aria-hidden="true">
+              ${BLOCS.map(b => `<span class="seg" style="--c: var(${b.c})" data-seg="${b.id}"><span class="rempli"></span></span>`).join('')}
+            </div>
+            <p class="chrono" aria-label="Temps passé sur ce jour"><span id="chrono">00:00</span><span class="sur"> / ${OBJECTIF_MIN}:00</span></p>
+          </header>
+          <main class="scene">
+            <p class="etiquette" id="etiquette"></p>
+            <article class="carte" id="carte"></article>
+          </main>
+        </div>`;
+      $('#quitter').addEventListener('click', renderAccueil);
+      window.scrollTo(0, 0);
+      demarrerChrono();
+      lancerBloc();
+    }
+
+    const blocCourant = () => BLOCS.find(b => b.id === seance.ids[seance.bi]);
+
+    function lancerBloc() {
+      const b = blocCourant();
+      seance.etapes = etapesDuBloc(seance.n, b.id);
+      seance.ei = 0; seance.ok = 0; seance.total = 0;
+      const s = $('.seance');
+      s.style.setProperty('--accent', `var(${b.c})`);
+      s.style.setProperty('--sur', `var(${b.sur})`);
+      renderEtape();
+    }
+
+    function majBarre() {
+      const ej = etatJour(seance.n);
+      const actuel = blocCourant();
+      BLOCS.forEach(b => {
+        let p = 0;
+        if (b === actuel) p = seance.etapes.length ? seance.ei / seance.etapes.length : 0;
+        else if (ej.blocs[b.id] && !(seance.enCours.has(b.id) && seance.ids.indexOf(b.id) > seance.bi)) p = 1;
+        const r = $(`[data-seg="${b.id}"] .rempli`);
+        if (r) r.style.width = `${Math.round(p * 100)}%`;
+      });
+    }
+
+    function renderEtape() {
+      const b = blocCourant();
+      const num = BLOCS.indexOf(b) + 1;
+      $('#etiquette').innerHTML = `Station ${num} · <b>${b.nom}</b> · ${seance.ei + 1}/${seance.etapes.length}`;
+      majBarre();
+      const e = seance.etapes[seance.ei];
+      e.note = false;
+      const carte = $('#carte');
+      ({ carte: etapeCarte, lecon: etapeLecon, tableau: etapeTableau, qcm: etapeQcm, saisie: etapeSaisie, parole: etapeParole })[e.type](e, carte);
+    }
+
+    function noter(e, bien) {
+      if (e.note) return;
+      e.note = true;
+      seance.total++;
+      if (bien) seance.ok++;
+    }
+
+    function suivante() {
+      if (Reco && recoActive) { try { recoActive.abort(); } catch (err) { /* rien */ } }
+      seance.ei++;
+      if (seance.ei >= seance.etapes.length) finBloc();
+      else renderEtape();
+      window.scrollTo(0, 0);
+    }
+
+    function boutonContinuer(libelle = 'Continuer') {
+      return `<div class="actions"><button class="bouton principal" id="continuer">${libelle}</button></div>`;
+    }
+    function brancherContinuer(focus = true) {
+      const c = $('#continuer');
+      c.addEventListener('click', suivante);
+      if (focus) c.focus({ preventScroll: true });
+    }
+
+    /* ---- Carte de vocabulaire ---- */
+    function etapeCarte(e, carte) {
+      const [en, fr, ex, exFr] = e.mot;
+      carte.innerHTML = `
+        <p class="consigne">Nouveau mot</p>
+        <div class="mot-zone">
+          <p class="mot" lang="en">${esc(en)}</p>
+          <button class="bouton" data-dire="${esc(en)}">${ICONE_SON} Écouter</button>
+        </div>
+        <div class="verso" id="verso" hidden>
+          <p class="traduction">${esc(fr)}</p>
+          <p class="exemple"><button class="rond" data-dire="${esc(ex)}" aria-label="Écouter l’exemple">${ICONE_SON}</button><span lang="en">${esc(ex)}</span></p>
+          <p class="exemple-fr">${esc(exFr)}</p>
+        </div>
+        <div class="actions" id="actions">
+          <button class="bouton principal" id="retourner">Voir la traduction</button>
+        </div>`;
+      $('#retourner').addEventListener('click', () => {
+        $('#verso').hidden = false;
+        $('#actions').innerHTML = `
+          <button class="bouton" data-savait="0">À revoir</button>
+          <button class="bouton principal" data-savait="1">Je le savais</button>`;
+        $$('[data-savait]').forEach(btn => btn.addEventListener('click', () => {
+          const savait = btn.dataset.savait === '1';
+          const boite = etat.mots[en] || 0;
+          etat.mots[en] = savait ? Math.max(2, boite + 1) : 1;
+          sauver();
+          noter(e, savait);
+          suivante();
+        }));
+        $('[data-savait="1"]').focus({ preventScroll: true });
+      });
+    }
+
+    /* ---- Leçon ---- */
+    function etapeLecon(e, carte) {
+      carte.innerHTML = `
+        <p class="consigne">${esc(e.consigne)}</p>
+        <h2>${esc(e.titre)}</h2>
+        <div class="texte">${e.html}</div>
+        ${e.exemples ? `<ul class="exemples">${e.exemples.map(([en, fr]) => `
+          <li><button class="rond" data-dire="${esc(en)}" aria-label="Écouter : ${esc(en)}">${ICONE_SON}</button>
+          <span><span class="ex-en" lang="en">${esc(en)}</span><span class="ex-fr">${esc(fr)}</span></span></li>`).join('')}</ul>` : ''}
+        ${boutonContinuer('J’ai compris, on s’entraîne')}`;
+      brancherContinuer(false);
+    }
+
+    /* ---- Tableau de verbes ---- */
+    function etapeTableau(e, carte) {
+      carte.innerHTML = `
+        <p class="consigne">À apprendre par cœur</p>
+        <h2>${esc(e.titre)}</h2>
+        <div class="table-defile">
+          <table class="verbes">
+            <thead><tr><th scope="col">Base</th><th scope="col">Prétérit</th><th scope="col">Participe passé</th><th scope="col"><span class="sr">Écouter</span></th></tr></thead>
+            <tbody>
+              ${e.verbes.map(([base, pret, part, sens]) => `<tr>
+                <td class="base" lang="en">${esc(base)}<span class="sens" lang="fr">${esc(sens)}</span></td>
+                <td lang="en">${esc(pret)}</td><td lang="en">${esc(part)}</td>
+                <td><button class="rond" data-dire="${esc(`${base}, ${pret}, ${part}`)}" aria-label="Écouter ${esc(base)}">${ICONE_SON}</button></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <p class="astuce">Récite chaque ligne à voix haute, trois fois, en tapant le rythme : « go, went, gone ». Ensuite, tu complètes des phrases.</p>
+        ${boutonContinuer('C’est parti')}`;
+      brancherContinuer(false);
+    }
+
+    /* ---- Question à choix ---- */
+    const BRAVOS = ['Bien joué !', 'Exact !', 'Parfait !', 'Bravo !', 'Oui, c’est ça !'];
+    function etapeQcm(e, carte) {
+      const trou = e.texte.includes('___');
+      carte.innerHTML = `
+        <p class="consigne">${esc(e.consigne)}</p>
+        <p class="enonce" id="enonce"${e.anglais ? ' lang="en"' : ''}>${trou ? avecTrou(e.texte) : esc(e.texte)}</p>
+        <div class="options" role="group" aria-label="Réponses possibles">
+          ${e.options.map((o, i) => `<button class="option" data-i="${i}">${esc(o)}</button>`).join('')}
+        </div>
+        <div class="retour-rep" id="retour" role="status" hidden></div>
+        <div id="suite"></div>`;
+      $$('.option', carte).forEach(btn => btn.addEventListener('click', () => {
+        const choix = e.options[Number(btn.dataset.i)];
+        const bien = choix === e.bonne;
+        noter(e, bien);
+        if (e.mot) { etat.mots[e.mot] = bien ? Math.max(2, etat.mots[e.mot] || 0) : 1; sauver(); }
+        $$('.option', carte).forEach(o => {
+          o.disabled = true;
+          if (e.options[Number(o.dataset.i)] === e.bonne) o.classList.add('bon');
+        });
+        if (!bien) btn.classList.add('faux');
+        if (trou) $('#enonce').innerHTML = avecTrou(e.texte, e.bonne);
+        const r = $('#retour');
+        r.hidden = false;
+        r.innerHTML = `
+          <p class="verdict ${bien ? 'bon' : 'faux'}">${bien ? BRAVOS[Math.floor(Math.random() * BRAVOS.length)] : `Pas tout à fait. Réponse : ${esc(e.bonne)}`}</p>
+          ${e.ecoute ? `<p class="ecoute-ligne"><button class="rond" data-dire="${esc(e.ecoute)}" aria-label="Écouter la phrase">${ICONE_SON}</button><span lang="en">${esc(e.ecoute)}</span></p>` : ''}
+          ${e.expl ? `<p class="expl">${esc(e.expl)}</p>` : ''}`;
+        $('#suite').innerHTML = boutonContinuer();
+        brancherContinuer();
+      }));
+    }
+
+    /* ---- Réponse à taper ---- */
+    const propre = s => s.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim();
+    function etapeSaisie(e, carte) {
+      carte.innerHTML = `
+        <p class="consigne">Mets le verbe <b lang="en">${esc(e.verbe)}</b> à la bonne forme</p>
+        <p class="enonce" id="enonce" lang="en">${avecTrou(e.texte)}</p>
+        <form class="saisie" id="form-saisie" autocomplete="off" novalidate>
+          <label for="champ" class="sr">Ta réponse</label>
+          <input id="champ" name="champ" type="text" lang="en" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="Ta réponse">
+          <button class="bouton principal" type="submit" id="verifier">Vérifier</button>
+        </form>
+        <button class="lien" id="sais-pas" type="button">Je ne sais pas, montre-moi</button>
+        <div class="retour-rep" id="retour" role="status" hidden></div>
+        <div id="suite"></div>`;
+      const champ = $('#champ');
+      champ.focus({ preventScroll: true });
+      function corriger(abandon) {
+        const val = propre(champ.value);
+        if (!abandon && !val) { champ.focus(); return; }
+        const bien = !abandon && e.reps.includes(val);
+        noter(e, bien);
+        champ.disabled = true; $('#verifier').disabled = true; $('#sais-pas').hidden = true;
+        $('#enonce').innerHTML = avecTrou(e.texte, e.reps[0]);
+        const phrase = e.texte.replace('___', e.reps[0]);
+        const r = $('#retour');
+        r.hidden = false;
+        r.innerHTML = `
+          <p class="verdict ${bien ? 'bon' : 'faux'}">${bien ? BRAVOS[Math.floor(Math.random() * BRAVOS.length)] : abandon ? `La réponse : ${esc(e.reps[0])}` : `Presque. La réponse : ${esc(e.reps[0])}`}</p>
+          <p class="ecoute-ligne"><button class="rond" data-dire="${esc(phrase)}" aria-label="Écouter la phrase">${ICONE_SON}</button><span lang="en">${esc(phrase)}</span></p>`;
+        $('#suite').innerHTML = boutonContinuer();
+        brancherContinuer();
+      }
+      $('#form-saisie').addEventListener('submit', ev => { ev.preventDefault(); corriger(false); });
+      $('#sais-pas').addEventListener('click', () => corriger(true));
+    }
+
+    /* ---- Diction ---- */
+    let recoActive = null;
+    function etapeParole(e, carte) {
+      let meilleur = null;
+      carte.innerHTML = `
+        <p class="consigne">Écoute, puis répète la phrase</p>
+        <p class="phrase-dite" id="phrase" lang="en">${e.en.split(' ').map(w => `<span class="m">${esc(w)}</span>`).join(' ')}</p>
+        <p class="trad">${esc(e.fr)}</p>
+        <div class="ecoutes">
+          <button class="bouton" data-dire="${esc(e.en)}">${ICONE_SON} Écouter</button>
+          <button class="bouton" data-dire="${esc(e.en)}" data-lent="1">Plus lentement</button>
+        </div>
+        <div class="micro-zone">
+          ${Reco ? `<button class="bouton micro" id="micro">${ICONE_MICRO}<span>Je répète</span></button>` : ''}
+          <p class="micro-info" id="micro-info">${Reco ? 'Appuie, dis la phrase, puis attends une seconde.' : 'Ce navigateur ne sait pas écouter ta voix. Répète la phrase à voix haute, puis note-toi.'}</p>
+        </div>
+        <div class="retour-rep" id="retour" role="status" hidden></div>
+        <div class="actions" id="fin-parole">
+          <p class="question-auto">Comment c’était ?</p>
+          <button class="bouton" data-auto="0">À retravailler</button>
+          <button class="bouton principal" data-auto="1">Bien prononcé</button>
+        </div>`;
+
+      function autoEval() {
+        $$('[data-auto]').forEach(btn => btn.addEventListener('click', () => { noter(e, btn.dataset.auto === '1'); suivante(); }));
+      }
+      autoEval();
+
+      function afficher(res) {
+        if (!meilleur || res.score >= meilleur.score) meilleur = res;
+        const spans = $$('#phrase .m');
+        res.mots.forEach((m, i) => { if (spans[i]) spans[i].className = `m ${m.ok ? 'ok' : 'rate'}`; });
+        const pct = Math.round(res.score * 100);
+        const verdict = res.score >= 0.85 ? ['bon', 'Excellent !'] : res.score >= 0.6 ? ['bon', 'Pas mal ! Réécoute les mots en rouge.'] : ['faux', 'Réessaie : écoute d’abord la version lente.'];
+        const r = $('#retour');
+        r.hidden = false;
+        r.innerHTML = `<p class="verdict ${verdict[0]}">${verdict[1]}</p><p class="expl">${pct} % des mots reconnus. J’ai entendu : « <span lang="en">${esc(res.texte)}</span> »</p>`;
+        $('#fin-parole').innerHTML = `
+          <button class="bouton" id="reessayer">Réessayer</button>
+          <button class="bouton principal" id="continuer">Continuer</button>`;
+        $('#reessayer').addEventListener('click', () => $('#micro').click());
+        $('#continuer').addEventListener('click', () => { noter(e, meilleur.score >= 0.6); suivante(); });
+      }
+
+      const micro = $('#micro');
+      if (!micro) return;
+      micro.addEventListener('click', () => {
+        const info = $('#micro-info');
+        if (recoActive) { try { recoActive.stop(); } catch (err) { /* rien */ } return; }
+        if (synth) synth.cancel();
+        let r;
+        try { r = new Reco(); } catch (err) { info.textContent = 'Le micro n’a pas pu démarrer. Note-toi avec les boutons ci-dessous.'; return; }
+        r.lang = 'en-GB'; r.interimResults = false; r.maxAlternatives = 4; r.continuous = false;
+        let recu = false, erreur = false;
+        r.onresult = ev => {
+          recu = true;
+          const alts = Array.from(ev.results[0]).map(a => a.transcript);
+          const res = alts.map(t => comparer(e.en, t)).sort((x, y) => y.score - x.score)[0];
+          info.textContent = 'Appuie à nouveau pour réessayer.';
+          afficher(res);
+        };
+        r.onerror = ev => {
+          erreur = true;
+          const msg = {
+            'not-allowed': 'Le micro est bloqué ici. Autorise-le dans les réglages du navigateur, ou note-toi avec les boutons ci-dessous.',
+            'service-not-allowed': 'Le micro est bloqué ici. Autorise-le dans les réglages du navigateur, ou note-toi avec les boutons ci-dessous.',
+            'no-speech': 'Je n’ai rien entendu. Réessaie, un peu plus près du micro.',
+            'audio-capture': 'Aucun micro trouvé sur cet appareil.',
+            'network': 'La reconnaissance de la voix a besoin d’internet.',
+            'aborted': '',
+          }[ev.error];
+          info.textContent = msg ?? 'La reconnaissance de la voix a échoué. Réessaie, ou note-toi.';
+        };
+        r.onend = () => {
+          recoActive = null;
+          if (!document.body.contains(micro)) return;
+          micro.classList.remove('actif');
+          micro.lastElementChild.textContent = 'Je répète';
+          if (!recu && !erreur) info.textContent = 'Je n’ai rien entendu. Réessaie, un peu plus près du micro.';
+        };
+        try {
+          r.start();
+          recoActive = r;
+          micro.classList.add('actif');
+          micro.lastElementChild.textContent = 'J’écoute… (touche pour arrêter)';
+          info.textContent = 'Parle maintenant.';
+        } catch (err) {
+          info.textContent = 'Le micro n’a pas pu démarrer. Note-toi avec les boutons ci-dessous.';
+        }
+      });
+    }
+
+    /* ---- Fin d'une station ---- */
+    function finBloc() {
+      const b = blocCourant();
+      const ej = etatJour(seance.n);
+      ej.blocs[b.id] = { ok: seance.ok, total: seance.total };
+      seance.enCours.delete(b.id);
+      compterTemps();
+      sauver();
+      seance.ei = seance.etapes.length;
+      majBarre();
+      const suivantId = seance.ids[seance.bi + 1];
+      const suivant = BLOCS.find(x => x.id === suivantId);
+      const pct = seance.total ? seance.ok / seance.total : 1;
+      const mot = pct >= 0.85 ? 'Très solide.' : pct >= 0.6 ? 'C’est en bonne voie.' : 'On reverra ça : refais cette station demain.';
+      $('#etiquette').innerHTML = `Station ${BLOCS.indexOf(b) + 1} · <b>${b.nom}</b> · terminée`;
+      $('#carte').innerHTML = `
+        <div class="bravo">
+          <p class="consigne">Station terminée</p>
+          <h2>${b.nom} : ${seance.ok}/${seance.total}</h2>
+          <p>${mot}</p>
+          <div class="actions">
+            <button class="bouton" id="pause">Faire une pause</button>
+            <button class="bouton principal" id="suite-bloc">${suivant ? `Station suivante : ${suivant.nom}` : 'Voir le bilan'}</button>
+          </div>
+        </div>`;
+      $('#pause').addEventListener('click', renderAccueil);
+      const s = $('#suite-bloc');
+      s.focus({ preventScroll: true });
+      s.addEventListener('click', () => {
+        seance.bi++;
+        if (suivant) { lancerBloc(); window.scrollTo(0, 0); } else finSeance();
+      });
+    }
+
+    /* ---- Bilan de la séance ---- */
+    function finSeance() {
+      const n = seance.n;
+      arreterChrono();
+      const ej = etatJour(n);
+      const complet = BLOCS.every(b => ej.blocs[b.id]);
+      if (complet) {
+        if (!ej.fini) ej.fini = dateCle(new Date());
+        etat.seances++;
+        majSerie();
+      }
+      sauver();
+      const ok = BLOCS.reduce((s, b) => s + (ej.blocs[b.id] ? ej.blocs[b.id].ok : 0), 0);
+      const total = BLOCS.reduce((s, b) => s + (ej.blocs[b.id] ? ej.blocs[b.id].total : 0), 0);
+      const pct = total ? Math.round(ok / total * 100) : 0;
+      const serie = serieActuelle();
+      const J = JOURS[n - 1];
+      const prochainJour = JOURS[n];
+      const restants = BLOCS.filter(b => !ej.blocs[b.id]);
+      seance = null;
+
+      app.innerHTML = `
+        <div class="seance" style="--accent: var(--l-conj); --sur: var(--sur-accent)">
+          <header class="barre">
+            <button class="bouton discret" id="accueil">Accueil</button>
+            <div class="mini-ligne" aria-hidden="true">
+              ${BLOCS.map(b => `<span class="seg" style="--c: var(${b.c})"><span class="rempli" style="width: ${ej.blocs[b.id] ? 100 : 0}%"></span></span>`).join('')}
+            </div>
+            <p class="chrono"><span>${mmss(ej.secondes)}</span><span class="sur"> / ${OBJECTIF_MIN}:00</span></p>
+          </header>
+          <main class="scene">
+            <p class="etiquette">Jour ${J.n} · <b>${esc(J.theme)}</b></p>
+            <article class="carte bravo">
+              <p class="consigne">${complet ? 'Terminus' : 'Pause'}</p>
+              <h2>${complet ? 'Séance terminée, bravo !' : 'Bien avancé !'}</h2>
+              <dl class="chiffres bilan-chiffres">
+                <div><dt>Temps</dt><dd>${Math.max(1, Math.round(ej.secondes / 60))} min</dd></div>
+                <div><dt>Bonnes réponses</dt><dd>${pct} %</dd></div>
+                <div><dt>Série</dt><dd>${pluriel(serie, 'jour')}</dd></div>
+              </dl>
+              <ul class="recap">
+                ${BLOCS.map(b => {
+                  const r = ej.blocs[b.id];
+                  return `<li style="--c: var(${b.c})"><span class="point${r ? '' : ' vide'}"></span><span>${b.nom}</span><span>${r ? `${r.ok}/${r.total}` : 'à faire'}</span></li>`;
+                }).join('')}
+              </ul>
+              <p>${complet
+                ? (prochainJour ? `Demain : jour ${prochainJour.n}, ${esc(prochainJour.theme.toLowerCase())}.` : 'Tu as fini la première semaine du programme !')
+                : `Il te reste : ${restants.map(b => b.nom.toLowerCase()).join(', ')}.`}</p>
+              <div class="actions">
+                <button class="bouton" id="accueil-2">Retour à l’accueil</button>
+                ${complet && prochainJour ? `<button class="bouton principal" id="jour-suivant">Voir le jour ${prochainJour.n}</button>` : ''}
+              </div>
+            </article>
+          </main>
+        </div>`;
+      window.scrollTo(0, 0);
+      $('#accueil').addEventListener('click', renderAccueil);
+      $('#accueil-2').addEventListener('click', renderAccueil);
+      const js = $('#jour-suivant');
+      if (js) js.addEventListener('click', () => { jourSel = prochainJour.n; renderAccueil(); });
+      if (js) js.focus({ preventScroll: true });
+    }
+
+    /* =========================================================
+       Chronomètre (compte le temps passé, se met en pause si l'écran est caché)
+       ========================================================= */
+
+    function compterTemps() {
+      if (!seance || !seance.t0) return;
+      const maintenant = Date.now();
+      const d = (maintenant - seance.t0) / 1000;
+      etatJour(seance.n).secondes += d;
+      etat.secondes += d;
+      seance.t0 = maintenant;
+    }
+    function majChrono() {
+      const el = $('#chrono');
+      if (!el || !seance) return;
+      const s = etatJour(seance.n).secondes + (seance.t0 ? (Date.now() - seance.t0) / 1000 : 0);
+      el.textContent = mmss(s);
+    }
+    function demarrerChrono() {
+      clearInterval(chronoId);
+      seance.t0 = Date.now();
+      chronoId = setInterval(majChrono, 1000);
+      majChrono();
+    }
+    function arreterChrono() {
+      if (chronoId) { clearInterval(chronoId); chronoId = null; }
+      if (seance) { compterTemps(); seance.t0 = null; sauver(); }
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (!seance || !chronoId) return;
+      if (document.hidden) { compterTemps(); seance.t0 = null; sauver(); }
+      else seance.t0 = Date.now();
+    });
+
+    // Tous les boutons « Écouter » de l'appli.
+    app.addEventListener('click', ev => {
+      const b = ev.target.closest('[data-dire]');
+      if (b) dire(b.dataset.dire, b.dataset.lent === '1');
+    });
+
+    function demarrage(data) {
+      if (data && data.jourSel && JOURS[data.jourSel - 1]) jourSel = data.jourSel;
+      renderAccueil();
+    }
+    window.claude?.hot?.snapshot(() => ({ jourSel }));
+    window.claude?.hot?.ready ? window.claude.hot.ready(demarrage) : demarrage(window.claude?.hot?.data ?? {});
+  })();
+  </script>
+</body>
+</html>

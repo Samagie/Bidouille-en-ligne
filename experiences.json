@@ -28,6 +28,21 @@
   ],
   "experiences": [
     {
+      "numero": "003",
+      "dossier": "003-anglais-intensif",
+      "titre": "Anglais intensif",
+      "statut": "en-cours",
+      "date": "2026-11-07",
+      "resume": "Une séance d'anglais de 25 minutes par jour, en 5 stations (vocabulaire, grammaire, conjugaison, bases, diction), sur téléphone et iPad.",
+      "tags": [
+        "web",
+        "apprentissage",
+        "voix"
+      ],
+      "demo": "experiences/003-anglais-intensif/",
+      "fiche": "https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/003-anglais-intensif"
+    },
+    {
       "numero": "002",
       "dossier": "002-rappel-de-la-semaine",
       "titre": "Rappel de la semaine (Chez Miaouss)",
