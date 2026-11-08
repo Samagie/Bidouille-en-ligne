@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chasseur de bonnes affaires · Bidouille en ligne</title>
+  <meta name="description" content="Trouver sur Leboncoin, Vinted et eBay les appareils en panne faciles à réparer, et savoir si l'annonce est une affaire.">
+  <link rel="stylesheet" href="chasseur.css">
+</head>
+<body>
+  <a class="retour" href="../../">← Retour au labo</a>
+
+  <header class="entete">
+    <p class="etiquette">Expérience n° 003</p>
+    <h1>Le chasseur de bonnes affaires</h1>
+    <p class="accroche">Repérer les appareils <strong>en panne</strong>… mais <strong>faciles à réparer</strong>, sur Leboncoin, Vinted et eBay.</p>
+  </header>
+
+  <nav class="onglets" role="tablist" aria-label="Sections">
+    <button type="button" role="tab" data-onglet="chercher" aria-selected="true"><span aria-hidden="true">🔎</span>Chercher</button>
+    <button type="button" role="tab" data-onglet="analyser" aria-selected="false"><span aria-hidden="true">🧐</span>Analyser</button>
+    <button type="button" role="tab" data-onglet="guide" aria-selected="false"><span aria-hidden="true">🛠️</span>Pannes</button>
+    <button type="button" role="tab" data-onglet="trouvailles" aria-selected="false"><span aria-hidden="true">📒</span>Trouvailles <b id="compte-trouvailles" class="compte"></b></button>
+  </nav>
+
+  <main>
+    <!-- 1. Chercher -->
+    <section id="onglet-chercher" class="onglet" role="tabpanel">
+      <p class="intro">Choisis un appareil : je prépare les recherches qui font remonter les annonces <em>en panne</em>, les plus récentes d'abord. Un clic, et c'est ouvert sur le site.</p>
+
+      <div id="choix-appareil" class="puces" aria-label="Appareil"></div>
+
+      <div class="reglages">
+        <label id="autre-champ" class="champ" hidden><span>Quel appareil ?</span>
+          <input id="autre-texte" type="text" placeholder="ex. GoPro Hero 9" autocomplete="off">
+        </label>
+        <label class="champ champ-court"><span>Prix max</span>
+          <span class="avec-unite"><input id="budget" type="number" inputmode="numeric" min="0" step="5" placeholder="sans limite"><span>€</span></span>
+        </label>
+      </div>
+
+      <div id="liste-recherches"></div>
+
+      <aside class="encadre">
+        <h2>🔔 Être prévenu tout seul</h2>
+        <p>Inutile de revenir chercher tous les jours : les sites le font pour toi.</p>
+        <ol>
+          <li>Ouvre une recherche avec un des boutons.</li>
+          <li><strong>Leboncoin</strong> : touche « Sauvegarder la recherche », puis active l'alerte.<br>
+              <strong>Vinted</strong> : touche « Sauvegarder la recherche ».<br>
+              <strong>eBay</strong> : touche « Enregistrer cette recherche ».</li>
+          <li>Tu reçois une notification à chaque nouvelle annonce. Les bonnes affaires partent en quelques heures : c'est là que ça se joue.</li>
+        </ol>
+      </aside>
+
+      <aside class="encadre encadre-astuces">
+        <h2>💡 Astuces de chasseur</h2>
+        <ul>
+          <li><strong>« Vendu sans chargeur »</strong> : souvent un appareil qui marche très bien, que personne n'ose acheter.</li>
+          <li><strong>Les vendeurs qui « n'y connaissent rien »</strong> (grenier, déménagement) décrivent mal la panne… qui est souvent toute simple.</li>
+          <li><strong>Les fautes de frappe</strong> (« nintendo swich », « playstaion ») : moins de monde voit ces annonces.</li>
+          <li>Avant d'acheter, colle l'annonce dans <button type="button" class="lien-bouton" data-onglet-lien="analyser">🧐 Analyser</button>.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <!-- 2. Analyser -->
+    <section id="onglet-analyser" class="onglet" role="tabpanel" hidden>
+      <p class="intro">Colle le texte d'une annonce. Je repère la panne, je dis si elle est facile à réparer, et je calcule si c'est une affaire.</p>
+
+      <div class="exemples-ligne">
+        <span class="petit">Essayer avec un exemple :</span>
+        <div id="exemples" class="puces puces-petites"></div>
+      </div>
+
+      <label class="champ"><span>Le texte de l'annonce <span class="petit">(le titre sur la 1<sup>re</sup> ligne, puis la description)</span></span>
+        <textarea id="annonce" rows="6" placeholder="Nintendo Switch&#10;Les joy-con dérivent, sinon tout fonctionne…&#10;80 €"></textarea>
+      </label>
+      <p id="detecte" class="detecte" aria-live="polite"></p>
+
+      <div class="deux-colonnes">
+        <label class="champ"><span>Prix demandé</span>
+          <span class="avec-unite"><input id="prix" type="number" inputmode="decimal" min="0" placeholder="ex. 60"><span>€</span></span>
+        </label>
+        <label class="champ"><span>Il vaut, en état de marche</span>
+          <span class="avec-unite"><input id="revente" type="number" inputmode="decimal" min="0" placeholder="estimé"><span>€</span></span>
+        </label>
+      </div>
+      <div class="deux-colonnes">
+        <label class="champ"><span>Appareil</span>
+          <select id="famille"></select>
+        </label>
+        <div class="champ champ-bouton"><button type="button" id="effacer" class="bouton bouton-discret">🧽 Effacer</button></div>
+      </div>
+
+      <div id="resultat" class="resultat"></div>
+    </section>
+
+    <!-- 3. Guide des pannes -->
+    <section id="onglet-guide" class="onglet" role="tabpanel" hidden>
+      <p class="intro">Les pannes qui reviennent le plus, appareil par appareil, de la plus facile à la plus risquée. Prix des pièces en ordre de grandeur.</p>
+      <p class="legende">
+        <span class="badge badge-facile">🟢 Facile</span> un tournevis et un tuto ·
+        <span class="badge badge-moyen">🟡 Bricoleur</span> patience, chaleur ou soudure ·
+        <span class="badge badge-difficile">🔴 Spécialiste</span> microsoudure ou pièce chère ·
+        <span class="badge badge-piege">⛔ Piège</span> à fuir
+      </p>
+      <div id="guide"></div>
+    </section>
+
+    <!-- 4. Trouvailles -->
+    <section id="onglet-trouvailles" class="onglet" role="tabpanel" hidden>
+      <p class="intro">Les annonces que tu as gardées, avec leur verdict. Elles restent sur cet appareil, nulle part ailleurs.</p>
+      <div id="liste-trouvailles"></div>
+    </section>
+  </main>
+
+  <footer class="pied">
+    <p>Aucune annonce n'est récupérée par un robot : les boutons ouvrent simplement la recherche sur le vrai site. Prix et pannes donnés en ordre de grandeur, à vérifier avant d'acheter.</p>
+  </footer>
+
+  <script src="appareils.js"></script>
+  <script src="chasseur.js"></script>
+  <script>
+    // Le lien « 🧐 Analyser » dans les astuces.
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-onglet-lien]");
+      if (b) document.querySelector('.onglets [data-onglet="' + b.dataset.ongletLien + '"]').click();
+    });
+  </script>
+</body>
+</html>

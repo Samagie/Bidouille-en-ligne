@@ -28,6 +28,23 @@
   ],
   "experiences": [
     {
+      "numero": "003",
+      "dossier": "003-chasseur-de-bonnes-affaires",
+      "titre": "Chasseur de bonnes affaires",
+      "statut": "en-cours",
+      "date": "2026-11-08",
+      "resume": "Trouver sur Leboncoin, Vinted et eBay les appareils en panne faciles à réparer, et savoir en un coup d'œil si une annonce est une affaire.",
+      "tags": [
+        "web",
+        "bonnes affaires",
+        "réparation",
+        "leboncoin",
+        "vinted"
+      ],
+      "demo": "experiences/003-chasseur-de-bonnes-affaires/",
+      "fiche": "https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/003-chasseur-de-bonnes-affaires"
+    },
+    {
       "numero": "002",
       "dossier": "002-rappel-de-la-semaine",
       "titre": "Rappel de la semaine (Chez Miaouss)",

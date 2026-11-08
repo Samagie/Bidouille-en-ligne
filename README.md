@@ -10,6 +10,7 @@ Mon labo d'idées : de petites expériences rapides pour tester des idées, puis
 <!-- DEBUT-SOMMAIRE -->
 | N° | Expérience | Statut | En une phrase | Démo |
 |---|---|---|---|---|
+| 003 | [Chasseur de bonnes affaires](experiences/003-chasseur-de-bonnes-affaires/) | 🧪 En cours | Trouver sur Leboncoin, Vinted et eBay les appareils en panne faciles à réparer, et savoir en un coup d'œil si une annonce est une affaire. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/003-chasseur-de-bonnes-affaires/) |
 | 002 | [Rappel de la semaine (Chez Miaouss)](experiences/002-rappel-de-la-semaine/) | 🧪 En cours | Le journal de la semaine de Mimi en story animée, avec 5 modèles qui tournent, des modèles de saison, la comparaison avec la semaine d'avant et des réactions. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/002-rappel-de-la-semaine/) |
 | 001 | [Le dictaphone de Madeleine](experiences/001-labo-audio/) | 🧪 En cours | Quatre cassettes abîmées à remettre en état (à l'envers, trop vite, couvertes par une autre voix) pour trouver le code d'un coffre. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/001-labo-audio/) |
 <!-- FIN-SOMMAIRE -->
