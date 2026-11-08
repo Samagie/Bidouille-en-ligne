@@ -10,6 +10,7 @@ Mon labo d'idées : de petites expériences rapides pour tester des idées, puis
 <!-- DEBUT-SOMMAIRE -->
 | N° | Expérience | Statut | En une phrase | Démo |
 |---|---|---|---|---|
+| 003 | [Sites pour commerçants](experiences/003-sites-pour-commercants/) | 🧪 En cours | Deux sites de démonstration pour des commerces imaginaires (une boulangerie, un barbier), pour voir ce qu'on pourrait vendre aux commerçants du quartier. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/003-sites-pour-commercants/) |
 | 002 | [Rappel de la semaine (Chez Miaouss)](experiences/002-rappel-de-la-semaine/) | 🧪 En cours | Le journal de la semaine de Mimi en story animée, avec 5 modèles qui tournent, des modèles de saison, la comparaison avec la semaine d'avant et des réactions. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/002-rappel-de-la-semaine/) |
 | 001 | [Le dictaphone de Madeleine](experiences/001-labo-audio/) | 🧪 En cours | Quatre cassettes abîmées à remettre en état (à l'envers, trop vite, couvertes par une autre voix) pour trouver le code d'un coffre. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/001-labo-audio/) |
 <!-- FIN-SOMMAIRE -->

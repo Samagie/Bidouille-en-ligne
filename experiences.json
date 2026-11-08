@@ -28,6 +28,21 @@
   ],
   "experiences": [
     {
+      "numero": "003",
+      "dossier": "003-sites-pour-commercants",
+      "titre": "Sites pour commerçants",
+      "statut": "en-cours",
+      "date": "2026-11-08",
+      "resume": "Deux sites de démonstration pour des commerces imaginaires (une boulangerie, un barbier), pour voir ce qu'on pourrait vendre aux commerçants du quartier.",
+      "tags": [
+        "web",
+        "commerce",
+        "revenus"
+      ],
+      "demo": "experiences/003-sites-pour-commercants/",
+      "fiche": "https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/003-sites-pour-commercants"
+    },
+    {
       "numero": "002",
       "dossier": "002-rappel-de-la-semaine",
       "titre": "Rappel de la semaine (Chez Miaouss)",

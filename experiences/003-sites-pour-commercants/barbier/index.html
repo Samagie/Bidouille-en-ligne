@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marius, barbier à Valbreuil</title>
+  <meta name="description" content="Barbier rue du Pont-Neuf à Valbreuil : coupe homme, taille de barbe, rasage à l'ancienne. Réservation en ligne.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --porcelaine: #f2f1ec;
+      --carrelage: #dcdad2;
+      --nuit: #18213a;
+      --nuit-2: #222c48;
+      --sang: #8e1f27;
+      --laiton: #c29a5b;
+      --gris: #5a5e6a;
+      --police: "Bricolage Grotesque", system-ui, sans-serif;
+      --large: min(100% - 2.5rem, 76rem);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; background: var(--porcelaine); color: var(--nuit);
+      font: 400 1.0625rem/1.55 var(--police);
+      font-variation-settings: "wdth" 100;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--laiton); outline-offset: 3px; }
+    h1, h2, h3 { margin: 0; line-height: 1; font-variation-settings: "wdth" 75; font-weight: 800; letter-spacing: -0.01em; }
+    h2 { font-size: clamp(2.6rem, 1.6rem + 4vw, 5rem); }
+    p { margin: 0; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .demo { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 0.45rem 1.25rem; background: var(--nuit); color: #c9ccd6; font-size: 0.8rem; }
+    .demo a { color: #fff; }
+
+    .bouton {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0.8rem 1.4rem; border-radius: 6px; border: 2px solid var(--sang);
+      background: var(--sang); color: #fff; text-decoration: none; cursor: pointer;
+      font: 700 1rem var(--police);
+    }
+    .bouton:hover { background: #741820; border-color: #741820; }
+    .bouton.creux { background: transparent; color: var(--nuit); border-color: var(--nuit); }
+    .bouton.creux:hover { background: var(--nuit); color: #fff; }
+
+    /* En-tête */
+    .tete { width: var(--large); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.1rem 0; }
+    .marque { text-decoration: none; display: flex; align-items: baseline; gap: 0.5rem; }
+    .marque strong { font-size: 1.7rem; font-weight: 800; font-variation-settings: "wdth" 75; }
+    .marque span { color: var(--gris); }
+    .tete nav { display: flex; align-items: center; gap: 1.6rem; }
+    .tete nav a:not(.bouton) { text-decoration: none; font-weight: 500; }
+    .tete nav a:not(.bouton):hover { color: var(--sang); }
+    .tete .bouton { padding: 0.55rem 1.1rem; }
+
+    /* La une, avec l'enseigne de barbier qui tourne */
+    .une { width: var(--large); margin: 0 auto; display: grid; grid-template-columns: 30px minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(1.25rem, 3.5vw, 3.5rem); padding: 1.5rem 0 4.5rem; }
+    .poteau {
+      border-radius: 15px; position: relative;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, 0.22)),
+        repeating-linear-gradient(45deg, var(--sang) 0 28.28px, var(--porcelaine) 0 56.57px, var(--nuit) 0 84.85px, var(--porcelaine) 0 113.14px);
+      background-size: 100% 100%, 100% 160px;
+      box-shadow: inset 0 0 0 1px rgba(24, 33, 58, 0.25);
+      animation: tourne 5s linear infinite;
+    }
+    .poteau::before, .poteau::after {
+      content: ""; position: absolute; left: -4px; right: -4px; height: 16px; border-radius: 8px;
+      background: linear-gradient(90deg, #f0d9a8, var(--laiton) 45%, #7d5f2e);
+    }
+    .poteau::before { top: -8px; }
+    .poteau::after { bottom: -8px; }
+    @keyframes tourne { to { background-position: 0 0, 0 160px; } }
+
+    .une-texte { display: flex; flex-direction: column; justify-content: center; padding: 1rem 0; }
+    .une h1 { font-size: clamp(6rem, 3rem + 13vw, 15.5rem); line-height: 0.8; letter-spacing: -0.015em; margin-left: -0.04em; }
+    .une-metier { font-size: clamp(1.4rem, 1rem + 1.4vw, 2.2rem); font-weight: 300; margin-top: 1.2rem; }
+    .une-accroche { margin-top: 1.4rem; font-size: 1.15rem; max-width: 34ch; color: var(--gris); }
+    .etat { margin-top: 1.8rem; display: grid; gap: 0.2rem; padding-left: 1rem; border-left: 3px solid #3f8a5c; }
+    .etat.ferme { border-left-color: var(--sang); }
+    .etat strong { font-weight: 700; }
+    .une .boutons { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.8rem; }
+    .une-photo { margin: 0; position: relative; }
+    .une-photo img { width: 100%; height: 100%; min-height: 32rem; object-fit: cover; border-radius: 0 0 160px 0; }
+
+    /* Les prestations */
+    .prestations { background: var(--nuit); color: var(--porcelaine); padding: 5.5rem 0; }
+    .dedans { width: var(--large); margin: 0 auto; }
+    .prestations-tete { display: flex; justify-content: space-between; align-items: end; gap: 1.5rem; flex-wrap: wrap; }
+    .prestations-tete p { color: #aeb3c3; }
+    .tarif { list-style: none; padding: 0; margin: 2.8rem 0 0; }
+    .tarif li { display: grid; grid-template-columns: minmax(0, 1fr) 6rem 5rem auto; align-items: center; gap: 1.5rem; padding: 1.4rem 0; border-top: 1px solid #364160; }
+    .tarif li:last-child { border-bottom: 1px solid #364160; }
+    .tarif h3 { font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem); font-weight: 700; }
+    .tarif p { color: #aeb3c3; margin-top: 0.35rem; font-size: 0.97rem; }
+    .tarif .duree { color: #aeb3c3; font-variant-numeric: tabular-nums; }
+    .tarif .prix { font-size: 1.9rem; font-weight: 800; color: var(--laiton); font-variation-settings: "wdth" 75; text-align: right; }
+    .tarif button {
+      font: 700 0.95rem var(--police); padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer;
+      background: transparent; color: var(--porcelaine); border: 1.5px solid #59627f;
+    }
+    .tarif button:hover { border-color: var(--porcelaine); }
+
+    /* Réserver */
+    .reserver { padding: 5.5rem 0; }
+    .reserver .dedans { display: grid; grid-template-columns: minmax(0, 1fr) 23rem; gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
+    .reserver h2 { margin-bottom: 1rem; }
+    fieldset { border: 0; padding: 0; margin: 2.2rem 0 0; min-width: 0; }
+    legend { font-weight: 700; font-size: 1.2rem; display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.9rem; padding: 0; }
+    legend span {
+      width: 2rem; height: 2rem; border-radius: 50%; display: grid; place-items: center;
+      background: var(--nuit); color: var(--porcelaine); font-size: 0.95rem;
+    }
+    .puces { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .puce { position: relative; }
+    .puce input { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .puce span {
+      display: grid; padding: 0.6rem 1rem; border-radius: 6px; cursor: pointer; line-height: 1.25;
+      border: 1.5px solid #c4c2b9; background: #fff;
+    }
+    .puce small { color: var(--gris); font-size: 0.82rem; }
+    .puce span:hover { border-color: var(--nuit); }
+    .puce input:checked + span { background: var(--nuit); border-color: var(--nuit); color: #fff; }
+    .puce input:checked + span small { color: #c9ccd6; }
+    .puce input:focus-visible + span { outline: 3px solid var(--laiton); outline-offset: 2px; }
+    .puce input:disabled + span { background: transparent; color: #a9a79f; border-style: dashed; cursor: not-allowed; text-decoration: line-through; }
+    .jours { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.4rem; scrollbar-width: thin; }
+    .jours .puce span { text-align: center; min-width: 4.6rem; }
+    .heures { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.2rem, 1fr)); gap: 0.5rem; }
+    .heures .puce span, .jours .puce span, .jours small { white-space: nowrap; }
+    .heures .puce span { text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .vide { color: var(--gris); padding: 1rem; border: 1.5px dashed #c4c2b9; border-radius: 6px; }
+
+    .ticket { position: sticky; top: 1.5rem; background: var(--nuit); color: var(--porcelaine); border-radius: 10px; overflow: hidden; }
+    .ticket-haut { padding: 1.5rem 1.5rem 1.2rem; }
+    .ticket h3 { font-size: 1.9rem; }
+    .ticket dl { margin: 1.2rem 0 0; display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1rem; }
+    .ticket dt { color: #aeb3c3; }
+    .ticket dd { margin: 0; text-align: right; font-weight: 600; }
+    .ticket .prix-total { font-size: 2.2rem; font-weight: 800; color: var(--laiton); font-variation-settings: "wdth" 75; }
+    .ticket-bas { padding: 1.3rem 1.5rem 1.5rem; background: var(--nuit-2); border-top: 2px dashed #48537a; display: grid; gap: 0.8rem; }
+    .ticket label { display: grid; gap: 0.3rem; font-size: 0.9rem; font-weight: 600; }
+    .ticket input { font: 400 1rem var(--police); padding: 0.7rem 0.8rem; border-radius: 6px; border: 1px solid #48537a; background: #2b3656; color: #fff; }
+    .ticket input::placeholder { color: #8d93a8; }
+    .ticket .bouton { width: 100%; margin-top: 0.3rem; }
+    .ticket .erreur { color: #ffb4ad; font-weight: 600; min-height: 1.4em; font-size: 0.92rem; }
+    .confirme { padding: 1.8rem 1.5rem; display: grid; gap: 0.9rem; }
+    .confirme h3 { font-size: 2.1rem; }
+    .confirme .note { font-size: 0.88rem; color: #c9ccd6; background: var(--nuit-2); padding: 0.7rem 0.8rem; border-radius: 6px; }
+    .confirme .bouton { background: transparent; border-color: #59627f; }
+
+    /* Le salon */
+    .salon { position: relative; color: #fff; }
+    .salon img { width: 100%; height: clamp(26rem, 70vh, 44rem); object-fit: cover; }
+    .salon::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(14, 18, 32, 0.85), rgba(14, 18, 32, 0.15) 70%); }
+    .salon-texte { position: absolute; inset: 0; z-index: 1; width: var(--large); margin: 0 auto; display: flex; flex-direction: column; justify-content: center; }
+    .salon h2 { max-width: 14ch; }
+    .salon p { margin-top: 1.2rem; max-width: 40ch; font-size: 1.15rem; color: #e1e3ea; }
+
+    .equipe { width: var(--large); margin: 0 auto; padding: 5.5rem 0 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 4vw, 4rem); }
+    .barbier img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 0 0 90px 0; }
+    .barbier h3 { font-size: 2.6rem; margin-top: 1.3rem; }
+    .barbier .depuis { color: var(--sang); font-weight: 700; margin-top: 0.3rem; }
+    .barbier p:last-child { margin-top: 0.7rem; color: var(--gris); max-width: 46ch; }
+
+    .avis { width: var(--large); margin: 0 auto; padding: 1rem 0 5.5rem; }
+    .note-globale { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+    .note-globale strong { font-size: 4.5rem; font-weight: 800; line-height: 1; font-variation-settings: "wdth" 75; }
+    .note-globale span { color: var(--gris); }
+    .note-globale .etoiles { color: var(--laiton); letter-spacing: 0.15em; font-size: 1.3rem; }
+    .avis ul { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .avis li { border-top: 3px solid var(--nuit); padding-top: 1.1rem; }
+    .avis blockquote { margin: 0; font-size: 1.12rem; }
+    .avis cite { display: block; margin-top: 0.7rem; font-style: normal; color: var(--gris); font-size: 0.92rem; }
+
+    .infos { background: #fff; padding: 5.5rem 0; }
+    .infos .dedans { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); }
+    .horaires { width: 100%; border-collapse: collapse; margin-top: 1.6rem; font-variant-numeric: tabular-nums; }
+    .horaires th, .horaires td { padding: 0.65rem 0.5rem; border-bottom: 1px solid var(--carrelage); text-align: left; font-weight: 400; }
+    .horaires td { text-align: right; }
+    .horaires .aujourdhui { background: var(--porcelaine); }
+    .horaires .aujourdhui th, .horaires .aujourdhui td { font-weight: 700; }
+    .horaires .ferme-jour { color: var(--gris); }
+    .acces address { font-style: normal; font-size: 1.2rem; margin-top: 1.6rem; }
+    .acces p { margin-top: 0.7rem; color: var(--gris); }
+    .plan { margin-top: 1.6rem; border-radius: 8px; overflow: hidden; border: 1px solid var(--carrelage); }
+    .plan svg { display: block; width: 100%; height: auto; }
+
+    footer { background: var(--nuit); color: #aeb3c3; padding: 3rem 0 6rem; font-size: 0.92rem; }
+    footer .dedans { display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+    footer strong { display: block; color: #fff; font-size: 1.8rem; font-variation-settings: "wdth" 75; font-weight: 800; margin-bottom: 0.3rem; }
+    footer p + p { margin-top: 0.3rem; }
+
+    .barre-mobile { display: none; }
+
+    @media (max-width: 860px) {
+      .tete nav a:not(.bouton) { display: none; }
+      .une { grid-template-columns: minmax(0, 1fr); gap: 1.2rem; padding-top: 0.5rem; }
+      .poteau { height: 18px; border-radius: 9px; background-size: 100% 100%, 160px 100%; animation-name: tourne-large; }
+      .poteau::before, .poteau::after { display: none; }
+      @keyframes tourne-large { to { background-position: 0 0, 160px 0; } }
+      .une-photo img { min-height: 0; aspect-ratio: 4 / 3; border-radius: 0 0 90px 0; }
+      .tarif li { grid-template-columns: 1fr auto; gap: 0.3rem 1rem; }
+      .tarif li > div { grid-column: 1 / -1; }
+      .tarif .prix { text-align: left; grid-row: 2; grid-column: 1; }
+      .tarif .duree { grid-row: 3; grid-column: 1; }
+      .tarif button { grid-row: 2 / 4; grid-column: 2; }
+      .reserver .dedans, .equipe, .infos .dedans { grid-template-columns: minmax(0, 1fr); }
+      .ticket { position: static; }
+      .avis ul { grid-template-columns: 1fr; }
+      .barre-mobile {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+        padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+        background: rgba(242, 241, 236, 0.96); border-top: 1px solid var(--carrelage);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .poteau { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+    <span>Site de démonstration : ce salon est imaginaire.</span>
+    <a href="../">← Voir les deux sites</a>
+  </div>
+
+  <header class="tete">
+    <a class="marque" href="#"><strong>Marius</strong><span>barbier</span></a>
+    <nav aria-label="Menu">
+      <a href="#prestations">Prestations</a>
+      <a href="#salon">Le salon</a>
+      <a href="#infos">Horaires et accès</a>
+      <a class="bouton" href="#reserver">Réserver</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="une">
+      <div class="poteau" aria-hidden="true"></div>
+      <div class="une-texte">
+        <h1>Marius<span class="sr">, barbier à Valbreuil</span></h1>
+        <p class="une-metier" aria-hidden="true">barbier à Valbreuil</p>
+        <p class="une-accroche">Coupe, barbe et rasage à l'ancienne, rue du Pont-Neuf. Réservez en ligne en trente secondes.</p>
+        <p class="etat" id="etat"><strong>Ouvert jusqu'à 19 h</strong><span>Prochain créneau libre : aujourd'hui à 15 h 30 avec Inès.</span></p>
+        <div class="boutons">
+          <a class="bouton" href="#reserver">Réserver un créneau</a>
+          <a class="bouton creux" href="tel:+33465713820">04 65 71 38 20</a>
+        </div>
+      </div>
+      <figure class="une-photo">
+        <img src="photos/coupe.webp" alt="Un barbier fait un dégradé à la tondeuse sur un client barbu." width="1200" height="800">
+      </figure>
+    </section>
+
+    <section class="prestations" id="prestations" aria-labelledby="prestations-titre">
+      <div class="dedans">
+        <div class="prestations-tete">
+          <h2 id="prestations-titre">Les prestations</h2>
+          <p>Shampoing et coiffage compris. Carte, espèces et sans contact.</p>
+        </div>
+        <ul class="tarif" id="tarif"></ul>
+      </div>
+    </section>
+
+    <section class="reserver" id="reserver" aria-labelledby="reserver-titre">
+      <div class="dedans">
+        <div>
+          <h2 id="reserver-titre">Réserver un créneau</h2>
+          <p style="color: var(--gris)">Les créneaux sont à jour. Si vous avez un empêchement, un SMS suffit pour annuler.</p>
+          <fieldset>
+            <legend><span>1</span>La prestation</legend>
+            <div class="puces" id="choix-prestation"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span>2</span>Le barbier</legend>
+            <div class="puces" id="choix-barbier"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span>3</span>Le jour</legend>
+            <div class="puces jours" id="choix-jour"></div>
+          </fieldset>
+          <fieldset>
+            <legend><span>4</span>L'heure</legend>
+            <div class="heures" id="choix-heure"></div>
+          </fieldset>
+        </div>
+
+        <aside class="ticket" aria-live="polite" id="ticket"></aside>
+      </div>
+    </section>
+
+    <section class="salon" id="salon" aria-labelledby="salon-titre">
+      <img src="photos/salon.webp" alt="L'intérieur du salon : murs de briques, fauteuils de barbier en cuir et miroirs." loading="lazy" width="1800" height="1200">
+      <div class="salon-texte">
+        <h2 id="salon-titre">Deux fauteuils, pas d'attente</h2>
+        <p>Un salon de quartier ouvert en 2011, entre le pont et le marché. On prend le temps, et on vous offre le café.</p>
+      </div>
+    </section>
+
+    <section class="equipe" aria-label="L'équipe">
+      <article class="barbier">
+        <img src="photos/rasage.webp" alt="Un client se fait savonner la barbe au blaireau avant un rasage." loading="lazy" width="1000" height="667">
+        <h3>Marius</h3>
+        <p class="depuis">Barbier depuis 2008</p>
+        <p>Le rasage au coupe-chou et la serviette chaude, c'est lui. Il taille aussi les barbes les plus fournies, et il a toujours une anecdote sur le quartier.</p>
+      </article>
+      <article class="barbier">
+        <img src="photos/degrade.webp" alt="Une barbière trace un dégradé net sur la nuque d'un client." loading="lazy" width="900" height="600">
+        <h3>Inès</h3>
+        <p class="depuis">Au salon depuis 2019</p>
+        <p>Dégradés, coupes texturées et coupes enfants. Montrez-lui une photo, elle vous dira franchement si ça ira avec vos cheveux.</p>
+      </article>
+    </section>
+
+    <section class="avis" aria-labelledby="avis-titre">
+      <h2 id="avis-titre" class="sr">Avis des clients</h2>
+      <div class="note-globale">
+        <strong>4,9</strong>
+        <span class="etoiles" aria-hidden="true">★★★★★</span>
+        <span>sur 212 avis (avis d'exemple pour la démonstration)</span>
+      </div>
+      <ul>
+        <li><blockquote>Réservé le matin pour midi, coupe impeccable. Inès a compris en deux phrases ce que je voulais.</blockquote><cite>Thomas</cite></li>
+        <li><blockquote>Le rasage à la serviette chaude, c'est mon cadeau d'anniversaire chaque année.</blockquote><cite>Karim</cite></li>
+        <li><blockquote>Mon fils de six ans ne bouge pas d'un millimètre sur le fauteuil. C'est dire.</blockquote><cite>Élodie</cite></li>
+      </ul>
+    </section>
+
+    <section class="infos" id="infos" aria-labelledby="infos-titre">
+      <div class="dedans">
+        <div>
+          <h2 id="infos-titre">Horaires</h2>
+          <table class="horaires"><tbody id="horaires"></tbody></table>
+        </div>
+        <div class="acces">
+          <h2>Accès</h2>
+          <address>14 rue du Pont-Neuf<br>Valbreuil</address>
+          <p>Juste après le pont, côté marché. Parking gratuit quai des Tanneurs, à deux minutes.</p>
+          <div class="plan">
+            <svg viewBox="0 0 480 240" role="img" aria-label="Plan : le salon est rue du Pont-Neuf, juste après le pont, près du quai des Tanneurs.">
+              <rect width="480" height="240" fill="#f4f3ef"/>
+              <path d="M-10 170 C100 120 180 210 300 160 S430 120 490 140" fill="none" stroke="#c9d6e3" stroke-width="34"/>
+              <path d="M0 60 H480" stroke="#fff" stroke-width="20"/>
+              <path d="M220 0 V240" stroke="#fff" stroke-width="20"/>
+              <rect x="206" y="148" width="28" height="44" fill="#e4e1d8"/>
+              <text x="240" y="232" font-family="Bricolage Grotesque, sans-serif" font-size="11" fill="#5a5e6a">Pont-Neuf</text>
+              <text x="40" y="215" font-family="Bricolage Grotesque, sans-serif" font-size="11" fill="#6f87a0">La Brève</text>
+              <text x="300" y="54" font-family="Bricolage Grotesque, sans-serif" font-size="11" fill="#5a5e6a">Quai des Tanneurs</text>
+              <text x="232" y="110" font-family="Bricolage Grotesque, sans-serif" font-size="11" fill="#5a5e6a" transform="rotate(90 232 110)">Rue du Pont-Neuf</text>
+              <g transform="translate(205 102)">
+                <path d="M0 0 C-14 -14 -14 -30 0 -30 C14 -30 14 -14 0 0 Z" fill="#8e1f27"/>
+                <circle cy="-20" r="5" fill="#f2f1ec"/>
+              </g>
+              <text x="140" y="85" font-family="Bricolage Grotesque, sans-serif" font-size="14" font-weight="800" fill="#18213a">Marius</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="dedans">
+      <div>
+        <strong>Marius, barbier</strong>
+        <p>14 rue du Pont-Neuf, Valbreuil</p>
+        <p><a href="tel:+33465713820">04 65 71 38 20</a></p>
+      </div>
+      <div>
+        <p>Site de démonstration réalisé dans le labo Bidouille en ligne.</p>
+        <p>Salon, adresse, personnes et avis imaginaires. Photos : Unsplash.</p>
+        <p><a href="../">← Voir les deux sites</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="barre-mobile">
+    <a class="bouton creux" href="tel:+33465713820">Appeler</a>
+    <a class="bouton" href="#reserver">Réserver</a>
+  </div>
+
+  <script>
+    // Heure simulée possible pour les captures : ?heure=2026-11-10T14:40
+    const parametre = new URLSearchParams(location.search).get("heure");
+    const maintenant = parametre && !isNaN(new Date(parametre)) ? new Date(parametre) : new Date();
+
+    const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+    const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+    const MOIS_COURTS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+    const h = (heures, minutes = 0) => heures * 60 + minutes;
+    const OUVERTURE = [null, null, [h(9), h(19)], [h(9), h(19)], [h(9), h(19)], [h(9), h(19)], [h(8, 30), h(17)]];
+    const PRESTATIONS = [
+      { id: "coupe", nom: "Coupe homme", detail: "Shampoing, coupe ciseaux ou tondeuse, coiffage.", duree: 30, prix: 24 },
+      { id: "coupe-barbe", nom: "Coupe et barbe", detail: "La coupe, plus la barbe taillée et dessinée au rasoir.", duree: 50, prix: 36 },
+      { id: "barbe", nom: "Taille de barbe", detail: "Contours au rasoir, huile et baume.", duree: 20, prix: 16 },
+      { id: "rasage", nom: "Rasage à l'ancienne", detail: "Serviette chaude, blaireau et coupe-chou.", duree: 30, prix: 28 },
+      { id: "enfant", nom: "Coupe enfant", detail: "Jusqu'à 12 ans. Les héros de dessin animé sont bienvenus.", duree: 20, prix: 16 },
+    ];
+    const BARBIERS = ["Marius", "Inès"];
+
+    const heureTexte = (m) => { const hh = Math.floor(m / 60), mm = m % 60; return mm ? `${hh} h ${String(mm).padStart(2, "0")}` : `${hh} h`; };
+    const cleDate = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    const ajouterJours = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); r.setHours(0, 0, 0, 0); return r; };
+    const memeJour = (a, b) => cleDate(a) === cleDate(b);
+    const minuteMaintenant = maintenant.getHours() * 60 + maintenant.getMinutes();
+
+    // Agenda inventé mais stable : le même créneau est toujours pris ou libre.
+    const reservesEnDemo = new Set();
+    function hachage(texte) { let x = 2166136261; for (const c of texte) { x ^= c.charCodeAt(0); x = Math.imul(x, 16777619); } return (x >>> 0) % 100; }
+    function demiHeureLibre(date, barbier, debut) {
+      if (reservesEnDemo.has(`${cleDate(date)}|${barbier}|${debut}`)) return false;
+      const seuil = date.getDay() === 6 ? 62 : 45;
+      return hachage(`${cleDate(date)}|${barbier}|${debut}`) >= seuil;
+    }
+    function creneauLibre(date, barbier, debut, duree) {
+      const [o, f] = OUVERTURE[date.getDay()];
+      if (debut + duree > f) return false;
+      if (memeJour(date, maintenant) && debut < minuteMaintenant + 20) return false;
+      for (let m = debut; m < debut + duree; m += 30) if (!demiHeureLibre(date, barbier, m)) return false;
+      return true;
+    }
+    function barbierLibre(date, choix, debut, duree) {
+      const candidats = choix === "premier" ? BARBIERS : [choix];
+      return candidats.find((b) => creneauLibre(date, b, debut, duree));
+    }
+    function joursOuverts(n) {
+      const liste = [];
+      for (let d = 0; liste.length < n && d < 30; d++) {
+        const date = ajouterJours(maintenant, d);
+        const o = OUVERTURE[date.getDay()];
+        if (!o) continue;
+        if (d === 0 && minuteMaintenant > o[1] - 50) continue;
+        liste.push(date);
+      }
+      return liste;
+    }
+    function creneaux(date) { const [o, f] = OUVERTURE[date.getDay()]; const l = []; for (let m = o; m < f; m += 30) l.push(m); return l; }
+    function jourTexte(date) {
+      if (memeJour(date, maintenant)) return "aujourd'hui";
+      if (memeJour(date, ajouterJours(maintenant, 1))) return "demain";
+      return `${JOURS[date.getDay()]} ${date.getDate()} ${MOIS[date.getMonth()]}`;
+    }
+
+    // État du salon dans la une
+    (function () {
+      const etat = document.getElementById("etat");
+      const o = OUVERTURE[maintenant.getDay()];
+      const ouvert = o && minuteMaintenant >= o[0] && minuteMaintenant < o[1];
+      let ligne1;
+      if (ouvert) ligne1 = `Ouvert jusqu'à ${heureTexte(o[1])}`;
+      else {
+        let d = 0, prochain;
+        while (!prochain && d < 8) { const date = ajouterJours(maintenant, d); const oo = OUVERTURE[date.getDay()]; if (oo && (d > 0 || minuteMaintenant < oo[0])) prochain = { date, debut: oo[0] }; d++; }
+        ligne1 = `Fermé, ouvre ${memeJour(prochain.date, maintenant) ? "" : jourTexte(prochain.date).replace(/ \d+ \S+$/, "") + " "}à ${heureTexte(prochain.debut)}`;
+        etat.classList.add("ferme");
+      }
+      let ligne2 = "";
+      for (const date of joursOuverts(6)) {
+        const debut = creneaux(date).find((m) => barbierLibre(date, "premier", m, 30));
+        if (debut !== undefined) { ligne2 = `Prochain créneau libre : ${jourTexte(date)} à ${heureTexte(debut)} avec ${barbierLibre(date, "premier", debut, 30)}.`; break; }
+      }
+      etat.innerHTML = `<strong>${ligne1}</strong><span>${ligne2}</span>`;
+    })();
+
+    // Tarifs
+    const tarif = document.getElementById("tarif");
+    PRESTATIONS.forEach((p) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<div><h3>${p.nom}</h3><p>${p.detail}</p></div>
+        <span class="duree">${p.duree} min</span>
+        <span class="prix">${p.prix} €</span>
+        <button type="button">Réserver</button>`;
+      li.querySelector("button").addEventListener("click", () => {
+        choix.prestation = p.id; choix.heure = null; dessiner();
+        document.getElementById("reserver").scrollIntoView();
+      });
+      tarif.append(li);
+    });
+
+    // Réservation
+    const jours = joursOuverts(10);
+    const choix = { prestation: "coupe", barbier: "premier", jour: 0, heure: null, confirme: null };
+    const prestation = () => PRESTATIONS.find((p) => p.id === choix.prestation);
+
+    function puce(nom, valeur, coche, contenu, desactive = false) {
+      return `<label class="puce"><input type="radio" name="${nom}" value="${valeur}" ${coche ? "checked" : ""} ${desactive ? "disabled" : ""}><span>${contenu}</span></label>`;
+    }
+
+    function dessiner() {
+      const p = prestation();
+      document.getElementById("choix-prestation").innerHTML = PRESTATIONS.map((x) =>
+        puce("prestation", x.id, x.id === choix.prestation, `${x.nom}<small>${x.duree} min, ${x.prix} €</small>`)).join("");
+      document.getElementById("choix-barbier").innerHTML = [["premier", "Le premier libre"], ...BARBIERS.map((b) => [b, b])].map(([v, t]) =>
+        puce("barbier", v, v === choix.barbier, t)).join("");
+      document.getElementById("choix-jour").innerHTML = jours.map((d, i) => {
+        const titre = memeJour(d, maintenant) ? "Auj." : memeJour(d, ajouterJours(maintenant, 1)) ? "Demain" : `${JOURS[d.getDay()].slice(0, 3)}.`;
+        return puce("jour", i, i === choix.jour, `${titre}<small>${d.getDate()} ${MOIS_COURTS[d.getMonth()]}</small>`);
+      }).join("");
+
+      const date = jours[choix.jour];
+      const debuts = creneaux(date).filter((m) => m + p.duree <= OUVERTURE[date.getDay()][1] && !(memeJour(date, maintenant) && m < minuteMaintenant));
+      const libres = debuts.filter((m) => barbierLibre(date, choix.barbier, m, p.duree));
+      if (choix.heure !== null && !libres.includes(choix.heure)) choix.heure = null;
+      document.getElementById("choix-heure").innerHTML = libres.length
+        ? debuts.map((m) => puce("heure", m, m === choix.heure, heureTexte(m), !libres.includes(m))).join("")
+        : `<p class="vide">Plus de créneau ce jour-là pour cette prestation. Essayez le jour suivant${choix.barbier !== "premier" ? " ou « Le premier libre »" : ""}.</p>`;
+
+      dessinerTicket();
+    }
+
+    function dessinerTicket() {
+      const ticket = document.getElementById("ticket");
+      const p = prestation();
+      const date = jours[choix.jour];
+      if (choix.confirme) {
+        const c = choix.confirme;
+        ticket.innerHTML = `<div class="confirme">
+          <h3>C'est réservé</h3>
+          <p>${c.prestation}, ${c.jour} à ${c.heure} avec ${c.barbier}. À bientôt, ${c.prenom} !</p>
+          <p>Vous recevez un SMS de confirmation, puis un rappel la veille.</p>
+          <p class="note">Démonstration : aucun SMS n'est envoyé et rien n'est enregistré.</p>
+          <button class="bouton" type="button" id="encore">Prendre un autre rendez-vous</button>
+        </div>`;
+        document.getElementById("encore").addEventListener("click", () => { choix.confirme = null; dessiner(); });
+        return;
+      }
+      const barbier = choix.heure !== null ? barbierLibre(date, choix.barbier, choix.heure, p.duree) : (choix.barbier === "premier" ? "Le premier libre" : choix.barbier);
+      ticket.innerHTML = `<div class="ticket-haut">
+          <h3>Votre rendez-vous</h3>
+          <dl>
+            <dt>Prestation</dt><dd>${p.nom}</dd>
+            <dt>Avec</dt><dd>${barbier}</dd>
+            <dt>Jour</dt><dd>${jourTexte(date).replace(/^./, (c) => c.toUpperCase())}</dd>
+            <dt>Heure</dt><dd>${choix.heure !== null ? heureTexte(choix.heure) : "à choisir"}</dd>
+            <dt>Durée</dt><dd>${p.duree} min</dd>
+          </dl>
+          <p class="prix-total" style="margin-top: 1rem">${p.prix} €</p>
+        </div>
+        <form class="ticket-bas" id="form-rdv" novalidate>
+          <label>Prénom<input id="prenom" autocomplete="given-name" placeholder="Votre prénom"></label>
+          <label>Téléphone<input id="tel" type="tel" autocomplete="tel" placeholder="Pour le SMS de rappel"></label>
+          <p class="erreur" id="erreur" role="alert"></p>
+          <button class="bouton" type="submit">Confirmer le rendez-vous</button>
+        </form>`;
+      document.getElementById("form-rdv").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const erreur = document.getElementById("erreur");
+        const prenom = document.getElementById("prenom").value.trim();
+        const tel = document.getElementById("tel").value.replace(/\D/g, "");
+        if (choix.heure === null) { erreur.textContent = "Choisissez une heure à l'étape 4."; return; }
+        if (!prenom) { erreur.textContent = "Indiquez votre prénom."; document.getElementById("prenom").focus(); return; }
+        if (tel.length < 10) { erreur.textContent = "Indiquez un numéro à 10 chiffres pour le rappel."; document.getElementById("tel").focus(); return; }
+        const b = barbierLibre(date, choix.barbier, choix.heure, p.duree);
+        for (let m = choix.heure; m < choix.heure + p.duree; m += 30) reservesEnDemo.add(`${cleDate(date)}|${b}|${m}`);
+        choix.confirme = { prestation: p.nom, jour: jourTexte(date), heure: heureTexte(choix.heure), barbier: b, prenom };
+        choix.heure = null;
+        dessiner();
+      });
+    }
+
+    document.getElementById("reserver").addEventListener("change", (e) => {
+      const { name, value } = e.target;
+      if (!["prestation", "barbier", "jour", "heure"].includes(name)) return;
+      choix[name] = name === "jour" || name === "heure" ? Number(value) : value;
+      if (name !== "heure") choix.heure = null;
+      // On garde les champs déjà remplis du ticket
+      const prenom = document.getElementById("prenom")?.value, tel = document.getElementById("tel")?.value;
+      const focus = `input[name="${name}"][value="${value}"]`;
+      dessiner();
+      if (document.getElementById("prenom")) { document.getElementById("prenom").value = prenom || ""; document.getElementById("tel").value = tel || ""; }
+      document.querySelector(focus)?.focus();
+    });
+
+    dessiner();
+
+    // Horaires
+    const corps = document.getElementById("horaires");
+    [1, 2, 3, 4, 5, 6, 0].forEach((j) => {
+      const o = OUVERTURE[j];
+      const tr = document.createElement("tr");
+      if (j === maintenant.getDay()) tr.className = "aujourdhui";
+      tr.innerHTML = `<th scope="row">${JOURS[j][0].toUpperCase() + JOURS[j].slice(1)}${j === maintenant.getDay() ? " (aujourd'hui)" : ""}</th>` +
+        (o ? `<td>${heureTexte(o[0])} à ${heureTexte(o[1])}</td>` : `<td class="ferme-jour">Fermé</td>`);
+      corps.append(tr);
+    });
+  </script>
+</body>
+</html>

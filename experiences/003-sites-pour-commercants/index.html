@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sites pour commerçants · Bidouille en ligne</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.55;
+      color: #1d1f24;
+      background: #eceae6;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid #3567d6; outline-offset: 3px; }
+    .retour { display: inline-block; padding: 0.75rem 1rem; font-size: 0.9rem; }
+    main { width: min(100% - 2rem, 68rem); margin: 1rem auto 4rem; }
+    h1 { font-size: clamp(2rem, 1.4rem + 2.5vw, 3rem); line-height: 1.1; margin: 0; letter-spacing: -0.02em; }
+    .intro { max-width: 60ch; margin-top: 1rem; font-size: 1.1rem; color: #4b4f58; }
+
+    .site {
+      margin-top: 3rem; background: #fff; border-radius: 14px; overflow: hidden;
+      display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    }
+    .ecrans { position: relative; padding: 1.5rem 4.5rem 1.5rem 1.5rem; }
+    .boulangerie .ecrans { background: #1e3a2b; }
+    .barbier .ecrans { background: #18213a; }
+    .ordi { border-radius: 8px; box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6); }
+    .tel {
+      position: absolute; right: 1.25rem; bottom: 1.25rem; width: 28%;
+      border: 5px solid #111; border-radius: 22px; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+    }
+    .texte { padding: 2rem; display: flex; flex-direction: column; }
+    .texte h2 { margin: 0; font-size: 1.6rem; line-height: 1.15; }
+    .texte .type { color: #6a6e78; margin-top: 0.25rem; }
+    .texte ul { padding-left: 1.1rem; margin: 1.2rem 0 1.6rem; }
+    .texte li + li { margin-top: 0.45rem; }
+    .ouvrir {
+      margin-top: auto; align-self: start;
+      display: inline-block; padding: 0.8rem 1.4rem; border-radius: 999px;
+      background: #1d1f24; color: #fff; font-weight: 600; text-decoration: none;
+    }
+    .boulangerie .ouvrir { background: #1e3a2b; }
+    .barbier .ouvrir { background: #8e1f27; }
+
+    .commun { margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+    .commun section { background: #fff; border-radius: 14px; padding: 1.5rem; }
+    .commun h2 { margin: 0 0 0.6rem; font-size: 1.15rem; }
+    .commun p, .commun li { color: #4b4f58; }
+    .commun ul { margin: 0; padding-left: 1.1rem; }
+    .commun p { margin: 0; }
+
+    @media (max-width: 760px) {
+      .site { grid-template-columns: 1fr; }
+      .ecrans { padding: 1rem 3.5rem 1rem 1rem; }
+      .texte { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="retour" href="../../">← Retour au labo</a>
+
+  <main>
+    <h1>Deux sites pour des commerçants</h1>
+    <p class="intro">Ce qu'on pourrait proposer à un commerce du quartier : un site d'une page, beau sur téléphone, qui répond aux questions des clients et fait gagner du temps au commerçant. Les deux commerces sont imaginaires.</p>
+
+    <article class="site boulangerie">
+      <div class="ecrans">
+        <img class="ordi" src="apercus/boul-ordinateur.webp" alt="Le site de la boulangerie sur un ordinateur : l'enseigne verte et or, le store rayé et la vitrine." width="1200" height="750">
+        <img class="tel" src="apercus/boul-telephone.webp" alt="Le même site sur un téléphone." width="390" height="844">
+      </div>
+      <div class="texte">
+        <h2>Le Fournil des Tilleuls</h2>
+        <p class="type">Boulangerie et pâtisserie</p>
+        <ul>
+          <li>L'enseigne façon devanture peinte, avec le store rayé.</li>
+          <li>L'heure de la prochaine fournée, en direct : « la tradition sort du four à 16 h 30 ».</li>
+          <li>Ouvert ou fermé, calculé à la minute près.</li>
+          <li>La carte avec les prix, et le pain du mois qui change tout seul.</li>
+          <li>Commande pour le lendemain, envoyée par SMS au boulanger.</li>
+        </ul>
+        <a class="ouvrir" href="boulangerie/">Ouvrir le site</a>
+      </div>
+    </article>
+
+    <article class="site barbier">
+      <div class="ecrans">
+        <img class="ordi" src="apercus/barb-ordinateur.webp" alt="Le site du barbier sur un ordinateur : le nom Marius en très grand, l'enseigne rayée bleu blanc rouge et une photo de coupe." width="1200" height="750">
+        <img class="tel" src="apercus/barb-telephone.webp" alt="Le même site sur un téléphone." width="390" height="844">
+      </div>
+      <div class="texte">
+        <h2>Marius, barbier</h2>
+        <p class="type">Salon de coiffure pour hommes</p>
+        <ul>
+          <li>L'enseigne de barbier rayée qui tourne, comme devant le salon.</li>
+          <li>Les prestations avec la durée et le prix.</li>
+          <li>La réservation en quatre étapes : prestation, barbier, jour, heure.</li>
+          <li>Le prochain créneau libre affiché dès l'arrivée sur le site.</li>
+          <li>L'équipe, les avis et le plan d'accès.</li>
+        </ul>
+        <a class="ouvrir" href="barbier/">Ouvrir le site</a>
+      </div>
+    </article>
+
+    <div class="commun">
+      <section>
+        <h2>Ce que le commerçant reçoit</h2>
+        <ul>
+          <li>Un site rapide et lisible sur téléphone.</li>
+          <li>Les boutons « Appeler » et « Commander » ou « Réserver » toujours à portée de pouce.</li>
+          <li>Des horaires qui disent clairement si c'est ouvert.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Ce que ça coûte à faire tourner</h2>
+        <p>Hébergement gratuit. Nom de domaine (du type nom-du-commerce.fr) : environ 10 € par an. Pas d'abonnement.</p>
+      </section>
+      <section>
+        <h2>Dans la vraie version</h2>
+        <p>La commande part vraiment par SMS. La réservation se branche sur l'agenda du salon (Planity, Google Agenda…) ou passe aussi par SMS.</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

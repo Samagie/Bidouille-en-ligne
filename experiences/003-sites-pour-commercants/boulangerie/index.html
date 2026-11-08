@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le Fournil des Tilleuls, boulangerie à Montclair</title>
+  <meta name="description" content="Boulangerie et pâtisserie artisanale place des Tilleuls à Montclair. Pain au levain, viennoiseries pur beurre, commande pour le lendemain.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --vert: #1e3a2b;
+      --vert-fonce: #13281d;
+      --or: #c9a247;
+      --or-clair: #ecd795;
+      --papier: #ffffff;
+      --farine: #f2f2ee;
+      --encre: #1c1b18;
+      --gris: #625e56;
+      --croute: #8b4a1c;
+      --serif: "Bodoni Moda", "Didot", Georgia, serif;
+      --sans: "Instrument Sans", system-ui, sans-serif;
+      --large: min(100% - 2.5rem, 72rem);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+    body {
+      margin: 0;
+      background: var(--papier);
+      color: var(--encre);
+      font: 400 1.0625rem/1.6 var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--or); outline-offset: 3px; border-radius: 2px; }
+    h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.1; margin: 0; }
+    h2 { font-size: clamp(2rem, 1.4rem + 2.4vw, 3.1rem); letter-spacing: -0.01em; }
+    p { margin: 0; }
+
+    /* Bandeau démo */
+    .demo {
+      display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+      padding: 0.45rem 1.25rem;
+      background: var(--encre); color: #d8d4ca;
+      font-size: 0.8rem;
+    }
+    .demo a { color: #fff; }
+
+    /* La devanture : enseigne + store */
+    .facade { background: var(--vert); color: var(--or-clair); }
+    .facade-haut {
+      width: var(--large); margin: 0 auto;
+      padding: 1.6rem 0 1.2rem;
+      display: grid; gap: 1.1rem; justify-items: center;
+    }
+    .enseigne {
+      text-align: center;
+      padding: 1.1rem clamp(1.2rem, 5vw, 3.5rem) 1.25rem;
+      border: 1px solid var(--or);
+      box-shadow: inset 0 0 0 5px var(--vert), inset 0 0 0 6px rgba(201, 162, 71, 0.55);
+    }
+    .enseigne-metier {
+      font-family: var(--serif); font-style: italic; font-size: 1.05rem;
+      color: var(--or); letter-spacing: 0.04em;
+    }
+    .enseigne h1 {
+      font-size: clamp(2.2rem, 1rem + 5.4vw, 5rem);
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      background: linear-gradient(178deg, #f6e7b0 10%, var(--or) 52%, #9a7526 90%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+    }
+    .nav {
+      display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+      gap: 0.3rem 1.6rem;
+      font-size: 0.95rem;
+    }
+    .nav a { text-decoration: none; padding: 0.3rem 0; border-bottom: 1px solid transparent; }
+    .nav a:hover { border-bottom-color: var(--or); }
+    .nav .appel {
+      border: 1px solid var(--or); border-radius: 999px; padding: 0.3rem 0.95rem;
+      color: #fff;
+    }
+    .nav .appel:hover { background: var(--or); color: var(--vert-fonce); }
+    .store {
+      height: 54px;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0) 45%),
+        repeating-linear-gradient(90deg, #24533a 0 38px, #f4f3ee 38px 76px);
+      -webkit-mask:
+        linear-gradient(#000 0 34px, transparent 0),
+        radial-gradient(circle 19px at 19px 34px, #000 97%, transparent 100%) 0 0 / 38px 54px repeat-x;
+              mask:
+        linear-gradient(#000 0 34px, transparent 0),
+        radial-gradient(circle 19px at 19px 34px, #000 97%, transparent 100%) 0 0 / 38px 54px repeat-x;
+      position: relative; z-index: 2;
+      margin-bottom: -40px;
+    }
+
+    /* La vitrine */
+    .vitrine { position: relative; }
+    .vitrine img {
+      width: 100%; height: clamp(22rem, 62vh, 40rem); object-fit: cover; object-position: center 40%;
+    }
+    .vitrine-carte {
+      position: absolute; right: max(1.25rem, calc((100% - 72rem) / 2)); bottom: -2.5rem;
+      width: min(26rem, calc(100% - 2.5rem));
+      background: var(--papier);
+      padding: 1.4rem 1.5rem 1.5rem;
+      box-shadow: 0 18px 40px -18px rgba(20, 30, 20, 0.45);
+      border-top: 4px solid var(--or);
+    }
+    .etat { display: flex; align-items: center; gap: 0.55rem; font-weight: 600; font-size: 0.95rem; }
+    .etat::before {
+      content: ""; width: 0.6rem; height: 0.6rem; border-radius: 50%;
+      background: #3d8c5a; box-shadow: 0 0 0 4px rgba(61, 140, 90, 0.18);
+    }
+    .etat.ferme::before { background: #a2483a; box-shadow: 0 0 0 4px rgba(162, 72, 58, 0.16); }
+    .vitrine-carte p + p { margin-top: 0.6rem; color: var(--gris); }
+    .vitrine-carte .boutons { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.1rem; }
+
+    .bouton {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 999px; border: 1px solid var(--vert);
+      background: var(--vert); color: #fff;
+      font: 600 0.98rem var(--sans); text-decoration: none; cursor: pointer;
+    }
+    .bouton:hover { background: var(--vert-fonce); }
+    .bouton.clair { background: transparent; color: var(--vert); }
+    .bouton.clair:hover { background: var(--farine); }
+
+    /* Les fournées : la signature du site */
+    .fournees { width: var(--large); margin: 0 auto; padding: 6.5rem 0 4.5rem; }
+    .fournees h2 { max-width: 18ch; font-size: clamp(2.2rem, 1.2rem + 3.6vw, 4.2rem); font-weight: 500; }
+    .fournees .sous-titre { margin-top: 0.8rem; font-size: 1.25rem; color: var(--croute); font-weight: 600; }
+    .frise { margin-top: 3rem; position: relative; height: 5.5rem; }
+    .frise-piste {
+      position: absolute; left: 0; right: 0; top: 2.4rem; height: 4px; background: var(--farine); border-radius: 2px;
+    }
+    .frise-passe { position: absolute; left: 0; top: 2.4rem; height: 4px; background: var(--or); border-radius: 2px; }
+    .frise-borne, .frise-fournee, .frise-maintenant { position: absolute; top: 0; transform: translateX(-50%); text-align: center; }
+    .frise-borne { font-size: 0.8rem; color: var(--gris); top: 3.3rem; white-space: nowrap; }
+    .frise-borne:first-of-type { transform: none; }
+    .frise-borne.fin { transform: translateX(-100%); }
+    .frise-fournee { font-size: 0.85rem; font-weight: 600; width: 5rem; }
+    .frise-fournee::after {
+      content: ""; display: block; margin: 0.35rem auto 0;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--papier); border: 3px solid var(--croute);
+    }
+    .frise-fournee.debut { transform: translateX(-9px); text-align: left; }
+    .frise-fournee.debut::after { margin-left: 0; }
+    .frise-fournee.passee::after { background: var(--croute); }
+    .frise-fournee.prochaine { color: var(--croute); }
+    .frise-fournee.prochaine::after { animation: chaud 2.4s ease-in-out infinite; }
+    @keyframes chaud {
+      50% { box-shadow: 0 0 0 9px rgba(139, 74, 28, 0.14); }
+    }
+    .frise-maintenant { top: 1.95rem; }
+    .frise-maintenant span {
+      display: block; width: 2px; height: 1.05rem; background: var(--encre); margin: 0 auto;
+    }
+    .frise-maintenant em { display: block; font-style: normal; font-size: 0.75rem; margin-top: 0.15rem; white-space: nowrap; }
+    .fournees-note { margin-top: 1.4rem; color: var(--gris); max-width: 60ch; }
+
+    /* Le comptoir */
+    .comptoir { background: var(--farine); padding: 5rem 0; }
+    .comptoir-dedans { width: var(--large); margin: 0 auto; }
+    .entete-section { display: flex; justify-content: space-between; align-items: end; gap: 1.5rem; flex-wrap: wrap; }
+    .onglets { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .onglets button {
+      font: 600 0.95rem var(--sans);
+      padding: 0.6rem 1.1rem; border-radius: 999px; cursor: pointer;
+      border: 1px solid #cfccc2; background: transparent; color: var(--encre);
+    }
+    .onglets button[aria-selected="true"] { background: var(--vert); border-color: var(--vert); color: #fff; }
+    .rayon { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(1.5rem, 4vw, 4rem); margin-top: 2.5rem; align-items: start; }
+    .rayon[hidden] { display: none; }
+    .rayon img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+    .tarifs { list-style: none; padding: 0; margin: 0; }
+    .tarifs li { padding: 1rem 0; border-bottom: 1px solid #dcd9cf; }
+    .tarifs li:first-child { padding-top: 0; }
+    .ligne { display: flex; align-items: baseline; gap: 0.5rem; }
+    .ligne .nom { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; }
+    .ligne .points { flex: 1; border-bottom: 2px dotted #b9b4a6; transform: translateY(-0.3rem); min-width: 1.5rem; }
+    .ligne .prix { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--croute); white-space: nowrap; }
+    .tarifs .desc { color: var(--gris); font-size: 0.95rem; margin-top: 0.15rem; }
+    .pain-du-mois {
+      margin-top: 2rem; padding: 1.2rem 1.4rem;
+      background: var(--vert); color: #fff;
+      display: grid; gap: 0.2rem;
+    }
+    .pain-du-mois strong { font-family: var(--serif); font-size: 1.45rem; font-weight: 600; color: var(--or-clair); }
+
+    /* Commander */
+    .commander { width: var(--large); margin: 0 auto; padding: 5.5rem 0; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 5rem); }
+    .commander-intro p { margin-top: 1rem; color: var(--gris); max-width: 36ch; }
+    .commander-intro ol { margin: 1.5rem 0 0; padding-left: 1.2rem; color: var(--gris); }
+    .commander-intro li + li { margin-top: 0.4rem; }
+    .bon {
+      border: 1px solid #dcd9cf; padding: clamp(1.2rem, 3vw, 2rem);
+      background: var(--papier);
+    }
+    .articles { list-style: none; padding: 0; margin: 0; }
+    .articles li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--farine); }
+    .articles .nom { font-weight: 600; }
+    .articles .nom small { display: block; font-weight: 400; color: var(--gris); font-size: 0.88rem; }
+    .compteur { display: flex; align-items: center; gap: 0.2rem; }
+    .compteur button {
+      width: 2.2rem; height: 2.2rem; border-radius: 50%;
+      border: 1px solid #cfccc2; background: var(--papier); color: var(--encre);
+      font: 600 1.2rem/1 var(--sans); cursor: pointer;
+    }
+    .compteur button:hover { border-color: var(--vert); }
+    .compteur output { width: 2rem; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .champs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.4rem; }
+    .champ { display: grid; gap: 0.3rem; font-size: 0.9rem; font-weight: 600; }
+    .champ input, .champ select {
+      font: 400 1rem var(--sans); padding: 0.65rem 0.75rem;
+      border: 1px solid #cfccc2; border-radius: 6px; background: var(--papier); color: var(--encre);
+    }
+    .total { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .total p { font-size: 1.05rem; }
+    .total strong { font-family: var(--serif); font-size: 1.7rem; }
+    .erreur { color: #a2483a; font-weight: 600; margin-top: 0.8rem; min-height: 1.6em; }
+
+    /* Le fournil */
+    .fournil { background: var(--vert); color: #eef0ea; }
+    .fournil-dedans { width: var(--large); margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(2rem, 5vw, 5rem); padding: 5rem 0; }
+    .fournil img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+    .fournil h2 { color: var(--or-clair); }
+    .fournil p { margin-top: 1.2rem; max-width: 52ch; line-height: 1.75; }
+    .fournil ul { margin: 1.6rem 0 0; padding: 0; list-style: none; display: grid; gap: 0.75rem; }
+    .fournil li { padding-left: 1.6rem; position: relative; }
+    .fournil li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 0.7rem; height: 0.7rem; border: 2px solid var(--or); border-radius: 50%; }
+
+    /* Horaires et accès */
+    .infos { width: var(--large); margin: 0 auto; padding: 5.5rem 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); }
+    .horaires { width: 100%; border-collapse: collapse; margin-top: 1.6rem; font-variant-numeric: tabular-nums; }
+    .horaires th, .horaires td { text-align: left; padding: 0.6rem 0.4rem; border-bottom: 1px solid var(--farine); font-weight: 400; }
+    .horaires td { text-align: right; }
+    .horaires tr.aujourdhui { background: var(--farine); font-weight: 600; }
+    .horaires tr.aujourdhui th { font-weight: 600; }
+    .horaires .ferme-jour { color: var(--gris); }
+    .acces address { font-style: normal; margin-top: 1.6rem; font-size: 1.15rem; }
+    .acces p { margin-top: 0.8rem; color: var(--gris); }
+    .plan { margin-top: 1.6rem; border: 1px solid #dcd9cf; background: #f7f7f3; }
+    .plan svg { display: block; width: 100%; height: auto; }
+
+    footer { background: var(--vert-fonce); color: #bfc6bd; padding: 3rem 0 6rem; font-size: 0.92rem; }
+    .pied { width: var(--large); margin: 0 auto; display: flex; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+    .pied strong { font-family: var(--serif); font-size: 1.5rem; color: var(--or-clair); font-weight: 600; display: block; margin-bottom: 0.4rem; }
+    .pied p + p { margin-top: 0.3rem; }
+
+    /* Barre du bas sur téléphone */
+    .barre-mobile { display: none; }
+
+    dialog {
+      border: 0; padding: 0; width: min(30rem, calc(100% - 2rem));
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+    }
+    dialog::backdrop { background: rgba(19, 40, 29, 0.6); }
+    .envoi { padding: 1.6rem; }
+    .envoi h3 { font-size: 1.7rem; }
+    .envoi > p { margin-top: 0.6rem; color: var(--gris); }
+    .sms {
+      margin: 1.2rem 0; padding: 0.9rem 1.1rem; border-radius: 18px 18px 4px 18px;
+      background: #2f7d55; color: #fff; line-height: 1.5;
+    }
+    .sms-dest { font-size: 0.82rem; color: var(--gris); text-align: right; }
+    .envoi .note { font-size: 0.85rem; background: var(--farine); padding: 0.6rem 0.8rem; margin: 1rem 0 1.2rem; }
+
+    @media (max-width: 760px) {
+      .nav a:not(.appel) { display: none; }
+      .vitrine img { height: 19rem; }
+      .vitrine-carte { position: relative; right: auto; bottom: auto; width: auto; margin: -3rem 1.25rem 0; }
+      .fournees { padding-top: 3.5rem; }
+      .rayon, .commander, .fournil-dedans, .infos { grid-template-columns: 1fr; }
+      .rayon img { aspect-ratio: 16 / 10; }
+      .champs { grid-template-columns: 1fr; }
+      .frise-fournee { width: 3.6rem; font-size: 0.75rem; }
+      .frise-borne { display: none; }
+      .barre-mobile {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+        padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+        background: rgba(255, 255, 255, 0.96); border-top: 1px solid #dcd9cf;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .frise-fournee.prochaine::after { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+    <span>Site de démonstration : cette boulangerie est imaginaire.</span>
+    <a href="../">← Voir les deux sites</a>
+  </div>
+
+  <header class="facade">
+    <div class="facade-haut">
+      <div class="enseigne">
+        <p class="enseigne-metier">Boulangerie et pâtisserie</p>
+        <h1>Le Fournil des Tilleuls</h1>
+      </div>
+      <nav class="nav" aria-label="Menu">
+        <a href="#comptoir">Le comptoir</a>
+        <a href="#commander">Commander</a>
+        <a href="#fournil">Le fournil</a>
+        <a href="#infos">Horaires et accès</a>
+        <a class="appel" href="tel:+33261912408">02 61 91 24 08</a>
+      </nav>
+    </div>
+    <div class="store" aria-hidden="true"></div>
+  </header>
+
+  <main>
+    <section class="vitrine" aria-label="La boutique">
+      <img src="photos/boutique.webp" alt="L'intérieur de la boutique : baguettes debout, pains et viennoiseries en vitrine." width="1800" height="1200">
+      <div class="vitrine-carte">
+        <p class="etat" id="etat">Ouvert</p>
+        <p id="etat-detail">8 place des Tilleuls, Montclair</p>
+        <div class="boutons">
+          <a class="bouton" href="#commander">Commander pour demain</a>
+          <a class="bouton clair" href="#infos">Y aller</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="fournees" aria-labelledby="fournee-titre">
+      <h2 id="fournee-titre">La prochaine tradition sort du four à 16 h 30.</h2>
+      <p class="sous-titre" id="fournee-delai">Dans 42 minutes.</p>
+      <div class="frise" id="frise" aria-hidden="true"></div>
+      <p class="fournees-note">Quatre fournées de baguettes par jour, pour que le pain soit chaud quand vous passez. Le dimanche, deux fournées le matin.</p>
+    </section>
+
+    <section class="comptoir" id="comptoir" aria-labelledby="comptoir-titre">
+      <div class="comptoir-dedans">
+        <div class="entete-section">
+          <h2 id="comptoir-titre">Le comptoir</h2>
+          <div class="onglets" role="tablist" aria-label="Rayons">
+            <button role="tab" id="t-pains" aria-controls="r-pains" aria-selected="true">Pains</button>
+            <button role="tab" id="t-viennoiseries" aria-controls="r-viennoiseries" aria-selected="false" tabindex="-1">Viennoiseries</button>
+            <button role="tab" id="t-patisseries" aria-controls="r-patisseries" aria-selected="false" tabindex="-1">Pâtisseries</button>
+          </div>
+        </div>
+
+        <div class="rayon" id="r-pains" role="tabpanel" aria-labelledby="t-pains">
+          <img src="photos/baguettes.webp" alt="Des baguettes dorées alignées." loading="lazy" width="1000" height="667">
+          <div>
+            <ul class="tarifs">
+              <li><div class="ligne"><span class="nom">Baguette tradition</span><span class="points"></span><span class="prix">1,30 €</span></div><p class="desc">Farine Label Rouge, 24 heures de pousse au frais.</p></li>
+              <li><div class="ligne"><span class="nom">Pain de campagne au levain</span><span class="points"></span><span class="prix">3,90 €</span></div><p class="desc">500 g, croûte épaisse, se garde quatre jours.</p></li>
+              <li><div class="ligne"><span class="nom">Pain aux céréales</span><span class="points"></span><span class="prix">4,20 €</span></div><p class="desc">Lin, tournesol, sésame et graines de courge.</p></li>
+              <li><div class="ligne"><span class="nom">Boule de seigle</span><span class="points"></span><span class="prix">4,10 €</span></div><p class="desc">Pour les huîtres et le fromage.</p></li>
+              <li><div class="ligne"><span class="nom">Pain de mie maison</span><span class="points"></span><span class="prix">3,50 €</span></div><p class="desc">Tranché sur demande.</p></li>
+            </ul>
+            <div class="pain-du-mois">
+              <span id="mois-label">Le pain de novembre</span>
+              <strong id="mois-pain">Châtaigne et noisette</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="rayon" id="r-viennoiseries" role="tabpanel" aria-labelledby="t-viennoiseries" hidden>
+          <img src="photos/croissants.webp" alt="Une plaque de croissants bien feuilletés." loading="lazy" width="1000" height="667">
+          <ul class="tarifs">
+            <li><div class="ligne"><span class="nom">Croissant au beurre</span><span class="points"></span><span class="prix">1,25 €</span></div><p class="desc">Beurre AOP Charentes-Poitou, feuilleté sur trois jours.</p></li>
+            <li><div class="ligne"><span class="nom">Pain au chocolat</span><span class="points"></span><span class="prix">1,35 €</span></div><p class="desc">Deux barres de chocolat noir à 64 %.</p></li>
+            <li><div class="ligne"><span class="nom">Chausson aux pommes</span><span class="points"></span><span class="prix">1,90 €</span></div><p class="desc">Compote maison, pommes du verger voisin.</p></li>
+            <li><div class="ligne"><span class="nom">Roulé à la cannelle</span><span class="points"></span><span class="prix">2,10 €</span></div><p class="desc">Le préféré du mercredi après-midi.</p></li>
+            <li><div class="ligne"><span class="nom">Brioche tressée</span><span class="points"></span><span class="prix">5,80 €</span></div><p class="desc">Pour six, le week-end uniquement.</p></li>
+          </ul>
+        </div>
+
+        <div class="rayon" id="r-patisseries" role="tabpanel" aria-labelledby="t-patisseries" hidden>
+          <img src="photos/patisserie.webp" alt="Un gâteau au chocolat nappé et décoré de rosaces." loading="lazy" width="1000" height="667">
+          <ul class="tarifs">
+            <li><div class="ligne"><span class="nom">Éclair au café</span><span class="points"></span><span class="prix">3,20 €</span></div><p class="desc">Crème au café infusé à froid.</p></li>
+            <li><div class="ligne"><span class="nom">Paris-brest</span><span class="points"></span><span class="prix">3,90 €</span></div><p class="desc">Praliné noisette maison.</p></li>
+            <li><div class="ligne"><span class="nom">Flan pâtissier</span><span class="points"></span><span class="prix">2,80 €</span></div><p class="desc">À la vanille de Madagascar, la part.</p></li>
+            <li><div class="ligne"><span class="nom">Tarte fine aux pommes</span><span class="points"></span><span class="prix">3,40 €</span></div><p class="desc">La part. Entière pour six : 19 €.</p></li>
+            <li><div class="ligne"><span class="nom">Gâteau chocolat d'anniversaire</span><span class="points"></span><span class="prix">dès 24 €</span></div><p class="desc">Sur commande, 48 heures à l'avance, prénom offert.</p></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="commander" id="commander" aria-labelledby="commander-titre">
+      <div class="commander-intro">
+        <h2 id="commander-titre">Commander pour demain</h2>
+        <p>Votre pain est mis de côté, vous passez le prendre sans faire la queue.</p>
+        <ol>
+          <li>Choisissez vos produits et l'heure de passage.</li>
+          <li>La commande part au fournil par SMS.</li>
+          <li>Vous payez sur place en la récupérant.</li>
+        </ol>
+      </div>
+
+      <form class="bon" id="bon" novalidate>
+        <ul class="articles" id="articles"></ul>
+        <div class="champs">
+          <label class="champ">Jour de passage
+            <select id="jour"></select>
+          </label>
+          <label class="champ">Heure
+            <select id="heure"></select>
+          </label>
+          <label class="champ">Prénom
+            <input id="prenom" autocomplete="given-name" placeholder="Pour retrouver la commande">
+          </label>
+          <label class="champ">Téléphone
+            <input id="tel" type="tel" autocomplete="tel" placeholder="06 …">
+          </label>
+        </div>
+        <p class="erreur" id="erreur" role="alert"></p>
+        <div class="total">
+          <p>Total : <strong id="total">0,00 €</strong></p>
+          <button class="bouton" type="submit">Envoyer la commande</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="fournil" id="fournil" aria-labelledby="fournil-titre">
+      <div class="fournil-dedans">
+        <img src="photos/fournil.webp" alt="Un croissant saupoudré de farine sur une plaque sombre." loading="lazy" width="1400" height="933">
+        <div>
+          <h2 id="fournil-titre">Le pain se fait ici, la nuit</h2>
+          <p>Julien arrive au fournil à 2 heures du matin. Le levain a été nourri la veille, la pâte a poussé lentement au frais. À 6 h 30, Camille ouvre la boutique avec la première fournée.</p>
+          <ul>
+            <li>Levain naturel, nourri chaque jour depuis 2009.</li>
+            <li>Farines d'un moulin de la vallée, à 30 km.</li>
+            <li>Rien de surgelé : tout est façonné sur place.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="infos" id="infos" aria-labelledby="infos-titre">
+      <div>
+        <h2 id="infos-titre">Horaires</h2>
+        <table class="horaires" id="horaires"><caption class="sr" hidden>Horaires d'ouverture</caption><tbody></tbody></table>
+      </div>
+      <div class="acces">
+        <h2>Accès</h2>
+        <address>8 place des Tilleuls<br>Montclair</address>
+        <p>Dix minutes de stationnement gratuit devant la boutique. Arrêt de bus « Les Tilleuls », ligne 3.</p>
+        <div class="plan">
+          <svg viewBox="0 0 480 250" role="img" aria-label="Plan : la boulangerie est au nord de la place des Tilleuls, à l'angle de la Grande Rue.">
+            <rect width="480" height="250" fill="#f7f7f3"/>
+            <path d="M0 70 H480 M0 200 H480 M150 0 V250 M340 0 V250" stroke="#fff" stroke-width="22"/>
+            <path d="M0 70 H480 M0 200 H480 M150 0 V250 M340 0 V250" stroke="#e1dfd7" stroke-width="24" stroke-dasharray="0" opacity=".5"/>
+            <rect x="170" y="90" width="150" height="90" rx="6" fill="#dfe8df"/>
+            <g fill="#8fae94">
+              <circle cx="195" cy="110" r="9"/><circle cx="245" cy="110" r="9"/><circle cx="295" cy="110" r="9"/>
+              <circle cx="195" cy="160" r="9"/><circle cx="245" cy="160" r="9"/><circle cx="295" cy="160" r="9"/>
+            </g>
+            <text x="245" y="139" text-anchor="middle" font-family="Instrument Sans, sans-serif" font-size="11" fill="#3c5a44">Place des Tilleuls</text>
+            <text x="20" y="62" font-family="Instrument Sans, sans-serif" font-size="11" fill="#8a867b">Grande Rue</text>
+            <text x="356" y="140" font-family="Instrument Sans, sans-serif" font-size="11" fill="#8a867b" transform="rotate(90 356 140)">Rue du Moulin</text>
+            <g transform="translate(245 40)">
+              <path d="M0 0 C-14 -14 -14 -30 0 -30 C14 -30 14 -14 0 0 Z" fill="#1e3a2b"/>
+              <circle cy="-20" r="5" fill="#c9a247"/>
+            </g>
+            <text x="262" y="24" font-family="Bodoni Moda, serif" font-size="13" font-weight="600" fill="#1e3a2b">Le Fournil</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="pied">
+      <div>
+        <strong>Le Fournil des Tilleuls</strong>
+        <p>8 place des Tilleuls, Montclair</p>
+        <p><a href="tel:+33261912408">02 61 91 24 08</a></p>
+      </div>
+      <div>
+        <p>Site de démonstration réalisé dans le labo Bidouille en ligne.</p>
+        <p>Boulangerie, adresse et personnes imaginaires. Photos : Unsplash.</p>
+        <p><a href="../">← Voir les deux sites</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="barre-mobile">
+    <a class="bouton clair" href="tel:+33261912408">Appeler</a>
+    <a class="bouton" href="#commander">Commander</a>
+  </div>
+
+  <dialog id="envoi">
+    <div class="envoi">
+      <h3>Commande prête à partir</h3>
+      <p>Voici le SMS envoyé au fournil. Julien ou Camille répondent pour confirmer.</p>
+      <div class="sms" id="sms"></div>
+      <p class="sms-dest">À : Le Fournil des Tilleuls</p>
+      <p class="note">Démonstration : aucun message n'est réellement envoyé.</p>
+      <form method="dialog"><button class="bouton">Fermer</button></form>
+    </div>
+  </dialog>
+
+  <script>
+    // Heure simulée possible pour les captures : ?heure=2026-11-10T16:05
+    const parametre = new URLSearchParams(location.search).get("heure");
+    const maintenant = parametre && !isNaN(new Date(parametre)) ? new Date(parametre) : new Date();
+
+    const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+    const MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+    const h = (heures, minutes = 0) => heures * 60 + minutes;
+    // Ouverture [début, fin] en minutes, par jour (0 = dimanche). null = fermé.
+    const OUVERTURE = [[h(7), h(13)], null, [h(6, 30), h(19, 30)], [h(6, 30), h(19, 30)], [h(6, 30), h(19, 30)], [h(6, 30), h(19, 30)], [h(6, 30), h(19, 30)]];
+    const FOURNEES = (jour) => jour === 0 ? [h(7), h(10)] : [h(6, 30), h(11, 30), h(16, 30), h(18)];
+
+    const heureTexte = (m) => {
+      const hh = Math.floor(m / 60), mm = m % 60;
+      return mm ? `${hh} h ${String(mm).padStart(2, "0")}` : `${hh} h`;
+    };
+    const dureeTexte = (min) => {
+      if (min < 60) return `${min} minute${min > 1 ? "s" : ""}`;
+      const hh = Math.floor(min / 60), mm = min % 60;
+      return mm ? `${hh} h ${String(mm).padStart(2, "0")}` : `${hh} heure${hh > 1 ? "s" : ""}`;
+    };
+    const jourRelatif = (decalage, jour) => decalage === 0 ? "aujourd'hui" : decalage === 1 ? "demain" : JOURS[jour];
+
+    const jour = maintenant.getDay();
+    const minute = maintenant.getHours() * 60 + maintenant.getMinutes();
+    const ouvertAujourdhui = OUVERTURE[jour];
+    const estOuvert = ouvertAujourdhui && minute >= ouvertAujourdhui[0] && minute < ouvertAujourdhui[1];
+
+    function prochaineOuverture() {
+      for (let d = 0; d < 8; d++) {
+        const j = (jour + d) % 7, o = OUVERTURE[j];
+        if (o && (d > 0 || minute < o[0])) return { decalage: d, jour: j, debut: o[0] };
+      }
+    }
+
+    // État : ouvert / fermé
+    const etat = document.getElementById("etat");
+    const etatDetail = document.getElementById("etat-detail");
+    if (estOuvert) {
+      etat.textContent = `Ouvert, jusqu'à ${heureTexte(ouvertAujourdhui[1])}`;
+    } else {
+      const p = prochaineOuverture();
+      etat.classList.add("ferme");
+      etat.textContent = `Fermé, ouvre ${p.decalage ? jourRelatif(p.decalage, p.jour) + " " : ""}à ${heureTexte(p.debut)}`;
+    }
+    etatDetail.textContent = "8 place des Tilleuls, Montclair. Pain chaud, viennoiseries pur beurre, gâteaux sur commande.";
+
+    // Fournées : titre, délai et frise
+    const titre = document.getElementById("fournee-titre");
+    const delai = document.getElementById("fournee-delai");
+    let jourFrise = jour, avecMaintenant = Boolean(ouvertAujourdhui);
+    const fourneesDuJour = ouvertAujourdhui ? FOURNEES(jour) : [];
+    const recente = fourneesDuJour.filter((f) => f <= minute && minute - f < 25).pop();
+    const prochaine = estOuvert || (ouvertAujourdhui && minute < ouvertAujourdhui[0]) ? fourneesDuJour.find((f) => f > minute) : undefined;
+
+    if (estOuvert && recente !== undefined) {
+      titre.textContent = "La tradition vient de sortir du four.";
+      delai.textContent = minute === recente ? "À l'instant. Elle est encore tiède." : `Il y a ${dureeTexte(minute - recente)}. Elle est encore tiède.`;
+    } else if (prochaine !== undefined) {
+      titre.textContent = `La prochaine tradition sort du four à ${heureTexte(prochaine)}.`;
+      delai.textContent = `Dans ${dureeTexte(prochaine - minute)}.`;
+    } else {
+      const p = prochaineOuverture();
+      titre.textContent = "Les fours se reposent.";
+      delai.textContent = `Première fournée ${jourRelatif(p.decalage, p.jour)} à ${heureTexte(FOURNEES(p.jour)[0])}.`;
+      jourFrise = p.jour;
+      avecMaintenant = false;
+    }
+
+    const frise = document.getElementById("frise");
+    const [debut, fin] = OUVERTURE[jourFrise];
+    const position = (m) => `${((m - debut) / (fin - debut)) * 100}%`;
+    let html = `<div class="frise-piste"></div>`;
+    if (avecMaintenant && minute > debut) html += `<div class="frise-passe" style="width:${position(Math.min(minute, fin))}"></div>`;
+    html += `<span class="frise-borne" style="left:0">Ouverture ${heureTexte(debut)}</span>`;
+    html += `<span class="frise-borne fin" style="left:100%">Fermeture ${heureTexte(fin)}</span>`;
+    FOURNEES(jourFrise).forEach((f) => {
+      const classe = (avecMaintenant && f <= minute ? "passee" : (f === prochaine ? "prochaine" : "")) + (f === debut ? " debut" : "");
+      html += `<span class="frise-fournee ${classe}" style="left:${position(f)}">${heureTexte(f)}</span>`;
+    });
+    if (avecMaintenant && minute > debut && minute < fin) {
+      html += `<span class="frise-maintenant" style="left:${position(minute)}"><span></span><em>maintenant</em></span>`;
+    }
+    frise.innerHTML = html;
+
+    // Pain du mois
+    const PAINS_DU_MOIS = ["Pain aux figues", "Seigle et miel", "Pain aux olives", "Pain à l'ail des ours", "Pain au pesto", "Pain aux tomates séchées", "Fougasse au romarin", "Pain au maïs", "Raisin et noix", "Pain à la courge", "Châtaigne et noisette", "Pain d'épices de Noël"];
+    document.getElementById("mois-label").textContent = `Le pain ${/^[aeiou]/.test(MOIS[maintenant.getMonth()]) ? "d'" : "de "}${MOIS[maintenant.getMonth()]}`;
+    document.getElementById("mois-pain").textContent = PAINS_DU_MOIS[maintenant.getMonth()];
+
+    // Onglets du comptoir
+    const onglets = [...document.querySelectorAll('[role="tab"]')];
+    function choisirOnglet(onglet) {
+      onglets.forEach((o) => {
+        const actif = o === onglet;
+        o.setAttribute("aria-selected", actif);
+        o.tabIndex = actif ? 0 : -1;
+        document.getElementById(o.getAttribute("aria-controls")).hidden = !actif;
+      });
+    }
+    onglets.forEach((o, i) => {
+      o.addEventListener("click", () => choisirOnglet(o));
+      o.addEventListener("keydown", (e) => {
+        const pas = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+        if (!pas) return;
+        const suivant = onglets[(i + pas + onglets.length) % onglets.length];
+        choisirOnglet(suivant); suivant.focus();
+      });
+    });
+
+    // Horaires
+    const corps = document.querySelector("#horaires tbody");
+    [1, 2, 3, 4, 5, 6, 0].forEach((j) => {
+      const o = OUVERTURE[j];
+      const tr = document.createElement("tr");
+      if (j === jour) tr.className = "aujourdhui";
+      tr.innerHTML = `<th scope="row">${JOURS[j][0].toUpperCase() + JOURS[j].slice(1)}${j === jour ? " (aujourd'hui)" : ""}</th>` +
+        (o ? `<td>${heureTexte(o[0])} à ${heureTexte(o[1])}</td>` : `<td class="ferme-jour">Fermé</td>`);
+      corps.append(tr);
+    });
+
+    // Bon de commande
+    const PRODUITS = [
+      { nom: "Baguette tradition", prix: 1.3, pluriel: "baguettes tradition" },
+      { nom: "Pain de campagne", detail: "500 g", prix: 3.9, pluriel: "pains de campagne" },
+      { nom: "Croissant", prix: 1.25, pluriel: "croissants" },
+      { nom: "Pain au chocolat", prix: 1.35, pluriel: "pains au chocolat" },
+      { nom: "Brioche tressée", detail: "pour six", prix: 5.8, pluriel: "brioches tressées" },
+      { nom: "Tarte fine aux pommes", detail: "entière, pour six", prix: 19, pluriel: "tartes fines aux pommes" },
+    ];
+    const quantites = PRODUITS.map(() => 0);
+    const euros = (n) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+    const liste = document.getElementById("articles");
+    PRODUITS.forEach((p, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span class="nom">${p.nom}<small>${p.detail ? p.detail + ", " : ""}${euros(p.prix)}</small></span>
+        <span class="compteur">
+          <button type="button" data-pas="-1" aria-label="Retirer : ${p.nom}">−</button>
+          <output aria-live="polite">0</output>
+          <button type="button" data-pas="1" aria-label="Ajouter : ${p.nom}">+</button>
+        </span>`;
+      li.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+        quantites[i] = Math.max(0, Math.min(30, quantites[i] + Number(b.dataset.pas)));
+        li.querySelector("output").textContent = quantites[i];
+        majTotal();
+      }));
+      liste.append(li);
+    });
+    function majTotal() {
+      const total = PRODUITS.reduce((s, p, i) => s + p.prix * quantites[i], 0);
+      document.getElementById("total").textContent = euros(total);
+      return total;
+    }
+
+    // Jours de passage : les 6 prochains jours d'ouverture, à partir de demain
+    const choixJour = document.getElementById("jour");
+    const choixHeure = document.getElementById("heure");
+    for (let d = 1, n = 0; n < 6 && d < 14; d++) {
+      const date = new Date(maintenant); date.setDate(date.getDate() + d);
+      if (!OUVERTURE[date.getDay()]) continue;
+      const libelle = `${d === 1 ? "Demain, " : ""}${JOURS[date.getDay()]} ${date.getDate()} ${MOIS[date.getMonth()]}`;
+      choixJour.add(new Option(libelle.charAt(0).toUpperCase() + libelle.slice(1), date.getDay()));
+      n++;
+    }
+    function majHeures() {
+      const [o, f] = OUVERTURE[Number(choixJour.value)];
+      choixHeure.innerHTML = "";
+      for (let m = o + 30; m <= f - 30; m += 30) choixHeure.add(new Option(`Vers ${heureTexte(m)}`, heureTexte(m)));
+      choixHeure.selectedIndex = Math.min(2, choixHeure.options.length - 1);
+    }
+    choixJour.addEventListener("change", majHeures);
+    majHeures();
+
+    document.getElementById("bon").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const erreur = document.getElementById("erreur");
+      const prenom = document.getElementById("prenom").value.trim();
+      const total = majTotal();
+      if (!total) { erreur.textContent = "Ajoutez au moins un produit avec le bouton +."; return; }
+      if (!prenom) { erreur.textContent = "Indiquez votre prénom pour qu'on retrouve la commande."; document.getElementById("prenom").focus(); return; }
+      erreur.textContent = "";
+      const lignes = PRODUITS.map((p, i) => quantites[i] ? `${quantites[i]} ${quantites[i] > 1 ? p.pluriel : p.nom.toLowerCase()}` : null).filter(Boolean);
+      const texteListe = lignes.length > 1 ? lignes.slice(0, -1).join(", ") + " et " + lignes.at(-1) : lignes[0];
+      const jourChoisi = choixJour.options[choixJour.selectedIndex].text.replace(/^Demain, /, "").toLowerCase();
+      document.getElementById("sms").textContent =
+        `Bonjour, c'est ${prenom}. Je voudrais pour ${jourChoisi}, ${choixHeure.value.toLowerCase()} : ${texteListe}. Total ${euros(total)}. Merci !`;
+      document.getElementById("envoi").showModal();
+    });
+  </script>
+</body>
+</html>
