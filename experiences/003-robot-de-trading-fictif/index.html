@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robot de trading fictif · Bidouille en ligne</title>
+  <link rel="stylesheet" href="robot.css">
+</head>
+<body>
+  <a class="retour" href="../../">← Retour au labo</a>
+
+  <main>
+    <header class="entete">
+      <h1>🤖 Robot de trading fictif</h1>
+      <p class="sous-titre">De l'argent imaginaire, de <strong>vrais cours en direct</strong>. Le robot achète et revend tout seul, selon sa méthode. Fait-il mieux que le hasard ?</p>
+    </header>
+
+    <section class="reglages" aria-label="Réglages">
+      <label>🪙 Crypto
+        <select id="choix-crypto"></select>
+      </label>
+      <label>🧠 Méthode du robot
+        <select id="choix-strat"></select>
+      </label>
+      <label>🕯️ Une bougie dure
+        <select id="choix-duree"></select>
+      </label>
+      <label>🛟 Filet de sécurité
+        <select id="choix-stop"></select>
+      </label>
+    </section>
+
+    <section class="cartes">
+      <div class="carte principale">
+        <div class="etiquette">💼 Ton portefeuille fictif</div>
+        <div class="valeur" id="valeur">…</div>
+        <div class="detail" id="perf"></div>
+      </div>
+      <div class="carte">
+        <div class="etiquette">😴 Si tu avais juste acheté et attendu</div>
+        <div class="valeur moyenne" id="hold">…</div>
+        <div class="detail" id="hold-detail"></div>
+      </div>
+      <div class="carte">
+        <div class="etiquette" id="etiquette-prix">🪙 Cours</div>
+        <div class="valeur moyenne" id="prix">…</div>
+        <div class="detail"><span id="statut" class="statut"></span></div>
+        <div class="detail" id="prix-detail"></div>
+      </div>
+    </section>
+
+    <section class="robot carte">
+      <div class="robot-tete" id="robot-tete" aria-hidden="true">🤖</div>
+      <div class="robot-texte">
+        <div class="robot-etat" id="etat-robot"></div>
+        <div class="bulle" id="pensee"></div>
+        <div class="regle" id="regle"></div>
+      </div>
+      <div class="robot-actions">
+        <button id="bouton-pause" type="button"></button>
+        <button id="bouton-zero" type="button" class="discret">↺ Recommencer</button>
+      </div>
+    </section>
+
+    <section class="carte graphique-carte">
+      <canvas id="graphique" aria-label="Graphique des cours avec les achats et ventes du robot"></canvas>
+      <div class="legende" id="legende"></div>
+    </section>
+
+    <section class="carte">
+      <h2>📒 Journal du robot</h2>
+      <div class="resume-ops" id="resume-ops"></div>
+      <div id="journal"></div>
+    </section>
+
+    <section class="carte">
+      <h2>🏁 La course des robots</h2>
+      <p class="intro" id="course-intro"></p>
+      <div id="course"></div>
+    </section>
+
+    <details class="carte explications">
+      <summary>❓ Comment ça marche</summary>
+      <ul>
+        <li><strong>L'argent est fictif</strong> : tu pars avec 10 000 € imaginaires. Rien n'est acheté pour de vrai.</li>
+        <li><strong>Les cours sont réels</strong> : ils viennent en direct de Binance, une grande plateforme d'échange de cryptomonnaies (Coinbase prend le relais si Binance ne répond pas).</li>
+        <li><strong>Une bougie</strong> résume le prix sur une durée (1, 5 ou 15 minutes). Le rectangle va du prix de départ au prix d'arrivée : <span class="pos">vert</span> si ça a monté, <span class="neg">rouge</span> si ça a baissé. Les traits fins montrent le plus haut et le plus bas atteints.</li>
+        <li><strong>Le robot décide à la fin de chaque bougie</strong> : il met tout son argent quand il achète, et revend tout quand il vend.</li>
+        <li><strong>Des frais de 0,1 %</strong> sont retenus à chaque achat et à chaque vente, comme chez un vrai courtier. Un robot qui s'agite beaucoup les paie souvent.</li>
+        <li><strong>Le filet de sécurité</strong> revend automatiquement si la perte depuis l'achat dépasse le seuil choisi.</li>
+        <li><strong>La page doit rester ouverte</strong> pour que le robot travaille. Quand tu reviens, il rattrape ce qu'il aurait fait pendant ton absence (jusqu'à 1 000 bougies en arrière).</li>
+        <li><strong>La course des robots</strong> rejoue les 4 méthodes sur les mêmes cours récents, pour les comparer d'un coup d'œil.</li>
+      </ul>
+    </details>
+
+    <p class="avertissement">Argent fictif uniquement, ce n'est pas un conseil d'investissement. Les marchés sont imprévisibles : un robot qui a gagné hier peut perdre demain.</p>
+  </main>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="robot.js"></script>
+</body>
+</html>

@@ -28,6 +28,23 @@
   ],
   "experiences": [
     {
+      "numero": "003",
+      "dossier": "003-robot-de-trading-fictif",
+      "titre": "Robot de trading fictif",
+      "statut": "en-cours",
+      "date": "2026-11-08",
+      "resume": "Un robot achète et revend des cryptos tout seul, avec 10 000 € imaginaires, sur les vrais cours en direct, et se mesure au hasard.",
+      "tags": [
+        "web",
+        "trading",
+        "crypto",
+        "temps réel",
+        "simulation"
+      ],
+      "demo": "experiences/003-robot-de-trading-fictif/",
+      "fiche": "https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/003-robot-de-trading-fictif"
+    },
+    {
       "numero": "002",
       "dossier": "002-rappel-de-la-semaine",
       "titre": "Rappel de la semaine (Chez Miaouss)",

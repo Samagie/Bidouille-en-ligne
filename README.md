@@ -10,6 +10,7 @@ Mon labo d'idées : de petites expériences rapides pour tester des idées, puis
 <!-- DEBUT-SOMMAIRE -->
 | N° | Expérience | Statut | En une phrase | Démo |
 |---|---|---|---|---|
+| 003 | [Robot de trading fictif](experiences/003-robot-de-trading-fictif/) | 🧪 En cours | Un robot achète et revend des cryptos tout seul, avec 10 000 € imaginaires, sur les vrais cours en direct, et se mesure au hasard. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/003-robot-de-trading-fictif/) |
 | 002 | [Rappel de la semaine (Chez Miaouss)](experiences/002-rappel-de-la-semaine/) | 🧪 En cours | Le journal de la semaine de Mimi en story animée, avec 5 modèles qui tournent, des modèles de saison, la comparaison avec la semaine d'avant et des réactions. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/002-rappel-de-la-semaine/) |
 | 001 | [Le dictaphone de Madeleine](experiences/001-labo-audio/) | 🧪 En cours | Quatre cassettes abîmées à remettre en état (à l'envers, trop vite, couvertes par une autre voix) pour trouver le code d'un coffre. | [Ouvrir](https://samagie.github.io/Bidouille-en-ligne/experiences/001-labo-audio/) |
 <!-- FIN-SOMMAIRE -->
