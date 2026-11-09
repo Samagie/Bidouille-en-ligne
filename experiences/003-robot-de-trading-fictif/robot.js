@@ -441,11 +441,11 @@
 
   // ---------- La course des robots (rejouée sur les mêmes cours) ----------
   // Rejoue chaque méthode sur les dernières 24 h (ou moins si l'historique est plus court).
-  function courseSur(b, stop, ms) {
+  function courseSur(b, stop, ms, depuisT) {
     let fin = b.length - 1;
     while (fin >= 0 && !b[fin].ferme) fin--;
     if (fin < 0) return null;
-    const limite = b[fin].t + ms - FENETRE;
+    const limite = depuisT ?? b[fin].t + ms - FENETRE;
     let debut = DEBUT_COURSE;
     while (debut < fin && b[debut].t < limite) debut++;
     if (fin - debut < 30) return null;
@@ -495,22 +495,19 @@
     majGrandeCourse();
   }
 
-  function majGrandeCourse() {
-    if (!grande) return;
+  // Tableau commun : une ligne par actif, une colonne par robot (+ « acheter et attendre »).
+  function tableauCourse(lignes, groupes) {
     const perfDe = (res, cle) => res.lignes.find((l) => l.cle === cle);
-    const nbFinis = grande.resultats.size;
-    $('#grande-intro').innerHTML = `Chaque robot repart de ${argent(CAPITAL)} fictifs sur chaque actif et rejoue <strong>les dernières 24 h</strong>, avec des bougies de ${DUREES[grande.duree].libelle} et le filet « ${STOPS[grande.stop]} ». ` +
-      (grande.calculeA ? `Calculé à ${heure(grande.calculeA)}.` : `<strong>Chargement… ${nbFinis}/${ACTIFS.length}</strong>`);
-
     const tete = `<thead><tr><th>Actif</th>${COLONNES.map((c) => `<th title="${c.nom}">${c.emoji}<span class="col-nom">${c.nom.replace(' (le témoin)', '')}</span></th>`).join('')}</tr></thead>`;
     const valides = [];
     let corps = '';
-    for (const groupe of ['crypto', 'autre']) {
-      corps += `<tr class="groupe"><td colspan="${COLONNES.length + 1}">${groupe === 'crypto' ? 'Cryptomonnaies' : 'Autres actifs'}</td></tr>`;
-      for (const a of ACTIFS.filter((x) => x.groupe === groupe)) {
-        const res = grande.resultats.get(a.code);
+    for (const [groupe, titre] of groupes) {
+      const membres = lignes.filter((x) => x.actif.groupe === groupe);
+      if (!membres.length) continue;
+      corps += `<tr class="groupe"><td colspan="${COLONNES.length + 1}">${titre}</td></tr>`;
+      for (const { actif: a, res } of membres) {
         const jouable = !!CRYPTOS[a.code];
-        const nomActif = `<b>${a.nom}</b><span class="actif-detail">${a.detail || a.code}</span>`;
+        const nomActif = `<b>${echapper(a.nom)}</b><span class="actif-detail">${echapper(a.detail || a.code)}</span>`;
         let cellules;
         if (res === undefined) cellules = COLONNES.map(() => '<td class="attente">…</td>').join('');
         else if (res === 'erreur') cellules = COLONNES.map(() => '<td class="attente">—</td>').join('');
@@ -519,9 +516,8 @@
           const perfs = COLONNES.map((c) => perfDe(res, c.cle).perf);
           const meilleur = Math.max(...perfs);
           cellules = COLONNES.map((c, j) => {
-            const l = perfDe(res, c.cle);
-            const titre = c.cle === null ? 'un seul achat au début' : `${l.ops.length} opérations`;
-            return `<td class="${classe(perfs[j])}${perfs[j] === meilleur ? ' meilleur' : ''}" title="${titre}">${pct(perfs[j])}</td>`;
+            const titreCase = c.cle === null ? 'un seul achat au début' : `${perfDe(res, c.cle).ops.length} opérations`;
+            return `<td class="${classe(perfs[j])}${perfs[j] === meilleur ? ' meilleur' : ''}" title="${titreCase}">${pct(perfs[j])}</td>`;
           }).join('');
         }
         corps += `<tr${jouable ? ` class="jouable" data-crypto="${a.code}" title="Lancer ton robot sur ${a.nom}"` : ''}><td>${nomActif}</td>${cellules}</tr>`;
@@ -538,17 +534,62 @@
         <tr><td>Moyenne</td>${moyennes.map((m) => `<td class="${classe(m)}${m === meilleureMoy ? ' meilleur' : ''}">${pct(m)}</td>`).join('')}</tr>
         <tr class="victoires"><td>Fois 1<sup>er</sup></td>${victoires.map((v) => `<td>${v}</td>`).join('')}</tr>
       </tfoot>`;
-      if (grande.calculeA) {
-        const iMeilleur = moyennes.indexOf(meilleureMoy);
-        const iHasard = COLONNES.findIndex((c) => c.cle === 'hasard');
-        const battus = COLONNES.filter((c, j) => c.cle && c.cle !== 'hasard' && moyennes[j] < moyennes[iHasard]).length;
-        verdict = `🏆 En moyenne, le meilleur est <strong>${COLONNES[iMeilleur].emoji} ${COLONNES[iMeilleur].nom}</strong> (${pct(meilleureMoy)}). ` +
-          `😴 « Acheter et attendre » arrive premier sur <strong>${victoires[0]} actif${victoires[0] > 1 ? 's' : ''} sur ${valides.length}</strong>. ` +
-          (battus ? `🎲 Le hasard fait mieux, en moyenne, que <strong>${battus} des 3 robots « malins »</strong>.` : '🎲 Les 3 robots « malins » font tous mieux que le hasard, en moyenne.');
-      }
+      const iMeilleur = moyennes.indexOf(meilleureMoy);
+      const iHasard = COLONNES.findIndex((c) => c.cle === 'hasard');
+      const battus = COLONNES.filter((c, j) => c.cle && c.cle !== 'hasard' && moyennes[j] < moyennes[iHasard]).length;
+      verdict = `🏆 En moyenne, le meilleur est <strong>${COLONNES[iMeilleur].emoji} ${COLONNES[iMeilleur].nom}</strong> (${pct(meilleureMoy)}). ` +
+        `😴 « Acheter et attendre » arrive premier sur <strong>${victoires[0]} actif${victoires[0] > 1 ? 's' : ''} sur ${valides.length}</strong>. ` +
+        (battus === 3 ? '🎲 Le hasard fait mieux, en moyenne, que <strong>les 3 robots « malins »</strong>.'
+          : battus ? `🎲 Le hasard fait mieux, en moyenne, que <strong>${battus} des 3 robots « malins »</strong>.`
+          : '🎲 Les 3 robots « malins » font tous mieux que le hasard, en moyenne.');
     }
-    $('#grande-course').innerHTML = tete + `<tbody>${corps}</tbody>` + pied;
-    $('#grande-verdict').innerHTML = verdict;
+    return { html: tete + `<tbody>${corps}</tbody>` + pied, verdict };
+  }
+
+  function majGrandeCourse() {
+    if (!grande) return;
+    const nbFinis = grande.resultats.size;
+    $('#grande-intro').innerHTML = `Chaque robot repart de ${argent(CAPITAL)} fictifs sur chaque actif et rejoue <strong>les dernières 24 h</strong>, avec des bougies de ${DUREES[grande.duree].libelle} et le filet « ${STOPS[grande.stop]} ». ` +
+      (grande.calculeA ? `Calculé à ${heure(grande.calculeA)}.` : `<strong>Chargement… ${nbFinis}/${ACTIFS.length}</strong>`);
+    const t = tableauCourse(ACTIFS.map((a) => ({ actif: a, res: grande.resultats.get(a.code) })), [['crypto', 'Cryptomonnaies'], ['autre', 'Autres actifs']]);
+    $('#grande-course').innerHTML = t.html;
+    $('#grande-verdict').innerHTML = grande.calculeA ? t.verdict : '';
+  }
+
+  // ---------- La course en Bourse (historique enregistré dans bourse.json) ----------
+  let bourse = null;
+  async function chargerBourse() {
+    try {
+      const r = await fetch('bourse.json');
+      if (!r.ok) throw new Error(r.status);
+      bourse = await r.json();
+      majBourse();
+    } catch (_) {
+      $('#bourse-intro').textContent = "Impossible de lire l'historique de la Bourse (bourse.json). Ouvre la page depuis le site du labo.";
+    }
+  }
+  function periode(jours) {
+    const f = (j, o) => new Date(j + 'T12:00:00').toLocaleDateString('fr-FR', o);
+    return `du ${f(jours[0], { weekday: 'long', day: 'numeric' })} au ${f(jours[jours.length - 1], { weekday: 'long', day: 'numeric', month: 'long' })}`;
+  }
+  function majBourse() {
+    if (!bourse) return;
+    const ms = 300000;
+    const lignes = bourse.valeurs.map((v) => {
+      const b = v.bougies.map(([t, o, h, l, c]) => ({ t: t * 1000, o, h, l, c, ferme: true }));
+      return { actif: v, res: courseSur(b, etat.stop, ms, v.debut * 1000) || 'erreur' };
+    });
+    const places = [['USD', 'New York'], ['EUR', 'Paris']]
+      .map(([devise, ville]) => {
+        const v = bourse.valeurs.find((x) => x.devise === devise);
+        return v ? `${ville} ${periode(v.seances)}` : null;
+      }).filter(Boolean).join(' ; ');
+    $('#bourse-intro').innerHTML = `Chaque robot repart de ${argent(CAPITAL)} fictifs sur chaque valeur et rejoue <strong>les 5 dernières séances complètes</strong> (${places}), avec des bougies de 5 minutes et le filet « ${STOPS[etat.stop]} ».`;
+    const t = tableauCourse(lignes, [['us', 'Actions américaines'], ['fr', 'Actions françaises'], ['indice', 'Indices (le marché entier)']]);
+    $('#bourse-course').innerHTML = t.html;
+    $('#bourse-verdict').innerHTML = t.verdict;
+    const maj = new Date(bourse.maj);
+    $('#bourse-maj').textContent = `Cours ${bourse.source}, enregistrés dans le labo le ${maj.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}.`;
   }
 
   // ---------- Affichage ----------
@@ -956,6 +997,7 @@
       demarrer();
     }
     if (!grande || grande.duree !== etat.duree || grande.stop !== etat.stop) lancerGrandeCourse();
+    majBourse();
   }
   function changer(cle, valeur) {
     if (etat.p.ops.length && !confirm(`Changer ce réglage lance une nouvelle partie avec ${argent(CAPITAL)} (le journal actuel sera effacé). On y va ?`)) {
@@ -1000,4 +1042,5 @@
   majLegende();
   demarrer();
   lancerGrandeCourse();
+  chargerBourse();
 })();
