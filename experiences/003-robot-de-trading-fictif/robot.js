@@ -592,6 +592,287 @@
     $('#bourse-maj').textContent = `Cours ${bourse.source}, enregistrés dans le labo le ${maj.toLocaleString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}.`;
   }
 
+  // ---------- Le robot « parfait » : réglé sur le passé, testé sur la suite ----------
+  // Bougies de 4 h : 6 mois ≈ 1 095 bougies, 3 mois ≈ 547.
+  const OPTIM = { duree: '4h', entrainement: 1095, test: 547, echauffement: 340, periodes: 4 };
+  let optim = null;
+
+  function serieSma(c, n) {
+    const out = new Float64Array(c.length).fill(NaN);
+    let s = 0;
+    for (let i = 0; i < c.length; i++) {
+      s += c[i];
+      if (i >= n) s -= c[i - n];
+      if (i >= n - 1) out[i] = s / n;
+    }
+    return out;
+  }
+  function serieRsi(c, n) {
+    const out = new Float64Array(c.length).fill(NaN);
+    let g = 0, p = 0;
+    for (let i = 1; i < c.length; i++) {
+      const d = c[i] - c[i - 1];
+      if (d > 0) g += d; else p -= d;
+      if (i > n) { const d0 = c[i - n] - c[i - n - 1]; if (d0 > 0) g -= d0; else p += d0; }
+      if (i >= n) out[i] = g + p > 0 ? (100 * g) / (g + p) : 50;
+    }
+    return out;
+  }
+  function serieExtremePrec(x, n, plusGrand) {
+    const out = new Float64Array(x.length).fill(NaN);
+    for (let i = n; i < x.length; i++) {
+      let m = x[i - n];
+      for (let k = i - n + 1; k < i; k++) m = plusGrand ? Math.max(m, x[k]) : Math.min(m, x[k]);
+      out[i] = m;
+    }
+    return out;
+  }
+  // Durée lisible pour k bougies de 4 h.
+  const b4 = (k) => (k * 4 < 48 ? `${k * 4} h` : `${Math.round(k / 6)} jours`);
+
+  // Les 155 robots essayés (mêmes familles que l'étude faite en Python).
+  function robotsOptim(h, l, c) {
+    const n = c.length, cache = new Map();
+    const memo = (cle, f) => { if (!cache.has(cle)) cache.set(cle, f()); return cache.get(cle); };
+    const sma = (k) => memo('s' + k, () => serieSma(c, k));
+    const rsiS = (k) => memo('r' + k, () => serieRsi(c, k));
+    const haut = (k) => memo('h' + k, () => serieExtremePrec(h, k, true));
+    const bas = (k) => memo('b' + k, () => serieExtremePrec(l, k, false));
+    const etat = (f) => { const p = new Uint8Array(n); for (let i = 0; i < n; i++) p[i] = f(i) ? 1 : 0; return p; };
+    const evenements = (achat, vente) => {
+      const p = new Uint8Array(n);
+      let e = 0;
+      for (let i = 0; i < n; i++) { if (achat(i)) e = 1; else if (vente(i)) e = 0; p[i] = e; }
+      return p;
+    };
+    const liste = [];
+    for (const f of [5, 10, 20, 30, 50]) for (const s2 of [20, 50, 100, 150, 200, 300]) {
+      if (f < s2) liste.push({ nom: `📈 Tendance ${b4(f)} contre ${b4(s2)}`, texte: `investi quand le prix moyen sur ${b4(f)} dépasse le prix moyen sur ${b4(s2)}`, pos: () => { const a = sma(f), b = sma(s2); return etat((i) => a[i] > b[i]); } });
+    }
+    for (const k of [10, 20, 50, 100, 150, 200, 300]) {
+      liste.push({ nom: `📈 Au-dessus de la moyenne ${b4(k)}`, texte: `investi quand le prix dépasse sa moyenne sur ${b4(k)}`, pos: () => { const a = sma(k); return etat((i) => c[i] > a[i]); } });
+    }
+    for (const k of [6, 12, 24, 48, 96, 168, 336]) {
+      liste.push({ nom: `🚀 Élan ${b4(k)}`, texte: `investi quand le prix est plus haut qu'il y a ${b4(k)}`, pos: () => etat((i) => i >= k && c[i] > c[i - k]) });
+    }
+    for (const p of [7, 14, 28]) for (const lo of [20, 25, 30, 35, 40]) for (const hi of [55, 60, 65, 70, 75, 80]) {
+      liste.push({ nom: `🔄 Creux ${b4(p)} (${lo}/${hi})`, texte: `jauge calculée sur ${b4(p)} : achète sous ${lo}, revend au-dessus de ${hi}`, pos: () => { const r = rsiS(p); return evenements((i) => r[i] < lo, (i) => r[i] > hi); } });
+    }
+    for (const a of [10, 20, 50, 100, 200]) for (const b of [5, 10, 20, 50, 100]) {
+      liste.push({ nom: `🚀 Records ${b4(a)} / ${b4(b)}`, texte: `achète quand le prix bat son record sur ${b4(a)}, revend sous son plus bas sur ${b4(b)}`, pos: () => { const H = haut(a), L = bas(b); return evenements((i) => c[i] > H[i], (i) => c[i] < L[i]); } });
+    }
+    return liste;
+  }
+
+  // Rendement d'une position entre les clôtures i0 et i1, frais compris.
+  function perfPos(pos, c, i0, i1) {
+    let v = 1, prec = 0, chg = 0;
+    for (let i = i0; i < i1; i++) {
+      if (pos[i] !== prec) { chg++; prec = pos[i]; }
+      if (pos[i]) v *= c[i + 1] / c[i];
+    }
+    return v * Math.pow(1 - FRAIS, chg) - 1;
+  }
+  function courbePos(pos, c, i0, i1) {
+    const out = [0];
+    let v = 1, prec = 0;
+    for (let i = i0; i < i1; i++) {
+      if (pos[i] !== prec) { v *= 1 - FRAIS; prec = pos[i]; }
+      if (pos[i]) v *= c[i + 1] / c[i];
+      out.push(v - 1);
+    }
+    return out;
+  }
+  function aleatoire(graine) {
+    let a = graine >>> 0;
+    return () => {
+      a = (a + 0x6d2b79f5) >>> 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  async function chargerOptim() {
+    const bouton = $('#bouton-optim');
+    bouton.disabled = true;
+    const n = OPTIM.echauffement + OPTIM.entrainement + OPTIM.test * OPTIM.periodes + 5;
+    const actifs = ACTIFS.filter((a) => a.groupe === 'crypto');
+    const series = [];
+    let faits = 0;
+    $('#optim-etat').textContent = `Téléchargement de 18 mois de cours… 0/${actifs.length}`;
+    const file = actifs.slice();
+    const ouvrier = async () => {
+      while (file.length) {
+        const a = file.shift();
+        const b = (await lireKlines(`${a.code}USDT`, OPTIM.duree, n)).filter((x) => x.ferme);
+        series.push({ actif: a, t: b.map((x) => x.t), h: Float64Array.from(b, (x) => x.h), l: Float64Array.from(b, (x) => x.l), c: Float64Array.from(b, (x) => x.c) });
+        $('#optim-etat').textContent = `Téléchargement de 18 mois de cours… ${++faits}/${actifs.length}`;
+      }
+    };
+    try {
+      await Promise.all([ouvrier(), ouvrier(), ouvrier()]);
+    } catch (_) {
+      $('#optim-etat').textContent = 'Impossible de lire les cours. Réessaie dans un moment.';
+      bouton.disabled = false;
+      return;
+    }
+    $('#optim-etat').textContent = 'Essai des 155 robots sur chaque crypto…';
+    await new Promise((r) => setTimeout(r, 30));
+    // Mêmes dates pour tout le monde : on garde la fin commune.
+    const L = Math.min(...series.map((x) => x.c.length));
+    for (const x of series) for (const k of ['t', 'h', 'l', 'c']) x[k] = x[k].slice(x[k].length - L);
+    series.sort((a, b) => ACTIFS.indexOf(a.actif) - ACTIFS.indexOf(b.actif));
+    for (const x of series) {
+      const robots = robotsOptim(x.h, x.l, x.c);
+      x.positions = robots.map((r) => r.pos());
+      x.hasard = Array.from({ length: 20 }, (_, g) => {
+        const rnd = aleatoire(1000 * series.indexOf(x) + g + 1);
+        const p = new Uint8Array(L);
+        let e = 0;
+        for (let i = 0; i < L; i++) { const u = rnd(); if (u < 0.04) e = 1; else if (u > 0.5 && u < 0.54) e = 0; p[i] = e; }
+        return p;
+      });
+      if (!optim) optim = { robots };
+    }
+    optim.series = series;
+    optim.L = L;
+    optim.periode = 0;
+    bouton.textContent = '🔎 Relancer la recherche';
+    bouton.disabled = false;
+    $('#optim-periodes').hidden = false;
+    calculerOptim();
+  }
+
+  function calculerOptim() {
+    const { series, robots, L } = optim;
+    const fin = L - 1 - optim.periode * OPTIM.test;
+    const te0 = fin - OPTIM.test, tr0 = te0 - OPTIM.entrainement;
+    const moyenne2 = (f) => series.reduce((s, x) => s + f(x), 0) / series.length;
+    const passe = robots.map((_, k) => moyenne2((x) => perfPos(x.positions[k], x.c, tr0, te0)));
+    const suite = robots.map((_, k) => moyenne2((x) => perfPos(x.positions[k], x.c, te0, fin)));
+    const choisi = passe.indexOf(Math.max(...passe));
+    const oracle = suite.indexOf(Math.max(...suite));
+    const attendre = (x, i0, i1) => (1 - FRAIS) * (x.c[i1] / x.c[i0]) - 1;
+    const surMesure = series.map((x) => {
+      const p = robots.map((_, k) => perfPos(x.positions[k], x.c, tr0, te0));
+      const k = p.indexOf(Math.max(...p));
+      return { x, k, passe: p[k], suite: perfPos(x.positions[k], x.c, te0, fin), attendre: attendre(x, te0, fin) };
+    });
+    const courbes = series.map((x) => ({ robot: courbePos(x.positions[choisi], x.c, tr0, fin), attendre: courbePos(new Uint8Array(L).fill(1), x.c, tr0, fin) }));
+    const moyCourbe = (cle) => courbes[0][cle].map((_, i) => courbes.reduce((s, c) => s + c[cle][i], 0) / courbes.length);
+    optim.res = {
+      tr0, te0, fin, choisi, oracle,
+      passe: passe[choisi], suite: suite[choisi], oracleSuite: suite[oracle],
+      attendrePasse: moyenne2((x) => attendre(x, tr0, te0)),
+      attendreSuite: moyenne2((x) => attendre(x, te0, fin)),
+      hasardSuite: moyenne2((x) => x.hasard.reduce((s, p) => s + perfPos(p, x.c, te0, fin), 0) / x.hasard.length),
+      surMesure,
+      surMesurePasse: surMesure.reduce((s, r) => s + r.passe, 0) / surMesure.length,
+      surMesureSuite: surMesure.reduce((s, r) => s + r.suite, 0) / surMesure.length,
+      courbeRobot: moyCourbe('robot'), courbeAttendre: moyCourbe('attendre'),
+    };
+    majOptim();
+  }
+
+  function majOptim() {
+    const r = optim.res, t = optim.series[0].t, R = optim.robots;
+    const jour = (i) => new Date(t[i]).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    $('#optim-etat').textContent = '';
+    document.querySelectorAll('#optim-periodes button').forEach((b) => b.classList.toggle('actif', Number(b.dataset.periode) === optim.periode));
+    const tient = r.suite > r.attendreSuite && r.suite > r.hasardSuite;
+    const verdict = tient
+      ? `Cette fois, il fait mieux qu'attendre et que le hasard sur la suite. Mais il est passé de <strong>${pct(r.passe)}</strong> à <strong>${pct(r.suite)}</strong> : ses promesses ne tenaient qu'en partie. Essaie les autres périodes.`
+      : `Sur le passé, il promettait <strong>${pct(r.passe)}</strong>. Sur la suite, qu'il n'avait jamais vue : <strong>${pct(r.suite)}</strong>, ${r.suite <= r.attendreSuite ? 'moins bien qu\'attendre' : 'moins bien que le hasard'}. Il avait appris le passé par cœur, pas la recette pour gagner.`;
+    $('#optim-resultat').innerHTML = `
+      <div class="optim-cartes">
+        <div class="carte-optim">
+          <div class="etiquette">📚 Sur le passé, là où il a été choisi (${jour(r.tr0)} → ${jour(r.te0)})</div>
+          <div class="valeur moyenne ${classe(r.passe)}">${pct(r.passe)}</div>
+          <div class="detail">le meilleur des ${R.length} robots · attendre : <span class="${classe(r.attendrePasse)}">${pct(r.attendrePasse)}</span></div>
+        </div>
+        <div class="carte-optim suite">
+          <div class="etiquette">🔮 Le même robot sur la suite, jamais vue (${jour(r.te0)} → ${jour(r.fin)})</div>
+          <div class="valeur moyenne ${classe(r.suite)}">${pct(r.suite)}</div>
+          <div class="detail">attendre : <span class="${classe(r.attendreSuite)}">${pct(r.attendreSuite)}</span> · hasard : <span class="${classe(r.hasardSuite)}">${pct(r.hasardSuite)}</span></div>
+        </div>
+      </div>
+      <p class="verdict">${verdict}</p>
+      <p class="detail">🤖 Le robot choisi : <strong>${R[r.choisi].nom}</strong> (${R[r.choisi].texte}). Moyenne des 10 cryptos, avec des frais de 0,1 % par opération.<br>
+      🎯 Sur la suite, le meilleur aurait été <strong>${R[r.oracle].nom}</strong> (${pct(r.oracleSuite)}), mais personne ne pouvait le savoir à l'avance.</p>
+      <details class="sur-mesure">
+        <summary>🧵 Et avec un robot réglé sur mesure pour chaque crypto ? Passé ${pct(r.surMesurePasse)} → suite ${pct(r.surMesureSuite)}</summary>
+        <div class="tableau-defile"><table class="grande">
+          <thead><tr><th>Crypto</th><th>Son meilleur robot sur le passé</th><th>Passé</th><th>Suite</th><th>Attendre (suite)</th></tr></thead>
+          <tbody>${r.surMesure.map((m) => `<tr><td><b>${m.x.actif.nom}</b></td><td class="texte">${R[m.k].nom}</td><td class="${classe(m.passe)}">${pct(m.passe)}</td><td class="${classe(m.suite)}${m.suite > m.attendre ? ' meilleur' : ''}">${pct(m.suite)}</td><td class="${classe(m.attendre)}">${pct(m.attendre)}</td></tr>`).join('')}</tbody>
+        </table></div>
+      </details>`;
+    dessinerOptim();
+  }
+
+  function dessinerOptim() {
+    const cv = $('#optim-graphique'), ctx = cv.getContext('2d');
+    if (!optim || !optim.res) return;
+    cv.hidden = false;
+    const r = optim.res, t = optim.series[0].t;
+    const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    const M = { g: 8, d: 54, h: 26, b: 22 };
+    const n = r.courbeRobot.length;
+    const tous = r.courbeRobot.concat(r.courbeAttendre);
+    let min = Math.min(0, ...tous), max = Math.max(0, ...tous);
+    const marge = (max - min) * 0.08 || 0.01; min -= marge; max += marge;
+    const X = (i) => M.g + (i / (n - 1)) * (W - M.g - M.d);
+    const Y = (v) => M.h + ((max - v) / (max - min)) * (H - M.h - M.b);
+    const xSep = X(r.te0 - r.tr0);
+    ctx.fillStyle = '#121a30';
+    ctx.fillRect(M.g, M.h, xSep - M.g, H - M.h - M.b);
+    ctx.font = '12px system-ui, sans-serif';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = COULEURS.doux;
+    ctx.textAlign = 'center';
+    ctx.fillText('📚 passé : il est choisi ici', (M.g + xSep) / 2, M.h - 8);
+    ctx.fillText('🔮 suite : jamais vue', (xSep + W - M.d) / 2, M.h - 8);
+    // Grille en %.
+    const pas = joliPas((max - min) / 5);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.font = '11px system-ui, sans-serif';
+    for (let v = Math.ceil(min / pas) * pas; v <= max; v += pas) {
+      const y = Math.round(Y(v)) + 0.5;
+      ctx.strokeStyle = Math.abs(v) < pas / 2 ? '#3a4566' : COULEURS.grille;
+      ctx.beginPath(); ctx.moveTo(M.g, y); ctx.lineTo(W - M.d, y); ctx.stroke();
+      ctx.fillStyle = COULEURS.doux;
+      ctx.fillText(pct(v).replace(',00', ''), W - M.d + 6, y);
+    }
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = COULEURS.accent;
+    ctx.beginPath(); ctx.moveTo(xSep, M.h); ctx.lineTo(xSep, H - M.b); ctx.stroke();
+    ctx.restore();
+    // Dates en bas.
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = COULEURS.doux;
+    for (const i of [0, r.te0 - r.tr0, n - 1]) {
+      const d = new Date(t[r.tr0 + i]).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+      ctx.textAlign = i === 0 ? 'left' : i === n - 1 ? 'right' : 'center';
+      ctx.fillText(d, X(i), H - 6);
+    }
+    const ligne = (serie, couleur, epaisseur) => {
+      ctx.strokeStyle = couleur;
+      ctx.lineWidth = epaisseur;
+      ctx.beginPath();
+      serie.forEach((v, i) => (i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v))));
+      ctx.stroke();
+      ctx.lineWidth = 1;
+    };
+    ligne(r.courbeAttendre, COULEURS.doux, 1.5);
+    ligne(r.courbeRobot, COULEURS.orange, 2.2);
+  }
+
   // ---------- Affichage ----------
   let affichagePrevu = false;
   function planifierAffichage() {
@@ -1022,6 +1303,13 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   $('#relancer-grande').addEventListener('click', lancerGrandeCourse);
+  $('#bouton-optim').addEventListener('click', chargerOptim);
+  $('#optim-periodes').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-periode]');
+    if (!b || !optim || !optim.series) return;
+    optim.periode = Number(b.dataset.periode);
+    calculerOptim();
+  });
   $('#bouton-pause').addEventListener('click', () => {
     etat.marche = !etat.marche;
     sauver();
@@ -1031,7 +1319,7 @@
     if (etat.p.ops.length && !confirm(`Recommencer avec ${argent(CAPITAL)} ? Le journal actuel sera effacé.`)) return;
     nouvellePartie(etat);
   });
-  window.addEventListener('resize', planifierAffichage);
+  window.addEventListener('resize', () => { planifierAffichage(); dessinerOptim(); });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) sonder(generation);
   });

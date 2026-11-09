@@ -2,7 +2,7 @@
 titre: Robot de trading fictif
 statut: en cours
 date: 2026-11-08
-resume: Un robot achète et revend des cryptos tout seul, avec 10 000 € imaginaires, sur les vrais cours en direct, et des courses comparent 4 robots sur 12 actifs (24 h) et 13 valeurs de la Bourse (5 séances).
+resume: Un robot achète et revend des cryptos tout seul, avec 10 000 € imaginaires, sur les vrais cours en direct, des courses comparent 4 robots sur 12 actifs et 13 valeurs de la Bourse, et un test montre le piège du robot « parfait » réglé sur le passé.
 tags: web, trading, crypto, temps réel, simulation
 ---
 
@@ -29,6 +29,7 @@ Une appli de trading **automatique** mais **fictive** : on part avec 10 000 € 
 - **La course des robots** rejoue les 4 méthodes sur les dernières 24 h, pour voir laquelle aurait gagné.
 - **La grande course** fait pareil sur **12 actifs à la fois** : 10 cryptos, l'or (jeton PAXG) et l'euro face au dollar. Elle affiche un tableau avec le gagnant de chaque ligne, la moyenne, le nombre de victoires et un verdict. Elle utilise les cours en dollars, bien plus échangés que les cours en euros. Toucher une crypto lance le robot en direct dessus.
 - **La course en Bourse** : la même chose sur **13 valeurs** (Apple, Microsoft, Nvidia, Tesla, Amazon, Google, Meta, LVMH, TotalEnergies, Airbus, L'Oréal, le CAC 40 et le S&P 500), sur les **5 dernières séances complètes**, en bougies de 5 minutes. Yahoo Finance ne laisse pas une page web lire ses cours : le script `maj_bourse.py` les télécharge dans `bourse.json`, que la page lit.
+- **Le robot « parfait » : le piège** : la page essaie 155 réglages de robots sur 6 mois de cours de 10 cryptos (bougies de 4 h) et garde le meilleur. Puis elle le teste sur les 3 mois suivants, qu'il n'a jamais vus. On peut choisir la période testée sur la dernière année. En dessous, un tableau résume la même étude faite sur 6 marchés (dossier `etude/`).
 - Le portefeuille est gardé dans le navigateur. Quand on revient, le robot **rattrape** ce qu'il aurait fait pendant l'absence.
 
 Les cours viennent de Binance (en direct), avec Coinbase en secours. Aucune clé, aucun serveur : tout tourne dans la page.
@@ -40,6 +41,7 @@ Les cours viennent de Binance (en direct), avec Coinbase en secours. Aucune clé
 
 ## ▶️ Comment l'essayer
 
+- Refaire l'étude du robot « parfait » (il faut numpy, et le téléchargement prend environ 15 min) : `python3 experiences/003-robot-de-trading-fictif/etude/telecharger.py`, puis `python3 experiences/003-robot-de-trading-fictif/etude/analyse.py crypto15m crypto1h crypto4h crypto1d bourse1h bourse1d`.
 - Mettre à jour les cours de la Bourse : `python3 experiences/003-robot-de-trading-fictif/maj_bourse.py`, puis faire un commit de `bourse.json`.
 
 - En ligne : https://samagie.github.io/Bidouille-en-ligne/experiences/003-robot-de-trading-fictif/
@@ -58,8 +60,15 @@ Les cours viennent de Binance (en direct), avec Coinbase en secours. Aucune clé
 - Course en Bourse (New York du 2 au 6 novembre, Paris du 3 au 9 novembre 2026, filet à −2 %) : **le hasard a la meilleure moyenne (−0,59 %)**, devant « acheter et attendre » (−0,91 %), « records » (−1,20 %), « tendance » (−1,26 %) et « creux » (−2,75 %). Les 3 robots « malins » font tous moins bien que le hasard.
 - Yahoo réserve en principe ses données à un usage personnel. Pour un labo, ça va ; si le projet devenait public ou commercial, il faudrait une source sous licence.
 
+- **Peut-on trouver un robot bien plus performant en étudiant l'historique ? Non, pas de façon fiable.** Étude du 9 novembre 2026 (`etude/analyse.py`) : on choisit le meilleur de 155 robots sur une période, on le teste sur la suivante, et on recommence en avançant dans le temps. 30 tests en tout, sur les cryptos (bougies de 15 min, 1 h, 4 h, 1 jour) et la Bourse (1 h, 1 jour).
+  - Sur le passé, le robot choisi affiche de +12 % à +91 % en moyenne. Sur la suite : de −9 % à +17 %.
+  - Il ne bat « acheter et attendre » que **9 fois sur 30**, et **jamais en Bourse** (0 sur 11).
+  - Un robot réglé sur mesure pour chaque actif fait encore pire : il « apprend par cœur » encore plus le passé (par exemple +143 % sur le passé, puis +3 % sur la suite, en cryptos journalières).
+  - Le robot le plus souvent choisi est un robot « creux » (il achète les fortes baisses). Il perd moins quand tout chute, parce qu'il est souvent hors du marché, mais il rate les hausses. Il réduit le risque ; il ne gagne pas plus.
+
 ## ➡️ Prochaine étape
 
 - Relancer la grande course plusieurs jours de suite (et en bougies de 5 ou 15 minutes, avec moins d'opérations, donc moins de frais) pour voir si le classement change.
+- Mesurer le risque (la pire chute subie) et pas seulement le gain : c'est là que les robots « prudents » pourraient avoir un intérêt.
 - Mettre à jour `bourse.json` automatiquement chaque soir (une tâche GitHub qui lance `maj_bourse.py` avant de publier le site).
 - Idées possibles : les 4 robots en concurrence en direct, des réglages des méthodes (nombre de bougies, seuils), une course longue sur 1 an en bougies d'une journée.

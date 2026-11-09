@@ -299,3 +299,27 @@ table.grande { width: 100%; border-collapse: separate; border-spacing: 0 2px; fo
   .grande th, .grande td { padding: 0.35rem 0.2rem; }
   .grande td.meilleur::before { content: ""; }
 }
+
+/* ---------- Robot « parfait » ---------- */
+h3 { margin: 1.4rem 0 0.4rem; font-size: 1rem; }
+.optim-lancer { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
+#bouton-optim { background: #1d2b4d; border-color: #34508f; }
+#bouton-optim:disabled { opacity: 0.6; cursor: wait; }
+.optim-periodes { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-bottom: 0.8rem; }
+.optim-periodes button { padding: 0.3rem 0.6rem; font-size: 0.82rem; font-weight: 500; }
+.optim-periodes button.actif { border-color: var(--accent); color: var(--accent); }
+.optim-cartes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.carte-optim { background: #0f1527; border: 1px solid var(--bord); border-radius: 0.8rem; padding: 0.7rem 0.9rem; }
+.carte-optim.suite { border-color: #34508f; }
+#optim-graphique { display: block; width: 100%; height: 260px; margin-top: 0.8rem; }
+#optim-legende { padding-left: 0; }
+#optim-graphique[hidden] + #optim-legende { display: none; }
+.sur-mesure { margin-top: 0.6rem; }
+.sur-mesure summary { cursor: pointer; font-size: 0.88rem; }
+.grande td.texte { text-align: left; white-space: normal; font-size: 0.82rem; }
+.grande.etude td, .grande.etude th { font-size: 0.85rem; }
+.grande.etude thead th { font-size: 0.8rem; color: var(--doux); }
+@media (max-width: 760px) {
+  .optim-cartes { grid-template-columns: 1fr; }
+}
+.grande.etude th:nth-child(3) { text-align: left; }

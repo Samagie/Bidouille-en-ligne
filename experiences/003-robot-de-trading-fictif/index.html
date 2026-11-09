@@ -102,6 +102,40 @@
       <p class="note"><span id="bourse-maj"></span> Pas de direct ici : Yahoo ne laisse pas une page web lire ses cours, alors on les télécharge et on les range dans le labo. La Bourse n'ouvre qu'en semaine : Paris de 9 h à 17 h 30, New York de 15 h 30 à 22 h (heure de Paris). Chaque valeur est comptée dans sa monnaie (dollar ou euro) : seul le pourcentage compte.</p>
     </section>
 
+    <section class="carte">
+      <h2>🔬 Le robot « parfait » : le piège</h2>
+      <p class="intro">Peut-on fabriquer un robot bien plus fort en étudiant l'historique ? On essaie <strong>155 réglages de robots</strong> sur 6 mois de cours de 10 cryptos (bougies de 4 h), et on garde le meilleur. Puis on le lâche sur <strong>les 3 mois suivants</strong>, qu'il n'a jamais vus. Gagne-t-il encore ?</p>
+      <div class="optim-lancer">
+        <button id="bouton-optim" type="button">🔎 Chercher le meilleur robot</button>
+        <span id="optim-etat" class="detail"></span>
+      </div>
+      <div id="optim-periodes" class="optim-periodes" hidden>
+        <span class="detail">Période testée :</span>
+        <button type="button" data-periode="0">les 3 derniers mois</button>
+        <button type="button" data-periode="1">il y a 3 à 6 mois</button>
+        <button type="button" data-periode="2">il y a 6 à 9 mois</button>
+        <button type="button" data-periode="3">il y a 9 à 12 mois</button>
+      </div>
+      <div id="optim-resultat"></div>
+      <canvas id="optim-graphique" hidden aria-label="Évolution du robot choisi et de « acheter et attendre »"></canvas>
+      <div class="legende" id="optim-legende"><span style="color:#f59e0b"><i></i><span style="color:var(--doux)">robot choisi</span></span><span style="color:#8e98b3"><i></i>acheter et attendre</span></div>
+
+      <h3>📊 Le même test, partout (étude du 9 novembre 2026)</h3>
+      <p class="intro">À chaque fois, on choisit le meilleur des 155 robots sur une période, puis on le teste sur la période suivante. On recommence en avançant dans le temps. Moyennes de 10 cryptos ou de 13 valeurs de la Bourse, frais de 0,1 % compris.</p>
+      <div class="tableau-defile"><table class="grande etude">
+        <thead><tr><th>Marché</th><th>Bougies</th><th>Choisi sur → testé sur</th><th>📚 Passé</th><th>🔮 Suite</th><th>😴 Attendre</th><th>🎲 Hasard</th><th>Bat « attendre »</th></tr></thead>
+        <tbody>
+          <tr><td><b>Cryptos</b></td><td>15 min</td><td class="texte">2 mois → 1 mois (×3)</td><td class="pos">+12,5 %</td><td class="pos">+1,5 %</td><td class="pos">+11,3 %</td><td class="neg">−5,5 %</td><td>1 fois sur 3</td></tr>
+          <tr><td><b>Cryptos</b></td><td>1 h</td><td class="texte">6 mois → 3 mois (×5)</td><td class="pos">+16,0 %</td><td class="neg">−9,2 %</td><td class="neg">−12,5 %</td><td class="neg">−12,9 %</td><td>3 fois sur 5</td></tr>
+          <tr><td><b>Cryptos</b></td><td>4 h</td><td class="texte">6 mois → 3 mois (×5)</td><td class="pos">+32,2 %</td><td class="neg">−8,2 %</td><td class="pos">+4,3 %</td><td class="neg">−0,7 %</td><td>3 fois sur 5</td></tr>
+          <tr><td><b>Cryptos</b></td><td>1 jour</td><td class="texte">1 an → 6 mois (×6)</td><td class="pos">+82,0 %</td><td class="neg">−3,5 %</td><td class="pos">+31,6 %</td><td class="pos">+13,5 %</td><td>2 fois sur 6</td></tr>
+          <tr><td><b>Bourse</b></td><td>1 h</td><td class="texte">6 mois → 3 mois (×5)</td><td class="pos">+12,0 %</td><td class="pos">+0,5 %</td><td class="pos">+2,6 %</td><td class="neg">−0,1 %</td><td>0 fois sur 5</td></tr>
+          <tr><td><b>Bourse</b></td><td>1 jour</td><td class="texte">2 ans → 1 an (×6)</td><td class="pos">+91,4 %</td><td class="pos">+17,3 %</td><td class="pos">+35,4 %</td><td class="pos">+15,0 %</td><td>0 fois sur 6</td></tr>
+        </tbody>
+      </table></div>
+      <p class="verdict">Le robot « parfait » bat « acheter et attendre » <strong>9 fois sur 30</strong>, et jamais en Bourse. Quand il gagne, c'est surtout pendant les chutes : il est souvent hors du marché, donc il perd moins. En contrepartie, il rate les hausses.</p>
+    </section>
+
     <details class="carte explications">
       <summary>❓ Comment ça marche</summary>
       <ul>
