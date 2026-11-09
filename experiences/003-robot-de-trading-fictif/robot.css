@@ -266,3 +266,36 @@ button.discret { color: var(--doux); font-weight: 500; }
   .course-ligne button, .course-ligne .tien { grid-column: 1 / -1; justify-self: start; }
   .reglages { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---------- Grande course ---------- */
+.titre-ligne { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+.titre-ligne h2 { margin: 0; }
+.titre-ligne button { padding: 0.35rem 0.6rem; font-size: 0.85rem; white-space: nowrap; }
+.legende-colonnes { display: none; }
+.tableau-defile { overflow-x: auto; }
+table.grande { width: 100%; border-collapse: separate; border-spacing: 0 2px; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.grande th, .grande td { padding: 0.4rem 0.5rem; text-align: right; white-space: nowrap; }
+.grande th:first-child, .grande td:first-child { text-align: left; white-space: normal; }
+.grande thead th { font-size: 1.15rem; font-weight: 600; vertical-align: bottom; border-bottom: 1px solid var(--bord); }
+.grande .col-nom { display: block; font-size: 0.72rem; color: var(--doux); font-weight: 500; }
+.grande .actif-detail { display: block; font-size: 0.72rem; color: var(--doux); }
+.grande tbody td { border-top: 1px solid var(--bord); }
+.grande tr.groupe td { border: 0; padding-top: 0.9rem; font-size: 0.75rem; color: var(--doux); text-transform: uppercase; letter-spacing: 0.06em; }
+.grande td.meilleur { background: #1d2b4d; font-weight: 750; border-radius: 0.4rem; box-shadow: 0 0 0 1px #34508f inset; }
+.grande td.meilleur::before { content: "🏆 "; font-size: 0.8em; }
+.grande td.attente { color: var(--doux); }
+.grande tr.jouable { cursor: pointer; }
+.grande tr.jouable:hover td { background-color: #18213a; }
+.grande tfoot td { font-weight: 700; border-top: 2px solid var(--bord); }
+.grande tfoot tr.victoires td { font-weight: 500; color: var(--doux); border-top: 0; }
+.verdict { margin: 0.8rem 0 0; font-size: 0.95rem; }
+.verdict:empty { display: none; }
+.note { margin: 0.6rem 0 0; font-size: 0.78rem; color: var(--doux); }
+
+@media (max-width: 760px) {
+  .legende-colonnes { display: block; }
+  .grande .col-nom { display: none; }
+  table.grande { font-size: 0.78rem; }
+  .grande th, .grande td { padding: 0.35rem 0.2rem; }
+  .grande td.meilleur::before { content: ""; }
+}

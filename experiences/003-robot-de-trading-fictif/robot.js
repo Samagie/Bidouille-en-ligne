@@ -8,7 +8,8 @@
   // ---------- Constantes ----------
   const CAPITAL = 10000;
   const FRAIS = 0.001; // 0,1 % par achat et par vente
-  const MAX_BOUGIES = 1000;
+  const MAX_BOUGIES = 1500;
+  const FENETRE = 24 * 3600e3; // la course se joue sur les dernières 24 h
   const MAX_OPS = 500;
   const DEBUT_COURSE = 25; // bougies d'échauffement pour les indicateurs
   const CLE = 'robot-trading-fictif-v1';
@@ -30,6 +31,21 @@
     '5m': { libelle: '5 minutes', rythme: 'toutes les 5 minutes', ms: 300000 },
     '15m': { libelle: '15 minutes', rythme: 'tous les quarts d\'heure', ms: 900000 },
   };
+  // La grande course : cours en dollars, bien plus échangés que les cours en euros, donc plus fiables.
+  const ACTIFS = [
+    { code: 'BTC', nom: 'Bitcoin', groupe: 'crypto' },
+    { code: 'ETH', nom: 'Ethereum', groupe: 'crypto' },
+    { code: 'SOL', nom: 'Solana', groupe: 'crypto' },
+    { code: 'XRP', nom: 'XRP', groupe: 'crypto' },
+    { code: 'DOGE', nom: 'Dogecoin', groupe: 'crypto' },
+    { code: 'ADA', nom: 'Cardano', groupe: 'crypto' },
+    { code: 'BNB', nom: 'BNB', groupe: 'crypto' },
+    { code: 'LINK', nom: 'Chainlink', groupe: 'crypto' },
+    { code: 'AVAX', nom: 'Avalanche', groupe: 'crypto' },
+    { code: 'LTC', nom: 'Litecoin', groupe: 'crypto' },
+    { code: 'PAXG', nom: '🥇 Or', detail: "jeton adossé à l'or", groupe: 'autre' },
+    { code: 'EUR', nom: '💶 Euro', detail: 'face au dollar', groupe: 'autre' },
+  ];
   const STOPS = { 0: 'aucun', 0.01: 'revend à −1 %', 0.02: 'revend à −2 %', 0.05: 'revend à −5 %' };
   const COULEURS = { vert: '#22c55e', rouge: '#f04f4f', orange: '#f59e0b', bleu: '#60a5fa', violet: '#a78bfa', doux: '#8e98b3', grille: '#1e2741', accent: '#38bdf8' };
 
@@ -270,11 +286,23 @@
     return { t, l: k[1], h: k[2], o: k[3], c: k[4], ferme: t + msBougie() <= Date.now() };
   }
 
-  async function lireBinance(limite) {
-    const r = await fetch(`${BINANCE_REST}?symbol=${etat.crypto}EUR&interval=${etat.duree}&limit=${limite}`);
-    if (!r.ok) throw new Error('Binance ' + r.status);
-    return (await r.json()).map(versBougieBinance);
+  // Lit n bougies en remontant le temps (Binance en donne 1 000 au plus par demande).
+  async function lireKlines(symbole, intervalle, n) {
+    let toutes = [], avant = null;
+    while (toutes.length < n) {
+      const limite = Math.min(1000, n - toutes.length);
+      const r = await fetch(`${BINANCE_REST}?symbol=${symbole}&interval=${intervalle}&limit=${limite}${avant ? `&endTime=${avant}` : ''}`);
+      if (!r.ok) throw new Error('Binance ' + r.status);
+      const lot = (await r.json()).map(versBougieBinance);
+      toutes = lot.concat(toutes);
+      if (lot.length < limite) break;
+      avant = lot[0].t - 1;
+    }
+    return toutes;
   }
+  const lireBinance = (limite) => lireKlines(`${etat.crypto}EUR`, etat.duree, limite);
+  // 24 h de bougies + l'échauffement des indicateurs.
+  const bougies24h = (duree) => Math.ceil(FENETRE / DUREES[duree].ms) + DEBUT_COURSE + 5;
   async function lireCoinbase() {
     const r = await fetch(`${COINBASE_REST}${etat.crypto}-EUR/candles?granularity=${msBougie() / 1000}`);
     if (!r.ok) throw new Error('Coinbase ' + r.status);
@@ -291,7 +319,7 @@
     majTout();
     let hist;
     try {
-      hist = await lireBinance(MAX_BOUGIES);
+      hist = await lireBinance(Math.max(1000, bougies24h(etat.duree)));
       source = 'binance';
     } catch (_) {
       try {
@@ -412,18 +440,115 @@
   }
 
   // ---------- La course des robots (rejouée sur les mêmes cours) ----------
-  function calculerCourse() {
-    const fin = indexDerniereFermee();
-    if (fin - DEBUT_COURSE < 30) { course = null; return; }
-    const prixDebut = bougies[DEBUT_COURSE].c, prixFin = bougies[fin].c;
+  // Rejoue chaque méthode sur les dernières 24 h (ou moins si l'historique est plus court).
+  function courseSur(b, stop, ms) {
+    let fin = b.length - 1;
+    while (fin >= 0 && !b[fin].ferme) fin--;
+    if (fin < 0) return null;
+    const limite = b[fin].t + ms - FENETRE;
+    let debut = DEBUT_COURSE;
+    while (debut < fin && b[debut].t < limite) debut++;
+    if (fin - debut < 30) return null;
+    const prixDebut = b[debut].c, prixFin = b[fin].c;
     const lignes = Object.entries(STRATEGIES).map(([cle, s]) => {
       const p = nouveauPortefeuille();
-      for (let i = DEBUT_COURSE; i <= fin; i++) etape(p, bougies, i, s, etat.stop);
+      for (let i = debut; i <= fin; i++) etape(p, b, i, s, stop);
       return { cle, nom: s.nom, emoji: s.emoji, perf: valeur(p, prixFin) / CAPITAL - 1, ops: p.ops };
     });
-    lignes.push({ cle: null, nom: 'Acheter et attendre', emoji: '😴', perf: ((CAPITAL * (1 - FRAIS)) * prixFin) / prixDebut / CAPITAL - 1, ops: [{}] });
-    lignes.sort((a, b) => b.perf - a.perf);
-    course = { lignes, debut: bougies[DEBUT_COURSE].t, fin: bougies[fin].t + msBougie() };
+    lignes.push({ cle: null, nom: 'Acheter et attendre', emoji: '😴', perf: (1 - FRAIS) * (prixFin / prixDebut) - 1, ops: [{}] });
+    lignes.sort((a, c) => c.perf - a.perf);
+    return { lignes, debut: b[debut].t, fin: b[fin].t + ms };
+  }
+  function calculerCourse() { course = courseSur(bougies, etat.stop, msBougie()); }
+
+  // ---------- La grande course : les mêmes robots sur 12 actifs ----------
+  const COLONNES = [
+    { cle: null, emoji: '😴', nom: 'Acheter et attendre' },
+    ...Object.entries(STRATEGIES).map(([cle, s]) => ({ cle, emoji: s.emoji, nom: s.nom })),
+  ];
+  let grande = null;
+  let genGrande = 0;
+
+  async function lancerGrandeCourse() {
+    const g = ++genGrande;
+    const duree = etat.duree, stop = etat.stop, ms = DUREES[duree].ms;
+    grande = { duree, stop, resultats: new Map(), calculeA: null };
+    majGrandeCourse();
+    const file = ACTIFS.slice();
+    const ouvrier = async () => {
+      while (file.length) {
+        const a = file.shift();
+        let res;
+        try {
+          res = courseSur(await lireKlines(`${a.code}USDT`, duree, bougies24h(duree)), stop, ms) || 'erreur';
+        } catch (_) {
+          res = 'erreur';
+        }
+        if (g !== genGrande) return;
+        grande.resultats.set(a.code, res);
+        majGrandeCourse();
+      }
+    };
+    await Promise.all([ouvrier(), ouvrier(), ouvrier()]);
+    if (g !== genGrande) return;
+    grande.calculeA = Date.now();
+    majGrandeCourse();
+  }
+
+  function majGrandeCourse() {
+    if (!grande) return;
+    const perfDe = (res, cle) => res.lignes.find((l) => l.cle === cle);
+    const nbFinis = grande.resultats.size;
+    $('#grande-intro').innerHTML = `Chaque robot repart de ${argent(CAPITAL)} fictifs sur chaque actif et rejoue <strong>les dernières 24 h</strong>, avec des bougies de ${DUREES[grande.duree].libelle} et le filet « ${STOPS[grande.stop]} ». ` +
+      (grande.calculeA ? `Calculé à ${heure(grande.calculeA)}.` : `<strong>Chargement… ${nbFinis}/${ACTIFS.length}</strong>`);
+
+    const tete = `<thead><tr><th>Actif</th>${COLONNES.map((c) => `<th title="${c.nom}">${c.emoji}<span class="col-nom">${c.nom.replace(' (le témoin)', '')}</span></th>`).join('')}</tr></thead>`;
+    const valides = [];
+    let corps = '';
+    for (const groupe of ['crypto', 'autre']) {
+      corps += `<tr class="groupe"><td colspan="${COLONNES.length + 1}">${groupe === 'crypto' ? 'Cryptomonnaies' : 'Autres actifs'}</td></tr>`;
+      for (const a of ACTIFS.filter((x) => x.groupe === groupe)) {
+        const res = grande.resultats.get(a.code);
+        const jouable = !!CRYPTOS[a.code];
+        const nomActif = `<b>${a.nom}</b><span class="actif-detail">${a.detail || a.code}</span>`;
+        let cellules;
+        if (res === undefined) cellules = COLONNES.map(() => '<td class="attente">…</td>').join('');
+        else if (res === 'erreur') cellules = COLONNES.map(() => '<td class="attente">—</td>').join('');
+        else {
+          valides.push(res);
+          const perfs = COLONNES.map((c) => perfDe(res, c.cle).perf);
+          const meilleur = Math.max(...perfs);
+          cellules = COLONNES.map((c, j) => {
+            const l = perfDe(res, c.cle);
+            const titre = c.cle === null ? 'un seul achat au début' : `${l.ops.length} opérations`;
+            return `<td class="${classe(perfs[j])}${perfs[j] === meilleur ? ' meilleur' : ''}" title="${titre}">${pct(perfs[j])}</td>`;
+          }).join('');
+        }
+        corps += `<tr${jouable ? ` class="jouable" data-crypto="${a.code}" title="Lancer ton robot sur ${a.nom}"` : ''}><td>${nomActif}</td>${cellules}</tr>`;
+      }
+    }
+
+    let pied = '';
+    let verdict = '';
+    if (valides.length) {
+      const moyennes = COLONNES.map((c) => valides.reduce((s, r) => s + perfDe(r, c.cle).perf, 0) / valides.length);
+      const victoires = COLONNES.map((c) => valides.filter((r) => r.lignes[0].cle === c.cle).length);
+      const meilleureMoy = Math.max(...moyennes);
+      pied = `<tfoot>
+        <tr><td>Moyenne</td>${moyennes.map((m) => `<td class="${classe(m)}${m === meilleureMoy ? ' meilleur' : ''}">${pct(m)}</td>`).join('')}</tr>
+        <tr class="victoires"><td>Fois 1<sup>er</sup></td>${victoires.map((v) => `<td>${v}</td>`).join('')}</tr>
+      </tfoot>`;
+      if (grande.calculeA) {
+        const iMeilleur = moyennes.indexOf(meilleureMoy);
+        const iHasard = COLONNES.findIndex((c) => c.cle === 'hasard');
+        const battus = COLONNES.filter((c, j) => c.cle && c.cle !== 'hasard' && moyennes[j] < moyennes[iHasard]).length;
+        verdict = `🏆 En moyenne, le meilleur est <strong>${COLONNES[iMeilleur].emoji} ${COLONNES[iMeilleur].nom}</strong> (${pct(meilleureMoy)}). ` +
+          `😴 « Acheter et attendre » arrive premier sur <strong>${victoires[0]} actif${victoires[0] > 1 ? 's' : ''} sur ${valides.length}</strong>. ` +
+          (battus ? `🎲 Le hasard fait mieux, en moyenne, que <strong>${battus} des 3 robots « malins »</strong>.` : '🎲 Les 3 robots « malins » font tous mieux que le hasard, en moyenne.');
+      }
+    }
+    $('#grande-course').innerHTML = tete + `<tbody>${corps}</tbody>` + pied;
+    $('#grande-verdict').innerHTML = verdict;
   }
 
   // ---------- Affichage ----------
@@ -830,6 +955,7 @@
     } else {
       demarrer();
     }
+    if (!grande || grande.duree !== etat.duree || grande.stop !== etat.stop) lancerGrandeCourse();
   }
   function changer(cle, valeur) {
     if (etat.p.ops.length && !confirm(`Changer ce réglage lance une nouvelle partie avec ${argent(CAPITAL)} (le journal actuel sera effacé). On y va ?`)) {
@@ -847,6 +973,13 @@
     const b = e.target.closest('button[data-strat]');
     if (b) changer('strat', b.dataset.strat);
   });
+  $('#grande-course').addEventListener('click', (e) => {
+    const ligne = e.target.closest('tr[data-crypto]');
+    if (!ligne || ligne.dataset.crypto === etat.crypto) return;
+    changer('crypto', ligne.dataset.crypto);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  $('#relancer-grande').addEventListener('click', lancerGrandeCourse);
   $('#bouton-pause').addEventListener('click', () => {
     etat.marche = !etat.marche;
     sauver();
@@ -866,4 +999,5 @@
   majReglages();
   majLegende();
   demarrer();
+  lancerGrandeCourse();
 })();
