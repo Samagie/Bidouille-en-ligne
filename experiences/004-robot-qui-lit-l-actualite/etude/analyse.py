@@ -20,10 +20,15 @@ def lire(nom):
     p = D / f'{nom}.json'
     return json.loads(p.read_text()) if p.exists() else None
 
-def serie(paires):
+def serie(paires, bouche=0):
     x = np.full(N, np.nan)
     for j, v in paires:
         if 0 <= j < N and v is not None: x[j] = v
+    for i in range(1, N):          # un jour manquant reprend la dernière valeur connue (au plus `bouche` jours)
+        if np.isnan(x[i]) and bouche:
+            k = i - 1
+            while k >= 0 and i - k <= bouche and np.isnan(x[k]): k -= 1
+            if k >= 0 and i - k <= bouche and not np.isnan(x[k]): x[i] = x[k]
     return x
 
 def moy(x, n):   # moyenne glissante qui tolère les trous
@@ -42,7 +47,7 @@ def z(x, n=90): return (x - moy(x, n)) / np.where(ecart(x, n) > 0, ecart(x, n), 
 def decale(x, k): return np.concatenate([np.full(k, np.nan), x[:-k]])
 
 peur_brut = lire('peur')
-peur = serie([((dt.datetime.fromtimestamp(t, dt.timezone.utc).date() - J0).days, v) for t, v in peur_brut]) if peur_brut else None
+peur = serie([((dt.datetime.fromtimestamp(t, dt.timezone.utc).date() - J0).days, v) for t, v in peur_brut], 7) if peur_brut else None
 
 SOURCES = {'peur': peur is not None, 'presse': True, 'wiki': True}
 donnees = {}
@@ -62,14 +67,14 @@ for a in ACTIFS:
         F['humeur: peur et avidité'] = peur / 100; F['humeur: peur, variation 7 j'] = (peur - decale(peur, 7)) / 100
     ton, art, wk = lire(f'ton_{a}'), lire(f'articles_{a}'), lire(f'wiki_{a}')
     if ton:
-        t = serie([(jour(d), v) for d, v, _ in ton])
+        t = serie([(jour(d), v) for d, v, _ in ton], 7)
         F['humeur: ton de la presse'] = z(t); F['humeur: ton, 7 j contre 30 j'] = moy(t, 7) - moy(t, 30)
     else: SOURCES['presse'] = False
     if art:
-        v = serie([(jour(d), (x / n if n else None)) for d, x, n in art]); v = np.log(np.where(v > 0, v, np.nan))
+        v = serie([(jour(d), (x / n if n else None)) for d, x, n in art], 7); v = np.log(np.where(v > 0, v, np.nan))
         F['humeur: nombre d\'articles'] = z(v); F['humeur: articles, 7 j contre 30 j'] = moy(v, 7) - moy(v, 30)
     if wk:
-        w = decale(np.log(serie([(jour(d), max(x, 1)) for d, x in wk])), 1)   # publié avec un jour de retard
+        w = decale(np.log(serie([(jour(d), max(x, 1)) for d, x in wk], 7)), 1)   # publié avec un jour de retard
         F['humeur: curiosité Wikipédia'] = z(w); F['humeur: Wikipédia, 7 j contre 30 j'] = moy(w, 7) - moy(w, 30)
     else: SOURCES['wiki'] = False
     donnees[a] = dict(c=c, r=r, F=F)
@@ -125,9 +130,12 @@ def etude(h, entrainement=730, test=182):
         res = {k: [] for k in courbes}; seg = {k: [] for k in courbes}
         for a, d in donnees.items():
             r_suiv = d['r'][i + 1:te1 + 1]          # rendement du lendemain de chaque décision
-            if np.isnan(r_suiv).any() or np.isnan(preds['tout'][a]).any(): continue
+            if np.isnan(r_suiv).any() or np.isnan(preds['tout'][a]).mean() > 0.2: continue
             for v in VERSIONS:
-                e = jouer((preds[v][a] > 0).astype(int), r_suiv); res[v].append(e[-1] - 1); seg[v].append(e)
+                pos, s = [], 0
+                for x in preds[v][a]:
+                    s = s if np.isnan(x) else int(x > 0); pos.append(s)
+                e = jouer(pos, r_suiv); res[v].append(e[-1] - 1); seg[v].append(e)
             e = jouer(np.ones(len(r_suiv), int), r_suiv); res['attendre'].append(e[-1] - 1); seg['attendre'].append(e)
             hs = []
             for g in range(30):
