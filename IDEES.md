@@ -47,4 +47,4 @@ Des fonctions pour l'appli du foyer. Certaines peuvent d'abord passer par une ma
 
 ## Un jour, peut-être
 
-- 📰 **Robot qui lit l'actualité** [Robot de trading fictif] : ajouter au robot l'humeur du marché (indice « peur et avidité » des cryptos, ton des articles de presse, popularité sur Wikipédia) et vérifier, sur une période jamais vue, si ça prédit mieux que les cours seuls. *L'actualité donne-t-elle un vrai avantage, ou est-elle déjà dans les prix ?*
+- _(vide pour l'instant)_

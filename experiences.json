@@ -28,6 +28,23 @@
   ],
   "experiences": [
     {
+      "numero": "004",
+      "dossier": "004-robot-qui-lit-l-actualite",
+      "titre": "Robot qui lit l'actualité",
+      "statut": "en-cours",
+      "date": "2026-11-10",
+      "resume": "Un robot de trading prédit-il mieux s'il connaît l'humeur du marché (peur, presse, Wikipédia) ? Test sur des périodes jamais vues.",
+      "tags": [
+        "web",
+        "trading",
+        "crypto",
+        "actualité",
+        "étude"
+      ],
+      "demo": "experiences/004-robot-qui-lit-l-actualite/",
+      "fiche": "https://github.com/Samagie/Bidouille-en-ligne/tree/main/experiences/004-robot-qui-lit-l-actualite"
+    },
+    {
       "numero": "003",
       "dossier": "003-robot-de-trading-fictif",
       "titre": "Robot de trading fictif",

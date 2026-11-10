@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Robot qui lit l'actualité · Bidouille en ligne</title>
+  <style>
+    :root {
+      --fond: #0b1020; --carte: #141b2e; --bord: #222b44; --texte: #e8ecf6; --doux: #8e98b3;
+      --vert: #22c55e; --rouge: #f04f4f; --accent: #38bdf8;
+      --c-tout: #f59e0b; --c-cours: #60a5fa; --c-humeur: #a78bfa; --c-attendre: #8e98b3; --c-hasard: #5b6787;
+      color-scheme: dark;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.45;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: radial-gradient(60rem 30rem at 85% -10%, #2a1b55 0%, transparent 60%), var(--fond); color: var(--texte); }
+    .retour { display: inline-block; padding: 0.75rem 1rem; font-size: 0.9rem; color: var(--doux); text-decoration: none; }
+    main { width: min(100% - 1.5rem, 60rem); margin: 0 auto 3rem; display: grid; gap: 0.9rem; }
+    h1 { margin: 0.2rem 0 0.3rem; font-size: clamp(1.6rem, 5vw, 2.2rem); }
+    h2 { margin: 0 0 0.6rem; font-size: 1.15rem; }
+    p { margin: 0 0 0.6rem; }
+    .doux, .sous-titre { color: var(--doux); }
+    .petit { font-size: 0.85rem; }
+    .pos { color: var(--vert); } .neg { color: var(--rouge); }
+    .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 1rem; padding: 0.9rem 1rem; }
+    .verdict { border-color: #34508f; font-size: 1.05rem; }
+    .verdict p:last-child { margin: 0; }
+    .choix { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-bottom: 0.7rem; }
+    button { font: inherit; color: var(--texte); background: var(--carte); border: 1px solid var(--bord); border-radius: 0.6rem; padding: 0.4rem 0.7rem; cursor: pointer; }
+    button.actif { border-color: var(--accent); color: var(--accent); }
+    .robots { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 0.6rem; }
+    .robot { background: #0f1527; border: 1px solid var(--bord); border-left: 4px solid var(--c); border-radius: 0.7rem; padding: 0.6rem 0.8rem; }
+    .robot .nom { font-size: 0.82rem; color: var(--doux); }
+    .robot .valeur { font-size: 1.45rem; font-weight: 750; font-variant-numeric: tabular-nums; }
+    canvas { display: block; width: 100%; height: 320px; }
+    .defile { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 0.88rem; }
+    th, td { padding: 0.4rem 0.5rem; text-align: right; white-space: nowrap; border-top: 1px solid var(--bord); }
+    th:first-child, td:first-child { text-align: left; }
+    thead th { border-top: 0; color: var(--doux); font-weight: 600; font-size: 0.8rem; }
+    td.meilleur { background: #1d2b4d; font-weight: 750; border-radius: 0.4rem; }
+    tfoot td { font-weight: 700; border-top: 2px solid var(--bord); }
+    li { margin: 0.35rem 0; }
+    ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+    summary { cursor: pointer; font-weight: 650; }
+    @media (max-width: 700px) { canvas { height: 260px; } table { font-size: 0.78rem; } th, td { padding: 0.35rem 0.25rem; } }
+  </style>
+</head>
+<body>
+  <a class="retour" href="../../">← Retour au labo</a>
+
+  <main>
+    <header>
+      <h1>📰 Robot qui lit l'actualité</h1>
+      <p class="sous-titre">Un robot de trading prédit-il mieux s'il connaît <strong>l'humeur du marché</strong> (peur des investisseurs, ton de la presse, curiosité du public), en plus des cours ? Test sur des périodes qu'il n'a jamais vues, avec de l'argent fictif.</p>
+    </header>
+
+    <section class="carte verdict" id="verdict"><p>Chargement des résultats…</p></section>
+
+    <section class="carte">
+      <h2>🏁 Les 5 concurrents, de <span id="periode"></span></h2>
+      <div class="choix">
+        <span class="doux petit">Le robot prédit :</span>
+        <button type="button" data-etude="0">le lendemain</button>
+        <button type="button" data-etude="1">les 7 jours suivants</button>
+      </div>
+      <div class="robots" id="robots"></div>
+      <canvas id="graphique" aria-label="Évolution de 10 000 € fictifs pour chaque concurrent"></canvas>
+      <p class="doux petit" id="note-graphique"></p>
+    </section>
+
+    <section class="carte">
+      <h2>📅 Période par période</h2>
+      <p class="doux petit">Avant chaque période, le robot apprend sur les 2 années précédentes. Puis il joue 6 mois sans rien retoucher. Moyenne des cryptos, frais de 0,1 % par opération.</p>
+      <div class="defile"><table id="periodes"></table></div>
+    </section>
+
+    <section class="carte">
+      <h2>🔍 Chaque signal, pris seul</h2>
+      <p class="doux petit" id="intro-liens"></p>
+      <div class="defile"><table id="liens"></table></div>
+    </section>
+
+    <details class="carte">
+      <summary>❓ Comment le test est fait</summary>
+      <ul>
+        <li><strong>Les signaux des cours</strong> : la variation du prix sur 1, 7 et 30 jours, l'écart à sa moyenne, une jauge « beaucoup monté / beaucoup baissé » et l'agitation récente.</li>
+        <li><strong>Les signaux d'humeur</strong>, tous gratuits : l'indice « peur et avidité » des cryptos (alternative.me), le ton et le nombre des articles de presse du monde entier (GDELT), et le nombre de visites de la page Wikipédia de chaque crypto.</li>
+        <li><strong>Le robot</strong> : chaque soir, une formule simple combine les signaux pour prédire si le prix va monter. Si oui, il est investi le lendemain ; sinon, il reste en euros. La formule est recalculée tous les 6 mois sur les 2 années précédentes.</li>
+        <li><strong>Pas de triche</strong> : chaque décision n'utilise que ce qui était connu ce soir-là, et le robot est toujours jugé sur des mois qu'il n'a pas vus.</li>
+        <li><strong>Les concurrents</strong> : le robot avec les cours seuls, avec l'humeur seule, avec les deux, « acheter et attendre », et le hasard.</li>
+      </ul>
+    </details>
+
+    <p class="doux petit" style="text-align:center">Argent fictif uniquement, ce n'est pas un conseil d'investissement.</p>
+  </main>
+
+  <script>
+    'use strict';
+    const $ = (s) => document.querySelector(s);
+    const ROBOTS = [
+      { cle: 'tout', nom: '📰 Cours + humeur', couleur: '--c-tout' },
+      { cle: 'cours', nom: '📈 Cours seuls', couleur: '--c-cours' },
+      { cle: 'humeur', nom: '💬 Humeur seule', couleur: '--c-humeur' },
+      { cle: 'attendre', nom: '😴 Acheter et attendre', couleur: '--c-attendre' },
+      { cle: 'hasard', nom: '🎲 Au hasard', couleur: '--c-hasard' },
+    ];
+    const couleur = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    const pct = (x, d = 1) => (x > 0 ? '+' : '') + (x * 100).toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d }) + ' %';
+    const classe = (x) => (x > 0 ? 'pos' : x < 0 ? 'neg' : '');
+    const dateFr = (s, o = { month: 'short', year: 'numeric' }) => new Date(s + 'T12:00:00').toLocaleDateString('fr-FR', o);
+    let R = null, choix = 1;
+
+    function afficher() {
+      const e = R.etudes[choix];
+      document.querySelectorAll('[data-etude]').forEach((b) => b.classList.toggle('actif', Number(b.dataset.etude) === choix));
+      $('#periode').textContent = `${dateFr(e.plis[0].debut)} à ${dateFr(e.plis[e.plis.length - 1].fin)}`;
+      $('#robots').innerHTML = ROBOTS.map((r) => {
+        const b = e.bilan[r.cle];
+        return `<div class="robot" style="--c:var(${r.couleur})"><div class="nom">${r.nom}</div><div class="valeur ${classe(b.final)}">${pct(b.final, 0)}</div><div class="doux petit">pire chute : ${pct(b.pire_chute, 0)}</div></div>`;
+      }).join('');
+      $('#note-graphique').textContent = `Évolution de 10 000 € fictifs répartis entre ${R.actifs.length} cryptos (${R.actifs.join(', ')}). L'échelle est « multiplicative » : chaque graduation double la somme. La « pire chute » est la plus forte baisse subie entre un sommet et le creux suivant.`;
+
+      const n = e.plis.length;
+      const gagne = (a, b) => e.plis.filter((p) => p[a] > p[b]).length;
+      $('#periodes').innerHTML = `<thead><tr><th>Période jouée</th>${ROBOTS.map((r) => `<th>${r.nom}</th>`).join('')}</tr></thead><tbody>` +
+        e.plis.map((p) => {
+          const m = Math.max(...ROBOTS.map((r) => p[r.cle]));
+          return `<tr><td>${dateFr(p.debut)} → ${dateFr(p.fin)}</td>${ROBOTS.map((r) => `<td class="${classe(p[r.cle])}${p[r.cle] === m ? ' meilleur' : ''}">${pct(p[r.cle])}</td>`).join('')}</tr>`;
+        }).join('') + `</tbody><tfoot><tr><td>Fois 1<sup>er</sup></td>${ROBOTS.map((r) => `<td>${e.plis.filter((p) => ROBOTS.every((o) => p[o.cle] <= p[r.cle])).length}</td>`).join('')}</tr></tfoot>`;
+
+      const B = e.bilan;
+      const mieuxQueCours = gagne('tout', 'cours'), mieuxQuAttendre = gagne('tout', 'attendre');
+      const aide = B.tout.final > B.cours.final && mieuxQueCours > n / 2;
+      const bat = B.tout.final > B.attendre.final;
+      $('#verdict').innerHTML = `
+        <p><strong>${aide ? '🟢 Oui, l\'humeur aide un peu le robot…' : '🔴 Non, l\'humeur n\'aide pas le robot.'}</strong>
+        Avec l'humeur en plus des cours, il finit à <strong class="${classe(B.tout.final)}">${pct(B.tout.final, 0)}</strong>, contre <strong class="${classe(B.cours.final)}">${pct(B.cours.final, 0)}</strong> avec les cours seuls. Il fait mieux sur <strong>${mieuxQueCours} périodes sur ${n}</strong>.</p>
+        <p><strong>${bat ? '🟢 Et il bat « acheter et attendre »' : '🔴 ' + (aide ? 'Mais il' : 'Et il') + ' ne bat pas « acheter et attendre »'}</strong>
+        (<span class="${classe(B.attendre.final)}">${pct(B.attendre.final, 0)}</span>) : il gagne sur ${mieuxQuAttendre} périodes sur ${n}.
+        ${B.tout.pire_chute > B.attendre.pire_chute ? `En revanche, sa pire chute est moins forte : <strong>${pct(B.tout.pire_chute, 0)}</strong> contre <strong>${pct(B.attendre.pire_chute, 0)}</strong>. Il est moins risqué.` : ''}</p>
+        <p class="doux petit">Étude du ${dateFr(R.date, { day: 'numeric', month: 'long', year: 'numeric' })}, prédiction sur ${choix ? 'les 7 jours suivants' : 'le lendemain'}. Change ce réglage plus bas pour voir l'autre version.</p>`;
+      dessiner();
+    }
+
+    function liens() {
+      $('#intro-liens').innerHTML = `Quand ce signal est haut, le prix monte-t-il les 7 jours suivants ? La note va de −1 à +1 ; près de 0, le signal ne dit rien. Un signal fiable garde <strong>le même signe</strong> sur les deux moitiés de l'historique (avant et après ${dateFr(R.milieu)}).`;
+      $('#liens').innerHTML = '<thead><tr><th>Signal</th><th>1<sup>re</sup> moitié</th><th>2<sup>e</sup> moitié</th><th>Fiable ?</th></tr></thead><tbody>' +
+        R.liens.map((l) => {
+          const stable = l.avant !== null && l.apres !== null && Math.sign(l.avant) === Math.sign(l.apres) && Math.min(Math.abs(l.avant), Math.abs(l.apres)) >= 0.03;
+          const f = (x) => (x === null ? '—' : (x > 0 ? '+' : '') + x.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+          const [type, nom] = l.signal.split(': ');
+          return `<tr><td>${type === 'cours' ? '📈' : '💬'} ${nom}</td><td class="${classe(l.avant)}">${f(l.avant)}</td><td class="${classe(l.apres)}">${f(l.apres)}</td><td>${stable ? '🟢 un peu' : '⚪ non'}</td></tr>`;
+        }).join('') + '</tbody>';
+    }
+
+    function dessiner() {
+      if (!R) return;
+      const e = R.etudes[choix], cv = $('#graphique'), ctx = cv.getContext('2d');
+      const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      const M = { g: 6, d: 64, h: 10, b: 22 };
+      const series = ROBOTS.map((r) => ({ ...r, v: e.courbes[r.cle] }));
+      const n = series[0].v.length;
+      let min = Infinity, max = -Infinity;
+      for (const s of series) for (const v of s.v) { min = Math.min(min, v); max = Math.max(max, v); }
+      const lmin = Math.log(min * 0.9), lmax = Math.log(max * 1.1);
+      const X = (i) => M.g + (i / (n - 1)) * (W - M.g - M.d);
+      const Y = (v) => M.h + ((lmax - Math.log(v)) / (lmax - lmin)) * (H - M.h - M.b);
+      ctx.font = '11px system-ui, sans-serif';
+      ctx.textBaseline = 'middle';
+      for (let k = -4; k <= 8; k++) {
+        const v = Math.pow(2, k);
+        if (v < min * 0.9 || v > max * 1.1) continue;
+        const y = Math.round(Y(v)) + 0.5;
+        ctx.strokeStyle = k === 0 ? '#3a4566' : '#1e2741';
+        ctx.beginPath(); ctx.moveTo(M.g, y); ctx.lineTo(W - M.d, y); ctx.stroke();
+        ctx.fillStyle = couleur('--doux');
+        ctx.textAlign = 'left';
+        ctx.fillText((v * 10000).toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + ' €', W - M.d + 6, y);
+      }
+      ctx.textBaseline = 'alphabetic';
+      let annee = '';
+      e.dates.forEach((d, i) => {
+        if (d.slice(0, 4) === annee) return;
+        annee = d.slice(0, 4);
+        if (i === 0) return;
+        ctx.strokeStyle = '#1e2741';
+        ctx.beginPath(); ctx.moveTo(X(i), M.h); ctx.lineTo(X(i), H - M.b); ctx.stroke();
+        ctx.fillStyle = couleur('--doux');
+        ctx.textAlign = 'center';
+        ctx.fillText(annee, X(i), H - 6);
+      });
+      for (const s of series.slice().reverse()) {
+        ctx.strokeStyle = couleur(s.couleur);
+        ctx.lineWidth = s.cle === 'tout' ? 2.4 : 1.5;
+        ctx.beginPath();
+        s.v.forEach((v, i) => (i ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v))));
+        ctx.stroke();
+      }
+      ctx.lineWidth = 1;
+    }
+
+    document.querySelectorAll('[data-etude]').forEach((b) => b.addEventListener('click', () => { choix = Number(b.dataset.etude); afficher(); }));
+    window.addEventListener('resize', dessiner);
+    fetch('resultats.json').then((r) => r.json()).then((d) => { R = d; liens(); afficher(); })
+      .catch(() => { $('#verdict').innerHTML = "<p>Impossible de lire les résultats (resultats.json). Ouvre la page depuis le site du labo.</p>"; });
+  </script>
+</body>
+</html>
